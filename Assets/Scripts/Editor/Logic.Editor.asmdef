@@ -1,6 +1,8 @@
 {
     "name": "Logic.Editor",
-    "references": [],
+    "references": [
+        "GUID:0ff47c9bfea9f594cb40bd1d59a9d9f1"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,

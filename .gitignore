@@ -23,3 +23,6 @@
 /UnityEditor.UI.csproj
 /UnityEngine.TestRunner.csproj
 /UnityEngine.UI.csproj
+/Logic.Editor.csproj
+/Logic.Editor.Player.csproj
+/Unity-UGUI-UI.sln
