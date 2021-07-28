@@ -1,0 +1,25 @@
+/.vs
+/Library
+/Logs
+/obj
+/Packages
+/Temp
+/.vsconfig
+/Assembly-CSharp.csproj
+/Assembly-CSharp.Player.csproj
+/Framework.csproj
+/Framework.Player.csproj
+/Logic.Framework.csproj
+/Logic.Framework.Player.csproj
+/New Unity Project.sln
+/Unity.CollabProxy.Editor.csproj
+/Unity.Rider.Editor.csproj
+/Unity.TextMeshPro.csproj
+/Unity.TextMeshPro.Editor.csproj
+/Unity.Timeline.csproj
+/Unity.Timeline.Editor.csproj
+/Unity.VSCode.Editor.csproj
+/UnityEditor.TestRunner.csproj
+/UnityEditor.UI.csproj
+/UnityEngine.TestRunner.csproj
+/UnityEngine.UI.csproj
