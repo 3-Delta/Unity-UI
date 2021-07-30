@@ -1,12 +1,15 @@
 ﻿using System;
 using UnityEngine;
 using System.Runtime.CompilerServices;
+using Object = System.Object;
+
+public interface IRegisterEvent {
+    void RegisterEvent(bool toRegister);
+}
 
 [Serializable]
 public class UIBaseT {
     public UIEntry entry;
-
-    protected bool isEventHandled = false;
 
     public void Open(bool toOpen) {
         if (toOpen) {
@@ -15,12 +18,6 @@ public class UIBaseT {
         else {
             Close();
         }
-    }
-
-    private void Open() {
-    }
-
-    private void Close() {
     }
 
     public void Show(bool toShow) {
@@ -32,10 +29,13 @@ public class UIBaseT {
         }
     }
 
+    private void Open() {
+    }
+
+    private void Close() {
+    }
+
     private void Show() {
-        // if (!isEventHandled) {
-        //     isEventHandled = true;
-        // }
     }
 
     private void Hide() {
@@ -47,11 +47,11 @@ public class UIBaseT {
         // 资源组件解析
     }
 
-    protected virtual void OnOpen(ITuple arg) {
+    protected virtual void OnOpen(Object arg) {
         // ui没有打开的时候调用UIMgr.Open
     }
 
-    protected virtual void OnTransfer(ITuple arg) {
+    protected virtual void OnTransfer(Object arg) {
         // ui已经打开的时候调用UIMgr.Open
     }
 
