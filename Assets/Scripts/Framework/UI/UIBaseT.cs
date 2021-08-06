@@ -42,7 +42,7 @@ public class UIBaseT {
     }
 
     public virtual void BlcokRaycast(bool toBlcok) {
-        // 放置点击事件
+        // 防止点击事件
     }
 
     #region 生命周期

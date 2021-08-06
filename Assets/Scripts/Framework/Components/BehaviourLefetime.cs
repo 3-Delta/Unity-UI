@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
+// 框架层提供给热更层的快捷口
 [DisallowMultipleComponent]
 public class BehaviourLefetime : MonoBehaviour {
     public Action onAwake;
