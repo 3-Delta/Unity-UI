@@ -10,7 +10,7 @@ public interface IRegisterEvent {
 [Serializable]
 public class UIBaseT {
     public UIEntry entry;
-
+    
     public void Open(bool toOpen) {
         if (toOpen) {
             Open();
@@ -39,6 +39,10 @@ public class UIBaseT {
     }
 
     private void Hide() {
+    }
+
+    public virtual void BlcokRaycast(bool toBlcok) {
+        // 放置点击事件
     }
 
     #region 生命周期

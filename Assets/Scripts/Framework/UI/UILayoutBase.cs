@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [Serializable]
-public abstract class UILayoutBase {
+public abstract class UILayoutBase : IRegisterEvent {
     private bool isFind = false;
     public Transform transform { get; protected set; }
 
@@ -21,7 +21,7 @@ public abstract class UILayoutBase {
     protected virtual void OnInit() {
     }
 
-    public virtual void HandleEvents(bool toRegister) {
+    public virtual void RegisterEvent(bool toRegister) {
     }
 }
 
