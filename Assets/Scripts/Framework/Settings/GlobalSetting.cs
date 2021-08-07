@@ -20,6 +20,7 @@ public class GlobalSetting {
     public static readonly string[] ABVariantQualityNames = new string[] { "H", "M", "L" };
 
     public const string ABExtension = "unity3d";
+    public static SystemLanguage Lan = SystemLanguage.ChineseSimplified;
 
     public static readonly long[] ByteSizes = { 1024 * 1024 * 1024, 1024 * 1024 * 1024, 1024 * 1024, 1024, 1 };
     public static readonly string[] ByteNames = { "GB", "MB", "KB", "B" };

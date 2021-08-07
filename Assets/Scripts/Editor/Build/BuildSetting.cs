@@ -6,7 +6,7 @@ using UnityEditor;
 using System.IO;
 
 public class BuildSetting {
-    public static bool ChangeAbVersion = false;
+    public static bool ChangeABVersion = true;
     public static readonly string ABOutputPath = $"{Application.dataPath}/{"../ABOutput"}";
 
     public static string AppVersionOutputPath {

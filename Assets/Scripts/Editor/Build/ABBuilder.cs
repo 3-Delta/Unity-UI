@@ -20,11 +20,26 @@ public class ABAsset {
     public string bundlePath;
 }
 
+// ab优先级限制
 [Serializable]
 public class ABAssetGroup {
     public EABPriority priority = EABPriority.Necessary;
     public string bundlePath;
     public string[] assetPaths;
+}
+
+// 高中低配置限制
+[Serializable]
+public class QualityABAssetGroup {
+    public EABVariantQuality quality = EABVariantQuality.Mid;
+    public ABAssetGroup[] groups;
+}
+
+// 语言限制
+[Serializable]
+public class LanQualityABAssetGroup {
+    public SystemLanguage lan = SystemLanguage.ChineseSimplified;
+    public QualityABAssetGroup groups;
 }
 
 public static class ABBuilder {
@@ -150,7 +165,7 @@ public static class ABBuilder {
         }
 
         BundleRecords records = BuildSetting.CurrentABRecords;
-        if (BuildSetting.ChangeAbVersion) {
+        if (BuildSetting.ChangeABVersion) {
             ++records.version;
         }
         string outputPath = BuildSetting.GetABOutputPath(records.version);
@@ -160,7 +175,7 @@ public static class ABBuilder {
                     assetNames = bundle.assetPaths,
                     assetBundleName = bundle.bundlePath,
                     // unity会自动给 assetBundleVariant添加一个., 所以我们不需要手动添加.
-                    assetBundleVariant = $"{GlobalSetting.ABVariantQualityNames[(int)GlobalSetting.ABVariantQuality]}.{GlobalSetting.ABExtension}",
+                    assetBundleVariant = GlobalSetting.ABExtension
                 }).ToArray(),
                 BuildAssetBundleOptions.ChunkBasedCompression |
                 BuildAssetBundleOptions.StrictMode |
@@ -215,6 +230,7 @@ public static class ABBuilder {
     }
 
     public static void RecordBundle(List<BundleRecord> bundles, BundleRecords records, string abOutputPath) {
+        // 1. abList
         records.bundles = bundles;
         records.necessaryBundleIds = Array.ConvertAll(NecessaryABs.ToArray(), input => input.id);
         records.unNecessaryBundleIds = Array.ConvertAll(UnNecessaryABs.ToArray(), input => input.id);
@@ -230,15 +246,28 @@ public static class ABBuilder {
         records.necessarySize = GetSize(NecessaryABs);
         records.unNecessarySize = GetSize(UnNecessaryABs);
 
-        string path = BuildSetting.GetABOutputVersionPath(records.version);
-        records.ToJson(path);
-        records.crc = new CRC32().Compute(path);
-        records.ToJson(path);
+        string versionPath = BuildSetting.GetABOutputVersionPath(records.version);
+        records.ToJson(versionPath);
+        // 从文件计算crc, 然后重新写入文件
+        records.crc = new CRC32().Compute(versionPath);
+        records.ToJson(versionPath);
 
-        path = BuildSetting.CurrentABVersionPath;
-        records.ToJson(path);
+        records.ToJson(BuildSetting.CurrentABVersionPath);
 
-        //BundleHistroy abHistroy = BuildSetting.CurrentABHistroy;
+        // 2. ab构建历史记录
+        BundleHistroy abHistroy = BuildSetting.CurrentABHistroy;
+        TimeSpan ts = DateTime.Now.ToLocalTime() - DateTime.Parse("1970-1-1");
+        BundleHistroy.Record rd = new BundleHistroy.Record {
+            abVersion = records.version,
+
+            necessarySize = records.necessarySize,
+            unNecessarySize = records.unNecessarySize,
+
+            recordPath = versionPath,
+            buildTime = (ulong)ts.TotalSeconds
+        };
+        abHistroy.Add(rd);
+        abHistroy.ToJson(BuildSetting.ABBuildHistroyPath);
     }
 
     public static string ConvertAssetBundleName(string abName) {
@@ -246,7 +275,7 @@ public static class ABBuilder {
         string name = abName.Substring(0, abName.Length - GlobalSetting.ABExtension.Length - 1);
 
         // 剔除高中低配置
-        name = name.Substring(0, name.Length - GlobalSetting.ABVariantQualityNames[(int)GlobalSetting.ABVariantQuality].Length - 1);
+        // name = name.Substring(0, name.Length - GlobalSetting.ABVariantQualityNames[(int)GlobalSetting.ABVariantQuality].Length - 1);
 
         // 如果追加了hash, 还需要剔除hash
         return name;

@@ -42,7 +42,6 @@ public static class BuildMenuItem {
         AssetDatabase.RemoveUnusedAssetBundleNames();
         AssetDatabase.Refresh();
     }
-
     #endregion
 
     #region path

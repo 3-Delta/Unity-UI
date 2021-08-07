@@ -1,26 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using UnityEngine;
-
 [Serializable]
-public class BundleHistroy {
+public class BundleHistroy : DefaultJsonSerialize {
     [Serializable]
-    public class Record {
-        public int version = 0;
-        public long buildTime;
-        public ulong totalSize;
+    public class Record : DefaultJsonSerialize {
+        #region 序列化数据
+        public uint abVersion = 0;
+
+        public ulong necessarySize;
+        public ulong unNecessarySize;
+
+        public ulong buildTime;
+
         public string recordPath;
+        #endregion
     }
 
-    public List<Record> records = new List<Record>();
+    #region 序列化数据
+    public List<Record> records = new List<Record>(0);
+    #endregion
 
-
-    public void FromJson(string json) {
-
-    }
-
-    public void ToJson() {
-
+    public void Add(Record record) {
+        if (record != null) {
+            records.Add(record);
+        }
     }
 }
