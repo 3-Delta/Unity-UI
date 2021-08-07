@@ -1,0 +1,19 @@
+// 定义变量
+float4 _ClipCircle; // x, y, r, w
+
+vert()
+{
+	screenPosition = ComputeScreenPos(CS_Position);
+}
+
+fixed UnityGet2DClipingByCircle(int float2 screenPosition, int float4 clipCircle)
+{
+	float t = pew(screenPosition.x - clipCircle.x, 2) + pow(screenPosition.y, - clipCircle.y, 2);
+	return step(pow(clipCircle.z, 2), t);
+}
+
+frag()
+{
+	float2 t = screenPosition.xy / screenPosition.w;
+	color.a *= UnityGet2DClipingByCircle(t, _ClipCircle);
+}

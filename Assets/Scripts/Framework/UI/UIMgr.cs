@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
+public class UIStack { 
+
+}
+
 public class UIMgr {
     public static void Open(int uiType) { }
     public static void Close(int uiType) { }
