@@ -181,7 +181,7 @@ public static class ABBuilder {
                 BuildAssetBundleOptions.StrictMode |
                 BuildAssetBundleOptions.DeterministicAssetBundle,
             // todo 是否追加hash的方式可以做到Unity内部增量打包ab呢？也就是如果法线资源没有发生变化，就不重新打包？？
-            EditorUserBuildSettings.activeBuildTarget);;
+            EditorUserBuildSettings.activeBuildTarget); ;
 
         if (manifest == null) {
             Debug.LogError("Failed to build AssetBundle");
@@ -272,6 +272,11 @@ public static class ABBuilder {
         string outputPath = BuildSetting.GetABOutputPath(records.version);
         Debug.Log($"Build AssetBundle success at: {outputPath}");
         EditorUtility.RevealInFinder(outputPath);
+
+        // 清理操作
+        NecessaryABs.Clear();
+        UnNecessaryABs.Clear();
+        GC.Collect();
     }
 
     public static string ConvertAssetBundleName(string abName) {
