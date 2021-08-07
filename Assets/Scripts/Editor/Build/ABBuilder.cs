@@ -268,6 +268,10 @@ public static class ABBuilder {
         };
         abHistroy.Add(rd);
         abHistroy.ToJson(BuildSetting.ABBuildHistroyPath);
+
+        string outputPath = BuildSetting.GetABOutputPath(records.version);
+        Debug.Log($"Build AssetBundle success at: {outputPath}");
+        EditorUtility.RevealInFinder(outputPath);
     }
 
     public static string ConvertAssetBundleName(string abName) {
