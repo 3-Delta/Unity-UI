@@ -214,7 +214,10 @@ public static class ABBuilder {
                 if (File.Exists(abFullPath)) {
                     using (var stream = File.OpenRead(abFullPath)) {
                         record.size = (ulong)stream.Length;
+
                         record.crc = new CRC32().Compute(stream);
+                        // AssetBundle.LoadFromFileAsync(abFullPath, record.crc);
+                        // BuildPipeline.GetCRCForAssetBundle(abFullPath, out record.crc);
                     }
                 }
                 else {

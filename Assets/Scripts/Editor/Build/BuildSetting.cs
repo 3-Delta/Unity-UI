@@ -27,6 +27,13 @@ public class BuildSetting {
         return $"{appVersion}/ABVersion_{abVersion}/ab.version.json";
     }
 
+    // 基础ab, 也就是当前appVersion下打的第一个ab记录
+    public static string BaseABOutputVersionPath {
+        get {
+            return GetABOutputVersionPath(1);
+        }
+    }
+
     public static string CurrentAppVersionPath {
         get {
             var platform = EditorUserBuildSettings.activeBuildTarget;

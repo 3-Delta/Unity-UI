@@ -4,6 +4,11 @@ using UnityEngine;
 
 public static class BuildMenuItem {
     #region Build
+    [MenuItem("Assets/Path/ABOutputPath")]
+    public static void OpenABOutputPath() {
+        EditorUtility.RevealInFinder(BuildSetting.AppVersionOutputPath);
+    }
+
     [MenuItem("Assets/Build/EditorBundle")]
     public static void BuildEditorBundle() {
         ABBuilder.Build(true);
@@ -45,10 +50,6 @@ public static class BuildMenuItem {
     #endregion
 
     #region path
-    [MenuItem("Assets/Path/ABOutputPath")]
-    public static void OpenABOutputPath() {
-        EditorUtility.RevealInFinder(BuildSetting.AppVersionOutputPath);
-    }
     [MenuItem("Assets/Path/PersistentPath")]
     public static void ApplicationPersistentPath() {
         EditorUtility.RevealInFinder(Application.persistentDataPath);

@@ -1,32 +1,30 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
-public enum EAssetLoadType { 
-    // 编辑器非AB同步加载
-    EditorSync,
-    // 编辑器非AB异步加载
-    EditorAsync,
-
-    // 编辑器AB同步加载
-    EditorABSync,
-    // 编辑器AB异步加载
-    EditorABAsync,
-
-    // 真机AB同步加载
-    DeviceABSync,
-    // 真机AB异步加载
-    DeviceABAsync,
+public enum EAssetLoadType {
+    Editor,
+    Device, // editor下就使用editor下的ab加载
 }
 
-public class AssetService : MonoBehaviour
-{
-    public static AssetRequest Load(string assetPath) {
-        return null;
+public class AssetService {
+    public static EAssetLoadType loadType = EAssetLoadType.Device;
+
+    public static RequestAsset Load(string assetPath) {
+        RequestAsset request = new RequestAsset();
+        request.Load();
+        return request;
     }
 
-    public static AssetRequest LoadAsync(string assetPath, Action<AssetRequest> onLoaded) {
-        return null;
+    public static RequestAsset LoadAsync(string assetPath, Action<RequestAsset> onLoaded) {
+        RequestAsset request = new RequestAsset();
+        request.LoadAsync(onLoaded);
+        return request;
+    }
+
+    public static void Unload(RequestAsset request) {
+        request?.Unload();
     }
 }
