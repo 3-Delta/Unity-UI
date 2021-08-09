@@ -8,6 +8,13 @@ public enum EABVariantQuality {
     Low = 2,
 }
 
+public enum EABPriority {
+    // 登录之前必须下载的
+    Necessary = 0,
+    UnNecessary,
+    Max,
+}
+
 public class GlobalSetting {
     public static readonly Version AppVersion = new Version(0, 0, 0, 1);
 

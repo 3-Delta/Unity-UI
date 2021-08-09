@@ -6,13 +6,6 @@ using UnityEditor;
 
 using UnityEngine;
 
-public enum EABPriority {
-    // 登录之前必须下载的
-    Necessary = 0,
-    UnNecessary,
-    Max,
-}
-
 [Serializable]
 public class ABAsset {
     public EABPriority priority = EABPriority.Necessary;
@@ -43,9 +36,7 @@ public class LanQualityABAssetGroup {
 }
 
 public static class ABBuilder {
-
-    private static readonly List<BundleRecord> NecessaryABs = new List<BundleRecord>();
-    private static readonly List<BundleRecord> UnNecessaryABs = new List<BundleRecord>();
+    private static readonly Dictionary<EABPriority, List<BundleRecord>> abs = new Dictionary<EABPriority, List<BundleRecord>>();
 
     private static List<ABAsset> GetAssets(bool editor) {
         List<ABAsset> assets = new List<ABAsset>();
@@ -127,8 +118,7 @@ public static class ABBuilder {
     // 核心函数
 
     public static void Build(List<ABAssetGroup> groups) {
-        NecessaryABs.Clear();
-        UnNecessaryABs.Clear();
+        abs.Clear();
 
         if (groups.Count <= 0) {
             Debug.LogError("Failed to build AssetBundle because assets not enough");
@@ -138,23 +128,18 @@ public static class ABBuilder {
         List<BundleRecord> allBundles = new List<BundleRecord>();
         for (int i = 0, length = groups.Count; i < length; ++i) {
             ABAssetGroup group = groups[i];
-            if (group.priority == EABPriority.Necessary) {
-                BundleRecord br = new BundleRecord {
-                    id = (uint)i,
-                    bundlePath = group.bundlePath,
-                    assetPaths = group.assetPaths
-                };
-                NecessaryABs.Add(br);
-                allBundles.Add(br);
-            }
-            else if (group.priority == EABPriority.UnNecessary) {
-                BundleRecord br = new BundleRecord {
-                    id = (uint)i,
-                    bundlePath = group.bundlePath,
-                    assetPaths = group.assetPaths
-                };
+            if (group.priority != EABPriority.Max) {
+                if (!abs.TryGetValue(group.priority, out List<BundleRecord> recordList)) {
+                    recordList = new List<BundleRecord>();
+                    abs.Add(group.priority, recordList);
+                }
 
-                UnNecessaryABs.Add(br);
+                BundleRecord br = new BundleRecord {
+                    id = (uint)i,
+                    bundlePath = group.bundlePath,
+                    assetPaths = group.assetPaths
+                };
+                recordList.Add(br);
                 allBundles.Add(br);
             }
         }
@@ -234,9 +219,17 @@ public static class ABBuilder {
 
     public static void RecordBundle(List<BundleRecord> bundles, BundleRecords records, string abOutputPath) {
         // 1. abList
-        records.bundles = bundles;
-        records.necessaryBundleIds = Array.ConvertAll(NecessaryABs.ToArray(), input => input.id);
-        records.unNecessaryBundleIds = Array.ConvertAll(UnNecessaryABs.ToArray(), input => input.id);
+        records.abRecords = bundles;
+
+        records.abIds.Clear();
+        foreach (var kvp in abs) {
+            BundleRecords.Record rr = new BundleRecords.Record();
+            rr.priority = kvp.Key;
+            rr.size = GetSize(kvp.Value);
+            rr.ids = Array.ConvertAll(kvp.Value.ToArray(), input => input.id);
+
+            records.abIds.Add(rr);
+        }
 
         ulong GetSize(List<BundleRecord> ls) {
             ulong size = 0;
@@ -245,9 +238,6 @@ public static class ABBuilder {
             }
             return size;
         }
-
-        records.necessarySize = GetSize(NecessaryABs);
-        records.unNecessarySize = GetSize(UnNecessaryABs);
 
         string versionPath = BuildSetting.GetABOutputVersionPath(records.version);
         records.ToJson(versionPath);
@@ -262,13 +252,18 @@ public static class ABBuilder {
         TimeSpan ts = DateTime.Now.ToLocalTime() - DateTime.Parse("1970-1-1");
         BundleHistroy.Record rd = new BundleHistroy.Record {
             abVersion = records.version,
-
-            necessarySize = records.necessarySize,
-            unNecessarySize = records.unNecessarySize,
-
             recordPath = versionPath,
             buildTime = (ulong)ts.TotalSeconds
         };
+        rd.sizes.Clear();
+        foreach (var item in records.abIds) {
+            BundleHistroy.PrioritySize pz = new BundleHistroy.PrioritySize {
+                priority = item.priority,
+                size = item.size
+            };
+            rd.sizes.Add(pz);
+        }
+
         abHistroy.Add(rd);
         abHistroy.ToJson(BuildSetting.ABBuildHistroyPath);
 
@@ -277,8 +272,7 @@ public static class ABBuilder {
         EditorUtility.RevealInFinder(outputPath);
 
         // 清理操作
-        NecessaryABs.Clear();
-        UnNecessaryABs.Clear();
+        abs.Clear();
         GC.Collect();
     }
 
