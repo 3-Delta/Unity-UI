@@ -16,7 +16,7 @@ public enum EABPriority {
 }
 
 public class GlobalSetting {
-    public static readonly Version AppVersion = new Version(0, 0, 0, 1);
+    public static readonly Version AppVersion = new Version(0, 0, 0, 2);
 
     public const float ResolutionWidth = 1520f;
     public const float ResolutionHeight = 720f;

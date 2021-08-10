@@ -255,14 +255,6 @@ public static class ABBuilder {
             recordPath = versionPath,
             buildTime = (ulong)ts.TotalSeconds
         };
-        rd.sizes.Clear();
-        foreach (var item in records.abIds) {
-            BundleHistroy.PrioritySize pz = new BundleHistroy.PrioritySize {
-                priority = item.priority,
-                size = item.size
-            };
-            rd.sizes.Add(pz);
-        }
 
         abHistroy.Add(rd);
         abHistroy.ToJson(BuildSetting.ABBuildHistroyPath);
