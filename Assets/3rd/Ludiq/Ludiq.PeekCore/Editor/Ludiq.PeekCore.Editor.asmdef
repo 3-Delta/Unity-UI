@@ -1,0 +1,19 @@
+{
+    "name": "Ludiq.PeekCore.Editor",
+    "references": [
+        "Ludiq.PeekCore.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Ludiq.OdinSerializer.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

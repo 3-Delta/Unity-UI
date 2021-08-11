@@ -1,0 +1,3 @@
+<linker>
+       <assembly fullname="Ludiq.OdinSerializer" preserve="all"/>
+</linker>

@@ -61,3 +61,9 @@
 /MemoryCaptures
 /ABOutput
 /*.csproj
+/Utility/FileSplitter/.vs/FileSplitter/DesignTimeBuild/.dtbcache.v2
+/Utility/FileSplitter/.vs/FileSplitter/v16/.suo
+/Utility/FileSplitter/obj/Debug/netcoreapp3.1/.NETCoreApp,Version=v3.1.AssemblyAttributes.cs
+/Utility/FileSplitter/obj/Debug/netcoreapp3.1/FileSplitter.AssemblyInfo.cs
+/Utility/FileSplitter/obj/Debug/netcoreapp3.1/FileSplitter.AssemblyInfoInputs.cache
+/Utility/FileSplitter/obj/Debug/netcoreapp3.1/FileSplitter.csproj.AssemblyReference.cache

@@ -1,0 +1,18 @@
+{
+    "name": "Ludiq.Peek.Editor",
+    "references": [
+        "Ludiq.PeekCore.Editor",
+        "Ludiq.PeekCore.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
