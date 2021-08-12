@@ -5,13 +5,13 @@ using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 
-[CustomEditor(typeof(DummyNodes))]
-public class DummyNodesInspector : EnumComponentListInspector<Transform, EDummyNode> {
+[CustomEditor(typeof(HumanoidMountNode))]
+public class HumanoidMountNodeInspector : EnumComponentListInspector<Transform, EHumanoidMountNode> {
 }
 #endif
 
 // 挂点类型
-public enum EDummyNode {
+public enum EHumanoidMountNode {
     LeftEye = 0,
     LeftEar,
     LeftShoulder,
@@ -37,23 +37,10 @@ public enum EDummyNode {
     Back,
     Belly,
     Ass,
-
-    LeftWeapon_1,
-    LeftWeapon_2,
-    LeftWeapon_3,
-    RightWeapon_1,
-    RightWeapon_2,
-    RightWeapon_3,
-
-    Skill_1,
-    Skill_2,
-    Skill_3,
-
-    Count,
 }
 
 [DisallowMultipleComponent]
-public class DummyNodes : EnumComponentList<Transform, EDummyNode> {
+public class HumanoidMountNode : EnumComponentList<Transform, EHumanoidMountNode> {
 }
 
 

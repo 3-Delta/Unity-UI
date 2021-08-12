@@ -1,9 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-using UnityEngine;
-
-public interface IPreProcess {
+﻿public interface IPreProcess {
     void PreProcess();
 }
 
@@ -12,7 +7,6 @@ public interface IPostProcess {
 }
 
 public interface IProcess : IPreProcess, IPostProcess {
-
 }
 
 public interface IPostProcess<T> {
@@ -20,5 +14,4 @@ public interface IPostProcess<T> {
 }
 
 public interface IProcess<T> : IPreProcess, IPostProcess<T> {
-
 }

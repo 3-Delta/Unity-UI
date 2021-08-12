@@ -18,7 +18,7 @@ public class EnumComponentListInspector<T_CP, T_Enum> : Editor
             node.FindAll();
         }
 
-        if (DrawHeader("Nodes", "Nodes", false, false)) {
+        if (DrawHeader("Array", "nodes", false, false)) {
             for (int i = 0; i < cps.Length; i++) {
 
                 string key = Enum.GetName(typeof(T_Enum), i);
@@ -26,7 +26,7 @@ public class EnumComponentListInspector<T_CP, T_Enum> : Editor
                 EditorGUILayout.PropertyField(p, new GUIContent(key));
             }
         }
-
+        
         serializedObject.ApplyModifiedProperties();
     }
 
@@ -71,7 +71,7 @@ public class EnumComponentList<T_CP, T_Enum> : MonoBehaviour
     where T_CP : Component
     where T_Enum : Enum {
 
-    public T_CP[] nodes;
+    public T_CP[] nodes = new T_CP[Enum.GetNames(typeof(T_Enum)).Length];
 
     public virtual void FindAll() {
     }
