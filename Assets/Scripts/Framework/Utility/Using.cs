@@ -4,7 +4,7 @@ using UnityEngine;
 // 类形式
 public class UsingC<T> : IDisposable {
     public T value { get; private set; }
-    protected Action<T> onDisposed;
+    public Action<T> onDisposed;
 
     public UsingC(T value, Action<T> onDisposed = null) {
         this.value = value;
@@ -32,7 +32,7 @@ public class UsingC<T> : IDisposable {
 // 结构体形式
 public class UsingSt<T> : IDisposable where T {
     public T value { get; private set; }
-    protected Action<T> onDisposed;
+    public Action<T> onDisposed;
 
     public UsingSt(T value, Action<T> onDisposed = null) {
         this.value = value;
