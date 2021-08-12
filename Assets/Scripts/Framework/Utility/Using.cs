@@ -2,16 +2,19 @@
 using UnityEngine;
 
 // 类形式
-public class UsingC<T> : IDisposable where T : class {
-    protected T value;
+public class UsingC<T> : IDisposable {
+    public T value { get; private set; }
     protected Action<T> onDisposed;
 
     public UsingC(T value, Action<T> onDisposed = null) {
         this.value = value;
         this.onDisposed = onDisposed;
     }
-
+    
     public void Dispose() {
+        this.value = default;
+        this.onDisposed = null;
+        
         onDisposed?.Invoke(value);
     }
 
@@ -27,8 +30,8 @@ public class UsingC<T> : IDisposable where T : class {
 }
 
 // 结构体形式
-public class UsingSt<T> : IDisposable where T : class {
-    protected T value;
+public class UsingSt<T> : IDisposable where T {
+    public T value { get; private set; }
     protected Action<T> onDisposed;
 
     public UsingSt(T value, Action<T> onDisposed = null) {
@@ -37,6 +40,9 @@ public class UsingSt<T> : IDisposable where T : class {
     }
 
     public void Dispose() {
+        this.value = default;
+        this.onDisposed = null;
+        
         onDisposed?.Invoke(value);
     }
 
