@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Runtime.CompilerServices;
 using Object = System.Object;
@@ -10,7 +10,17 @@ public interface IRegisterEvent {
 [Serializable]
 public class UIBaseT {
     public UIEntry entry;
-    
+
+    // UIEntry能否将UIEntry设置为表格填写的形式，也就是提剔除uiconfig
+    // 因为有时候，可能需要在B ui打开的时候，将前面的A ui关闭掉。所以需要外部设置这些回调。
+    public Action<UIEntry> onOpen { get; set; }
+    public Action<UIEntry> onClose { get; set; }
+
+    public Action<UIEntry> onBeginShow { get; set; }
+    public Action<UIEntry> onEndShow { get; set; }
+    public Action<UIEntry> onBeginHide { get; set; }
+    public Action<UIEntry> onEndHide { get; set; }
+
     public void Open(bool toOpen) {
         if (toOpen) {
             Open();
