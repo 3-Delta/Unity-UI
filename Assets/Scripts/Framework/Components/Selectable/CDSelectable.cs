@@ -30,12 +30,12 @@ public class CDSelectable : MonoBehaviour, IPointerClickHandler {
 
     private void OnClicked() {
         if (status) {
-            Invoke("CDCtrl", cdTime);
+            Invoke(nameof(_CDCtrl), cdTime);
             status = false;
         }
     }
 
-    private void CDCtrl() {
+    private void _CDCtrl() {
         status = true;
     }
 }
