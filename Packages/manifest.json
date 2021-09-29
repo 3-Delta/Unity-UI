@@ -1,12 +1,10 @@
 {
   "dependencies": {
-    "com.unity.2d.sprite": "1.0.0",
     "com.unity.build-report-inspector": "0.2.2-preview",
     "com.unity.ide.rider": "1.1.4",
     "com.unity.memoryprofiler": "0.2.10-preview.1",
     "com.unity.mobile.android-logcat": "1.2.3",
     "com.unity.performance.profile-analyzer": "1.1.0",
-    "com.unity.scriptablebuildpipeline": "1.7.3",
     "com.unity.shaderprofiler": "0.0.1-preview.1",
     "com.unity.ugui": "1.0.0",
     "com.unity.modules.ai": "1.0.0",
@@ -27,7 +25,6 @@
     "com.unity.modules.terrainphysics": "1.0.0",
     "com.unity.modules.tilemap": "1.0.0",
     "com.unity.modules.ui": "1.0.0",
-    "com.unity.modules.uielements": "1.0.0",
     "com.unity.modules.umbra": "1.0.0",
     "com.unity.modules.unityanalytics": "1.0.0",
     "com.unity.modules.unitywebrequest": "1.0.0",

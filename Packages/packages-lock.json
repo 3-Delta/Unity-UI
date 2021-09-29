@@ -1,11 +1,5 @@
 {
   "dependencies": {
-    "com.unity.2d.sprite": {
-      "version": "1.0.0",
-      "depth": 0,
-      "source": "builtin",
-      "dependencies": {}
-    },
     "com.unity.build-report-inspector": {
       "version": "0.2.2-preview",
       "depth": 0,
@@ -59,13 +53,6 @@
       "dependencies": {},
       "url": "https://packages.unity.cn"
     },
-    "com.unity.scriptablebuildpipeline": {
-      "version": "1.7.3",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://packages.unity.cn"
-    },
     "com.unity.shaderprofiler": {
       "version": "0.0.1-preview.1",
       "depth": 0,
@@ -74,7 +61,7 @@
       "url": "https://packages.unity.cn"
     },
     "com.unity.test-framework": {
-      "version": "1.1.16",
+      "version": "1.1.14",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -219,15 +206,6 @@
       "depth": 0,
       "source": "builtin",
       "dependencies": {}
-    },
-    "com.unity.modules.uielements": {
-      "version": "1.0.0",
-      "depth": 0,
-      "source": "builtin",
-      "dependencies": {
-        "com.unity.modules.imgui": "1.0.0",
-        "com.unity.modules.jsonserialize": "1.0.0"
-      }
     },
     "com.unity.modules.umbra": {
       "version": "1.0.0",
