@@ -1,0 +1,10 @@
+com.unity.traceeventprofiler/Plugins/**/*.dll
+com.unity.traceeventprofiler/Plugins/**/*.so
+com.unity.traceeventprofiler/Plugins/**/*.bundle
+TestProject/*.vs
+TestProject/Library
+TestProject/Logs
+TestProject/obj
+TestProject/Temp
+TestProject/*.sln
+TestProject/*.csproj

@@ -1,0 +1,21 @@
+{
+    "name": "Unity.DebugWatch.Runtime",
+    "references": [
+        "Unity.Entities",
+        "Unity.Entities.Properties",
+        "Unity.Collections",
+        "Unity.Mathematics",
+        "Unity.Mathematics.Extensions",
+        "Unity.Properties",
+        "Unity.Properties.Reflection"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": []
+}

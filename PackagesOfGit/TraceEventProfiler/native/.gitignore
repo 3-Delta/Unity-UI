@@ -1,0 +1,14 @@
+artifacts/
+artifacts_preprocess/
+build/
+build.gen.sln
+build.gen.csproj
+projects/VisualStudio/temp
+projects/VisualStudio/Debug
+.idea
+obj
+bin
+*.VC
+*.VC.db
+*.VC.opendb
+.vs

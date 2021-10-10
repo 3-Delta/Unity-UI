@@ -1,0 +1,25 @@
+{
+    "name": "Unity.DebugWatch.Editor",
+    "references": [
+        "Unity.Collections",
+        "Unity.Mathematics",
+        "Unity.Properties",
+        "Unity.Properties.Editor",
+        "UnityEditor.UI",
+        "Unity.Entities",
+        "Unity.DebugWatch.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Mono.Cecil.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

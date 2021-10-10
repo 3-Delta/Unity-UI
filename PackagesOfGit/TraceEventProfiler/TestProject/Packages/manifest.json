@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+	"com.unity.package-manager-ui": "2.0.2",
+    "com.unity.traceeventprofiler": "file:../../com.unity.traceeventprofiler",
+    "com.unity.modules.jsonserialize": "1.0.0"
+  },
+  "testables": [
+    "com.unity.traceeventprofiler"
+  ],
+  "registry": "https://staging-packages.unity.com"
+}
