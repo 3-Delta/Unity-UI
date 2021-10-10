@@ -1,12 +1,18 @@
 {
   "dependencies": {
+    "com.needle.compilation-visualizer": "file:../PackagesOfGit/compilation-visualizer",
     "com.unity.build-report-inspector": "0.2.2-preview",
+    "com.unity.debugwatch": "file:../PackagesOfGit/DebugWatch/com.unity.debugwatch",
     "com.unity.ide.rider": "1.1.4",
     "com.unity.memoryprofiler": "0.2.10-preview.1",
     "com.unity.mobile.android-logcat": "1.2.3",
+    "com.unity.performance-tracking": "file:../PackagesOfGit/com.unity.performance-tracking",
     "com.unity.performance.profile-analyzer": "1.1.0",
+    "com.unity.project-auditor": "file:../PackagesOfGit/ProjectAuditor",
     "com.unity.shaderprofiler": "0.0.1-preview.1",
+    "com.unity.traceeventprofiler": "file:../PackagesOfGit/TraceEventProfiler/com.unity.traceeventprofiler",
     "com.unity.ugui": "1.0.0",
+    "com.unity.zombieobjectdetector": "file:../PackagesOfGit/ZombieObjectDetector",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
