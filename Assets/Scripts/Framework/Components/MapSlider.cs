@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 [DisallowMultipleComponent]
@@ -13,46 +12,44 @@ public class MapSlider : MonoBehaviour {
         public GameObject scaledGo;
     }
 
-    public struct Gap {
-        public Vector2Int indexRange;
-        public Vector2 range;
-
-        public float mid {
-            get {
-                return (range.y - range.x) * 0.5f;
-            }
-        }
-
-        public void OnTriggerMid(Slider.Direction dir, bool positiveOrNegative) { 
-
-        }
-    }
-
     public Slider slider;
 
-    //[Range(0.001f, 0.1f)]  public float threshold = 0.01f;
-    [Range(2, 9)] public int range = 4;
+    [Range(0.001f, 0.1f)]  public float threshold = 0.01f;
+    // public Vector2 scale = new Vector2(0.8f, 1f);
+    public Ctrl[] ctrls = new Ctrl[0];
 
-    public Ctrl[] ctrls = null;
-
-    private Gap[] gaps;
-    private float preValue;
+    // 是否在临界区域
+    public bool inIndexRange { get; private set; } = true;
+    public int curIndex { get; private set; } = 0;
+    
+    private float preValue = 0f;
 
     private void Awake() {
-        preValue = 0;
-        ctrls = new Ctrl[range];
-        gaps = new Gap[range - 1];
-        for (int i = 0; i < range - 1; i++) {
-            gaps[i].indexRange = new Vector2Int(i, i + 1);
-            float min = 1f * i / (range - 1);
-            float max = 1f * (i + 1) / (range - 1);
-            gaps[i].range = new Vector2(min, max);
-        }
-
+        slider.minValue = 0;
+        slider.maxValue = ctrls.Length - 1;
         slider.onValueChanged.AddListener(OnValueChanged);
+        
+        preValue = slider.value;
     }
 
+    public void OnTabClicked(int index) {
+        if (index < 0 || index >= ctrls.Length) {
+            return;
+        }
+        
+        // trigger event
+        slider.value = index;
+    }
+    
     private void OnValueChanged(float value) {
+        inIndexRange = Approximately(slider.value, value);
+        // 正向滑动，还是逆向滑动
+        bool positive = value - preValue >= 0f;
+
+        if (inIndexRange) {
+            curIndex = Mathf.FloorToInt(value) + 1;
+        }
+
         switch (slider.direction) {
             case Slider.Direction.BottomToTop:
                 break;
@@ -63,5 +60,9 @@ public class MapSlider : MonoBehaviour {
             case Slider.Direction.RightToLeft:
                 break;
         }
+    }
+
+    private bool Approximately(float left, float right) {
+        return Mathf.Approximately(Mathf.Abs(left - right), threshold);
     }
 }
