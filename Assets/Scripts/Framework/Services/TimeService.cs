@@ -5,7 +5,7 @@
 public static class TimeService {
     public static readonly DateTime UTC_START_TIME = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     
-    public static bool IsSameDay(DateTime x, DateTime y) {
+    public static bool IsSameDay(ref DateTime x, ref DateTime y) {
         return x.Year == y.Year && x.DayOfYear == y.DayOfYear;
     }
 
@@ -15,24 +15,33 @@ public static class TimeService {
         }
 
         DateTime l = ToDateTime(xSeconds - secondsOffset, timeZoneSeconds);
-        DateTime r = ToDateTime(xSeconds - secondsOffset, timeZoneSeconds);
-        return IsSameDay(l, r);
+        DateTime r = ToDateTime(ySeconds - secondsOffset, timeZoneSeconds);
+        return IsSameDay(ref l, ref r);
     }
     
-    public static bool IsSameWeek(DateTime x, DateTime y) {
+    public static bool IsSameWeek(ref DateTime x, ref DateTime y) {
         var l = x.AddDays(-(int)x.DayOfWeek).Date;
         var r = y.AddDays(-(int)y.DayOfWeek).Date;
-        return IsSameDay(l, r);
+        return IsSameDay(ref l, ref r);
     }
 
+    public static bool IsSameMonth(long xSeconds, long ySeconds, long secondsOffset = 0, long timeZoneSeconds = 0) {
+        if (xSeconds == ySeconds) {
+            return true;
+        }
+
+        DateTime l = ToDateTime(xSeconds - secondsOffset, timeZoneSeconds);
+        DateTime r = ToDateTime(ySeconds - secondsOffset, timeZoneSeconds);
+        return l.Year == r.Year && l.Month == r.Month;
+    }
     public static bool IsSameWeek(long xSeconds, long ySeconds, long secondsOffset = 0, long timeZoneSeconds = 0) {
         if (xSeconds == ySeconds) {
             return true;
         }
 
         DateTime l = ToDateTime(xSeconds - secondsOffset, timeZoneSeconds);
-        DateTime r = ToDateTime(xSeconds - secondsOffset, timeZoneSeconds);
-        return IsSameWeek(l, r);
+        DateTime r = ToDateTime(ySeconds - secondsOffset, timeZoneSeconds);
+        return IsSameWeek(ref l, ref r);
     }
 
     public static long ToSeconds(DateTime dt, long timeZoneSeconds = 0) {
