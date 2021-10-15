@@ -13,22 +13,35 @@ public class MapSlider : MonoBehaviour {
     }
 
     public Slider slider;
+    [Range(0.001f, 0.5f)] public float threshold = 0.01f;
+    public Vector2 dragScale = new Vector2(1f, 1.2f);
 
-    [Range(0.001f, 0.1f)]  public float threshold = 0.01f;
     // public Vector2 scale = new Vector2(0.8f, 1f);
     public Ctrl[] ctrls = new Ctrl[0];
 
-    // 是否在临界区域
-    public bool inIndexRange { get; private set; } = true;
-    public int curIndex { get; private set; } = 0;
-    
+    public Action<int> onIndexed;
+    public Action<bool, int, float> onSliding;
+
+    private int _curIndex = 0;
+
+    public int curIndex {
+        get { return _curIndex; }
+        private set {
+            if (_curIndex != value) {
+                _curIndex = value;
+                Debug.LogError(_curIndex);
+                onIndexed?.Invoke(_curIndex);
+            }
+        }
+    }
+
     private float preValue = 0f;
 
     private void Awake() {
         slider.minValue = 0;
         slider.maxValue = ctrls.Length - 1;
         slider.onValueChanged.AddListener(OnValueChanged);
-        
+
         preValue = slider.value;
     }
 
@@ -36,33 +49,37 @@ public class MapSlider : MonoBehaviour {
         if (index < 0 || index >= ctrls.Length) {
             return;
         }
-        
+
         // trigger event
         slider.value = index;
     }
-    
+
     private void OnValueChanged(float value) {
-        inIndexRange = Approximately(slider.value, value);
         // 正向滑动，还是逆向滑动
         bool positive = value - preValue >= 0f;
+        preValue = value;
 
-        if (inIndexRange) {
-            curIndex = Mathf.FloorToInt(value) + 1;
-        }
+        curIndex = CalcIndex();
 
-        switch (slider.direction) {
-            case Slider.Direction.BottomToTop:
-                break;
-            case Slider.Direction.TopToBottom:
-                break;
-            case Slider.Direction.LeftToRight:
-                break;
-            case Slider.Direction.RightToLeft:
-                break;
-        }
+        float scale = LerpScale(positive);
+        ctrls[curIndex].scaledGo.transform.localScale = new Vector3(scale, scale, scale);
+        onSliding?.Invoke(positive, curIndex, slider.value);
     }
 
-    private bool Approximately(float left, float right) {
-        return Mathf.Approximately(Mathf.Abs(left - right), threshold);
+    private int CalcIndex() {
+        float value = slider.value;
+        int ceil = Mathf.CeilToInt(value);
+        int index = ceil - value < threshold ? ceil : ceil - 1;
+        return index;
+    }
+
+    private float LerpScale(bool positive) {
+        float value = slider.value;
+
+        if (positive) {
+            return Mathf.Lerp(dragScale.x, dragScale.y, value - curIndex);
+        }
+
+        return Mathf.Lerp(dragScale.y, dragScale.x, 1f - (value - curIndex));
     }
 }
