@@ -1,6 +1,0 @@
-* [About Performance Tracking](index)
-* [Performance Tracker Window](performance-tracker-window)
-* [Monitoring](monitoring)
-* [Performance Window Actions](performance-window-actions)
-* [Analytics](analytics)
-* [API](api)
