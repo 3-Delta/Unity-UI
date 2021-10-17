@@ -8,12 +8,14 @@ using UnityEngine.UI;
 public class MapSlider : MonoBehaviour {
     [Serializable]
     public class Ctrl {
-        public GameObject tabGo;
+        public Toggle toggle;
+        public GameObject pageGo;
         public GameObject scaledGo;
     }
 
     public Slider slider;
     [Range(0.001f, 0.5f)] public float threshold = 0.01f;
+    [Range(0.1f, 5f)] public float smoothTime = 1f;
     public Vector2 dragScale = new Vector2(1f, 1.2f);
 
     // public Vector2 scale = new Vector2(0.8f, 1f);
@@ -28,9 +30,9 @@ public class MapSlider : MonoBehaviour {
         get { return _curIndex; }
         private set {
             if (_curIndex != value) {
+                int oldIndex = _curIndex;
                 _curIndex = value;
-                Debug.LogError(_curIndex);
-                onIndexed?.Invoke(_curIndex);
+                OnIndexChanged(oldIndex, value);
             }
         }
     }
@@ -40,21 +42,59 @@ public class MapSlider : MonoBehaviour {
     private void Awake() {
         slider.minValue = 0;
         slider.maxValue = ctrls.Length - 1;
-        slider.onValueChanged.AddListener(OnValueChanged);
+        slider.onValueChanged.AddListener(OnSliderValueChanged);
+
+        for (int i = 0, length = ctrls.Length; i < length; ++i) {
+            int index = i;
+            ctrls[i].toggle.onValueChanged.AddListener((flag) => {
+                if (flag) {
+                    OnTabClicked(index, false);
+                }
+            });
+        }
 
         preValue = slider.value;
     }
 
-    public void OnTabClicked(int index) {
+    private bool allow = false;
+    private float from;
+    private float to;
+    private float startTime;
+
+    private void Update() {
+        if (allow) {
+            float rate = (Time.realtimeSinceStartup - startTime) / smoothTime;
+            slider.value = Mathf.Lerp(from, to, rate);
+
+            if (rate >= 1f) {
+                allow = false;
+            }
+        }
+    }
+
+    private void OnIndexChanged(int oldIndex, int newIndex) {
+        ctrls[newIndex].toggle.SetIsOnWithoutNotify(true);
+        onIndexed?.Invoke(newIndex);
+    }
+
+    public void OnTabClicked(int index, bool force = false) {
         if (index < 0 || index >= ctrls.Length) {
             return;
         }
 
-        // trigger event
-        slider.value = index;
+        if (force) {
+            allow = false;
+            slider.value = index;
+        }
+        else {
+            allow = true;
+            from = slider.value;
+            to = index;
+            startTime = Time.realtimeSinceStartup;
+        }
     }
 
-    private void OnValueChanged(float value) {
+    private void OnSliderValueChanged(float value) {
         // 正向滑动，还是逆向滑动
         bool positive = value - preValue >= 0f;
         preValue = value;
