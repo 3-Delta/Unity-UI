@@ -14,11 +14,12 @@ public class MapSlider : MonoBehaviour {
     }
 
     public Slider slider;
-    [Range(0.001f, 0.5f)] public float threshold = 0.01f;
-    [Range(0.1f, 5f)] public float smoothTime = 1f;
-    public Vector2 dragScale = new Vector2(1f, 1.2f);
+    [Range(0.001f, 0.3f)] public float threshold = 0.01f;
+    public bool considerMultiSmooth = true;
+    [Range(0.1f, 5f)] public float singleSmoothTime = 1f;
+    public Vector2 positiveDragScale = new Vector2(1f, 1.2f);
+    public Vector2 negetiveDragScale = new Vector2(1f, 0.8f);
 
-    // public Vector2 scale = new Vector2(0.8f, 1f);
     public Ctrl[] ctrls = new Ctrl[0];
 
     public Action<int> onIndexed;
@@ -63,7 +64,12 @@ public class MapSlider : MonoBehaviour {
 
     private void Update() {
         if (allow) {
-            float rate = (Time.realtimeSinceStartup - startTime) / smoothTime;
+            float time = singleSmoothTime;
+            if (considerMultiSmooth) {
+                time = Mathf.Abs(to - from) * singleSmoothTime;
+            }
+
+            float rate = (Time.realtimeSinceStartup - startTime) / time;
             slider.value = Mathf.Lerp(from, to, rate);
 
             if (rate >= 1f) {
@@ -97,29 +103,45 @@ public class MapSlider : MonoBehaviour {
     private void OnSliderValueChanged(float value) {
         // 正向滑动，还是逆向滑动
         bool positive = value - preValue >= 0f;
+
         preValue = value;
 
-        curIndex = CalcIndex();
+        curIndex = CalcIndex(positive);
 
         float scale = LerpScale(positive);
         ctrls[curIndex].scaledGo.transform.localScale = new Vector3(scale, scale, scale);
         onSliding?.Invoke(positive, curIndex, slider.value);
     }
 
-    private int CalcIndex() {
+    private int CalcIndex(bool positive) {
         float value = slider.value;
         int ceil = Mathf.CeilToInt(value);
-        int index = ceil - value < threshold ? ceil : ceil - 1;
-        return index;
+        bool isEnterCeil = ceil - value < threshold;
+        int floor = Mathf.FloorToInt(value);
+        bool isEnterFloor = value - floor < threshold;
+
+        if (positive) {
+            return isEnterCeil ? ceil : curIndex;
+        }
+        else {
+            return isEnterFloor ? floor : curIndex;
+        }
     }
 
     private float LerpScale(bool positive) {
         float value = slider.value;
 
         if (positive) {
-            return Mathf.Lerp(dragScale.x, dragScale.y, value - curIndex);
+            return Mathf.Lerp(positiveDragScale.x, positiveDragScale.y, value - curIndex);
         }
-
-        return Mathf.Lerp(dragScale.y, dragScale.x, 1f - (value - curIndex));
+        else {
+            // 负方向有两个
+            if (value > curIndex) {
+                return Mathf.Lerp(positiveDragScale.y, positiveDragScale.x, 1 - (value - curIndex));
+            }
+            else {
+                return Mathf.Lerp(negetiveDragScale.x, negetiveDragScale.y, curIndex - value);
+            }
+        }
     }
 }

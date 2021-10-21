@@ -592,9 +592,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slider: {fileID: 385310731}
-  threshold: 0.01
-  smoothTime: 1
-  dragScale: {x: 1, y: 1.2}
+  threshold: 0.08
+  considerMultiSmooth: 1
+  singleSmoothTime: 0.3
+  positiveDragScale: {x: 1, y: 1.2}
+  negetiveDragScale: {x: 1, y: 0.8}
   ctrls:
   - toggle: {fileID: 73615806}
     pageGo: {fileID: 570697048}
