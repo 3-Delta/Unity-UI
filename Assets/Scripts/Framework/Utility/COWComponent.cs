@@ -26,7 +26,7 @@ public class COWComponent<T> : MonoBehaviour where T : Component {
         Action<T, int /* index */> onInit) {
         proto.SetActive(false);
         while (targetCount > this.Count) {
-            GameObject clone = GameObject.Instantiate<GameObject>(proto, parent);
+            GameObject clone = Instantiate<GameObject>(proto, parent);
             clone.transform.localPosition = Vector3.zero;
             clone.transform.localEulerAngles = Vector3.zero;
             clone.transform.localScale = Vector3.one;
@@ -41,14 +41,14 @@ public class COWComponent<T> : MonoBehaviour where T : Component {
         return this;
     }
 
-    public COWComponent<T> TryRefresh(int targetCount, Action<T, int /* index */> onRrefresh) {
+    public COWComponent<T> TryRefresh(int targetCount, Action<T, int /* index */> onRefresh) {
         this.RealCount = targetCount;
         int componentCount = this.Count;
         for (int i = 0; i < componentCount; ++i) {
             T cur = this.components[i];
             if (i < targetCount) {
                 cur.gameObject.SetActive(true);
-                onRrefresh?.Invoke(cur, i);
+                onRefresh?.Invoke(cur, i);
             }
             else {
                 cur.gameObject.SetActive(false);

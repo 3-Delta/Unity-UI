@@ -1,6 +1,6 @@
-public class Progress {
-    public int current { get; protected set; }
-    public int limit { get; protected set; }
+public struct Progress {
+    private int current;
+    private int limit;
 
     public float progress {
         get { return current * 1f / limit; }
@@ -10,11 +10,9 @@ public class Progress {
         get { return progress >= 1f; }
     }
 
-    public Progress() {
-    }
-
     public Progress(int current, int limit) {
-        Reset(current, limit);
+        this.current = current;
+        this.limit = limit;
     }
 
     public Progress Reset(int current, int limit) {

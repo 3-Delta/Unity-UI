@@ -6,3 +6,8 @@ using System.Collections.Generic;
 public static class ZeroArray<T> {
     public static readonly T[] Value = new T[0];
 }
+
+public static class ZeroList<T> {
+    public static readonly List<T> Value = new List<T>(0);
+}
+
