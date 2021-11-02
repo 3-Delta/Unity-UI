@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -8,15 +9,52 @@ using UnityEngine.UI;
 public class CDSelectable : MonoBehaviour, IPointerClickHandler {
     public Selectable selectable;
     [Range(0.1f, 5f)] public float cdTime = 0.4f;
+    public Material grayMaterial;
+    public CDSelectableRegistry registry;
+
+    private Graphic[] graphics = new Graphic[0];
 
     public bool status {
         get { return selectable.enabled; }
-        set { selectable.enabled = value; }
+        set {
+            if (selectable.enabled != value) {
+                selectable.enabled = value;
+
+                if (grayMaterial != null) {
+                    if (!value) {
+                        foreach (var graphic in graphics) {
+                            graphic.material = grayMaterial;
+                        }
+                    }
+                    else {
+                        foreach (var graphic in graphics) {
+                            graphic.material = null;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void Awake() {
         if (selectable == null) {
             selectable = GetComponent<Selectable>();
+        }
+
+        if (grayMaterial != null) {
+            graphics = GetComponentsInChildren<Graphic>();
+        }
+    }
+
+    private void OnEnable() {
+        if (registry != null) {
+            registry.Register(this);
+        }
+    }
+
+    private void OnDisable() {
+        if (registry != null) {
+            registry.Unregister(this);
         }
     }
 
@@ -30,9 +68,19 @@ public class CDSelectable : MonoBehaviour, IPointerClickHandler {
 
     private void OnClicked() {
         if (status) {
-            Invoke(nameof(_CDCtrl), cdTime);
-            status = false;
+            if (registry == null) {
+                DisableImmediately();
+            }
+            else {
+                registry.OnAnyClicked();
+            }
         }
+    }
+
+    public void DisableImmediately() {
+        CancelInvoke(nameof(_CDCtrl));
+        Invoke(nameof(_CDCtrl), cdTime);
+        status = false; 
     }
 
     private void _CDCtrl() {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+[DisallowMultipleComponent]
 public class TransList : MonoBehaviour {
     public string listTag;
 
@@ -24,13 +25,13 @@ public class TransList : MonoBehaviour {
 
     protected void OnEnable() {
         if (Collector != null) {
-            Collector.RegisterToggle(this);
+            Collector.Register(this);
         }
     }
 
     protected void OnDisbale() {
         if (Collector != null) {
-            Collector.UnregisterToggle(this);
+            Collector.Unregister(this);
         }
     }
 

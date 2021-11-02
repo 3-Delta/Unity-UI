@@ -14,9 +14,7 @@ public class AutoHider : MonoBehaviour {
     [Range(0.02f, 10f)] public float duration = 0.02f;
 
     private float maxDuration;
-
-    public const string FUNCNAME = "Auto";
-
+    
     private void Start() {
         if (useFxDuration) {
             var ls = GetComponentsInChildren<ParticleSystem>();
@@ -34,8 +32,8 @@ public class AutoHider : MonoBehaviour {
     }
 
     private void OnEnable() {
-        CancelInvoke(FUNCNAME);
-        Invoke(FUNCNAME, useFxDuration ? maxDuration : duration);
+        CancelInvoke(nameof(Auto));
+        Invoke(nameof(Auto), useFxDuration ? maxDuration : duration);
     }
 
     private void Auto() {
