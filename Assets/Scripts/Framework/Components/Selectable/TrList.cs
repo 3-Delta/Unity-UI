@@ -2,7 +2,7 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class TransList : MonoBehaviour {
+public class TrList : MonoBehaviour {
     public string listTag;
 
     // 需要显示的objs
@@ -11,12 +11,12 @@ public class TransList : MonoBehaviour {
     // 需要隐藏的objs
     public List<Transform> deactives = new List<Transform>();
 
-    [SerializeField] private TransListRegistry _collector;
+    [SerializeField] private TrListRegistry _collector;
 
-    public TransListRegistry Collector {
+    public TrListRegistry Collector {
         get {
             if (_collector == null) {
-                _collector = GetComponentInParent<TransListRegistry>();
+                _collector = GetComponentInParent<TrListRegistry>();
             }
 
             return _collector;
