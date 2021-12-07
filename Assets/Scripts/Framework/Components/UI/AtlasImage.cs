@@ -7,6 +7,7 @@ using UnityEditor.UI;
 
 // https://github.com/SylarLi/AtlaS
 // https://github.com/mob-sakai/AtlasImage
+// ugui的image不能明确的知道sprite是否来自atlas, 可以仿照ngui实现一套
 [CanEditMultipleObjects]
 [CustomEditor(typeof(AtlasImage))]
 public class AtlasImageEditor : ImageEditor {
