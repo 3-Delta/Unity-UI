@@ -9,6 +9,7 @@ public interface IFader<T> {
     void OnEndFade();
 }
 
+// 可以参考GameFramework的audioAgent的实现
 [DisallowMultipleComponent]
 public class AudioFader : MonoBehaviour, IFader<AudioClip> {
     public AudioSource audioSource;
