@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-
 using UnityEditor;
 
-#if UNITY_EDITOR
-public class UnityMarco {
+public static class UnityMarco {
     public static List<string> GetMarcos() {
         List<string> marcos = new List<string>();
         string groups = PlayerSettings.GetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup);
         if (!string.IsNullOrEmpty(groups)) {
             return groups.Split(';').ToList<string>();
         }
+
         return marcos;
     }
 
@@ -35,8 +33,8 @@ public class UnityMarco {
             if (groups.Contains(marco)) {
                 groups = groups.Replace(marco + ";", "");
                 groups = groups.Replace(marco, "");
+                PlayerSettings.SetScriptingDefineSymbolsForGroup(EditorUserBuildSettings.selectedBuildTargetGroup, groups);
             }
         }
     }
 }
-#endif
