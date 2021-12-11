@@ -25,7 +25,7 @@ public class MonoLefetime : MonoBehaviour {
     }
 
     private void OnEnable() {
-        onDestroy?.Invoke();
+        onEnable?.Invoke();
     }
 
     private void OnDisable() {
