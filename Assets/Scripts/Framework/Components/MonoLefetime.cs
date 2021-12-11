@@ -9,18 +9,18 @@ public class MonoLefetime : MonoBehaviour {
     public Action onEnable;
     public Action onDisable;
 
-    public Action onUpdate;
+    public Action onLateUpdate;
     public Action onStart;
-
-    private void Start() {
-        onStart?.Invoke();
-    }
 
     private void Awake() {
         onAwake?.Invoke();
     }
 
     private void OnDestroy() {
+        onDestroy?.Invoke();
+    }
+
+    private void Start() {
         onStart?.Invoke();
     }
 
@@ -32,7 +32,7 @@ public class MonoLefetime : MonoBehaviour {
         onDisable?.Invoke();
     }
 
-    private void Update() {
-        onUpdate?.Invoke();
+    private void LateUpdate() {
+        onLateUpdate?.Invoke();
     }
 }
