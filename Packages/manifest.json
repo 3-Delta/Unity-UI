@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.oddworm.heapexplorer": "https://github.com/pschraut/UnityHeapExplorer.git",
     "com.unity.build-report-inspector": "0.2.2-preview",
     "com.unity.ide.rider": "1.1.4",
     "com.unity.memoryprofiler": "0.2.10-preview.1",
