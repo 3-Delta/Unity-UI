@@ -1,13 +1,17 @@
 ﻿using System.Collections.Generic;
 using Unity.Collections;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 // https://zhuanlan.zhihu.com/p/144098931
 // 最近拼ui烦躁得很，经常button被各种遮挡=。=
 [DisallowMultipleComponent]
 public class ClickPinger : MonoBehaviour {
+#if UNITY_EDITOR
     [ReadOnly] [SerializeField] private List<RaycastResult> list = new List<RaycastResult>();
 
     private void Update() {
@@ -94,4 +98,5 @@ public class ClickPinger : MonoBehaviour {
 
         return null;
     }
+#endif
 }
