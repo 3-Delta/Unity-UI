@@ -23,7 +23,7 @@ public class CDSelectableRegistry : TRegistry<CDSelectable> {
     
     public void OnAnyClicked() {
         foreach (var one in list) {
-            one.DisableImmediately();
+            one.DisableImmediately(cdTime);
         }
     }
 }

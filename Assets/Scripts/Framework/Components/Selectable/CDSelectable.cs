@@ -8,7 +8,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Selectable))]
 public class CDSelectable : MonoBehaviour, IPointerClickHandler {
     public Selectable selectable;
-    [Range(0.1f, 5f)] public float cdTime = 0.4f;
+    [Range(0.1f, 5f)] public float selfCd = 0.4f;
     public Material grayMaterial;
     public CDSelectableRegistry registry;
 
@@ -69,7 +69,7 @@ public class CDSelectable : MonoBehaviour, IPointerClickHandler {
     private void OnClicked() {
         if (status) {
             if (registry == null) {
-                DisableImmediately();
+                DisableImmediately(selfCd);
             }
             else {
                 registry.OnAnyClicked();
@@ -77,9 +77,9 @@ public class CDSelectable : MonoBehaviour, IPointerClickHandler {
         }
     }
 
-    public void DisableImmediately() {
+    public void DisableImmediately(float cd) {
         CancelInvoke(nameof(_CDCtrl));
-        Invoke(nameof(_CDCtrl), cdTime);
+        Invoke(nameof(_CDCtrl), cd);
         status = false; 
     }
 
