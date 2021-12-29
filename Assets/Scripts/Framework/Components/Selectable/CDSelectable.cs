@@ -8,6 +8,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Selectable))]
 public class CDSelectable : MonoBehaviour, IPointerClickHandler {
     public Selectable selectable;
+    [Header("如果存在registry，则使用registry的cd")]
     [Range(0.1f, 5f)] public float selfCd = 0.4f;
     public Material grayMaterial;
     public CDSelectableRegistry registry;
