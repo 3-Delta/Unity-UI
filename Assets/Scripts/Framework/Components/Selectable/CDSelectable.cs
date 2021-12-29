@@ -15,10 +15,10 @@ public class CDSelectable : MonoBehaviour, IPointerClickHandler {
     private Graphic[] graphics = new Graphic[0];
 
     public bool status {
-        get { return selectable.enabled; }
+        get { return selectable.interactable; }
         set {
-            if (selectable.enabled != value) {
-                selectable.enabled = value;
+            if (selectable.interactable != value) {
+                selectable.interactable = value;
 
                 if (grayMaterial != null) {
                     if (!value) {
