@@ -22,7 +22,7 @@ public class MapSlider : MonoBehaviour {
 
     public Ctrl[] ctrls = new Ctrl[0];
 
-    public Action<int> onIndexed;
+    public Action<int, int> onIndexed;
     public Action<bool, int, float> onSliding;
 
     private int _curIndex = 0;
@@ -58,9 +58,15 @@ public class MapSlider : MonoBehaviour {
     }
 
     private bool allow = false;
-    private float from;
-    private float to;
+    public float from { get; private set; }
+    public float to { get; private set; }
     private float startTime;
+
+    public bool reachTo {
+        get {
+            return curIndex == to;
+        }
+    }
 
     private void Update() {
         if (allow) {
@@ -80,7 +86,7 @@ public class MapSlider : MonoBehaviour {
 
     private void OnIndexChanged(int oldIndex, int newIndex) {
         ctrls[newIndex].toggle.SetIsOnWithoutNotify(true);
-        onIndexed?.Invoke(newIndex);
+        onIndexed?.Invoke(oldIndex, newIndex);
     }
 
     public void OnTabClicked(int index, bool force = false) {
