@@ -1,15 +1,14 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System;
 using UnityEngine;
 using UnityEngine.UI;
 
 [DisallowMultipleComponent]
-[RequireComponent(typeof(Text))]
-public class TextScrollNum : TLerp<Text> {
+[RequireComponent(typeof(Slider))]
+public class SliderLerper : TLerp<Slider> {
     private void Awake() {
         enabled = false;
     }
-    
+
     [ContextMenu("Begin")]
     public void Begin() {
         Begin(from, to, duration);
@@ -20,18 +19,21 @@ public class TextScrollNum : TLerp<Text> {
         enabled = false;
     }
 
+    public void Begin(float to, float duration = 0.8f) {
+        base.Begin(component.value, to, duration);
+    }
+
     protected override void OnBegin() {
-        component.text = from.ToString();
-        base.OnBegin();
+        component.value = from;
     }
 
     protected override void OnChange(float rate, float current) {
-        component.text = Mathf.RoundToInt(current).ToString();
+        component.value = current;
         base.OnChange(rate, current);
     }
 
     protected override void OnEnd() {
-        component.text = to.ToString();
+        component.value = to;
         base.OnEnd();
     }
 }

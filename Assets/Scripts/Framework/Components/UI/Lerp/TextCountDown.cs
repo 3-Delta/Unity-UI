@@ -6,70 +6,25 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Text))]
 public class TextCountDown : TLerp<Text> {
-    [Range(0.01f, 999f)] public float cd = 5f;
-
-    private float remainTime;
-    private float startTime;
-
-    public Action<Text, float, bool> onTimeRefresh;
-
     private void Awake() {
         enabled = false;
     }
-
+    
     [ContextMenu("Begin")]
     public void Begin() {
-       _BaseBegin();
+        Begin(from, to, duration);
     }
 
     [ContextMenu("End")]
-    private void End() {
-        _BaseEnd();
+    public void End() {
+        enabled = false;
     }
 
-    private void Update() {
-        if (_first) {
-            startTime = Time.time;
-            remainTime = cd;
-            _first = false;
-            
-            _OnTimeRefresh(false);
-        }
-        else {
-            remainTime -= Time.deltaTime;
-            bool isEnd = remainTime <= 0f;
-
-            if (refreshRate == ERefreshRate.PerFrame) {
-                _OnTimeRefresh(false);
-            }
-            else if (refreshRate == ERefreshRate.PerSecond) {
-                if (Time.time - startTime >= 1f) {
-                    startTime = Time.time;
-                    _OnTimeRefresh(false);
-                }
-            }
-            else if (refreshRate == ERefreshRate.PerMinute) {
-                if (Time.time - startTime >= 1f * 60) {
-                    startTime = Time.time;
-                    _OnTimeRefresh(false);
-                }
-            }
-
-            if (isEnd) {
-                _OnTimeRefresh(true);
-                End();
-            }
-        }
+    public override void Begin(float from, float to, float duration = 0.8f) {
+        Begin(from);
     }
 
-    private void _OnTimeRefresh(bool isEnd) {
-        // if (isEnd) {
-        //     text.text = "0";
-        // }
-        // else {
-        //     text.text = remainTime.ToString();
-        // }
-
-        onTimeRefresh?.Invoke(component, remainTime, isEnd);
+    public void Begin(float from) {
+        base.Begin(from, 0f, from);
     }
 }

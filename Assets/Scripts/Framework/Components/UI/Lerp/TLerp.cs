@@ -28,42 +28,48 @@ public class TLerp<T> : MonoBehaviour where T : Component {
 #if UNITY_EDITOR
     [SerializeField] protected float from;
     [SerializeField] protected float to;
-    [SerializeField] [Range(0.05f, 99f)] protected float duration;
+    [SerializeField] [Range(0.05f, 99f)] protected float duration = 0.3f;
 #else
     protected float from;
     protected float to;
-    protected float duration;
+    protected float duration = 0.3f;
 #endif
 
     protected bool _first = false;
     private float _startTime;
     private float _accumulateTime;
 
-    [ContextMenu("Begin")]
-    public virtual void Begin() { }
+    public Action<float> onBegin;
+    public Action<float> onEnd;
+    public Action<float, float, float, float> onLerp;
 
-    [ContextMenu("End")]
-    public virtual void End() { }
+    public virtual void Begin(float from, float to, float duration = 0.8f) {
+        this.from = from;
+        this.to = to;
+        this.duration = duration;
 
-    // 子类的begin需要调用该函数
-    protected void _BaseBegin() {
         enabled = true;
         _first = true;
     }
-
-    protected void _BaseEnd() {
-        enabled = false;
-    }
-
+    
     protected virtual void OnInit() {
         /* 初始化记录数据 */
         _startTime = Time.time;
         _accumulateTime = 0f;
     }
 
-    protected virtual void OnBegin() { }
-    protected virtual void OnChange() { }
-    protected virtual void OnEnd() { }
+    protected virtual void OnBegin() {
+        onBegin?.Invoke(from);
+    }
+
+    protected virtual void OnChange(float rate, float current) {
+        onLerp?.Invoke(current, rate, from, to);
+    }
+
+    protected virtual void OnEnd() {
+        onEnd?.Invoke(to);
+        enabled = false;
+    }
 
     protected void Update() {
         if (_first) {
@@ -76,18 +82,26 @@ public class TLerp<T> : MonoBehaviour where T : Component {
             float diff = Time.time - _startTime;
             if (diff <= duration) {
                 if (refreshRate == ERefreshRate.PerFrame) {
-                    OnChange();
+                    float rate = diff / duration;
+                    float current = Mathf.Lerp(from, to, rate);
+                    OnChange(rate, current);
                 }
                 else if (refreshRate == ERefreshRate.PerSecond) {
                     _accumulateTime += Time.deltaTime;
                     if (_accumulateTime >= 1f) {
-                        OnChange();
+                        _accumulateTime = 0f;
+                        float rate = diff / duration;
+                        float current = Mathf.Lerp(from, to, rate);
+                        OnChange(rate, current);
                     }
                 }
                 else if (refreshRate == ERefreshRate.PerMinute) {
                     _accumulateTime += Time.deltaTime;
                     if (_accumulateTime >= 1f * 60) {
-                        OnChange();
+                        _accumulateTime = 0f;
+                        float rate = diff / duration;
+                        float current = Mathf.Lerp(from, to, rate);
+                        OnChange(rate, current);
                     }
                 }
             }
