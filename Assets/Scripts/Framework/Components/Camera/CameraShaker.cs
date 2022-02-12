@@ -48,7 +48,7 @@ public class CameraShaker : MonoBehaviour
         Begin(this.duration, this.strength, this.vibrato, this.randomness);
     }
     
-    #endif
+#endif
     
     public void Begin(float duration, Vector3 strength, int vibrato = 10, float randomness = 90f, bool fadeout = true ) {
         // if (shakeTwener != null) {
