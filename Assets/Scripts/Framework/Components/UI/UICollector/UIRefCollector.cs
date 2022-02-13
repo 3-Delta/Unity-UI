@@ -35,10 +35,13 @@ public class BindItemDrawer : PropertyDrawer {
 [CustomEditor(typeof(UIRefCollector))]
 public class UIRefCollectorInspector : Editor {
     private UIRefCollector owner;
+
+    protected SerializedProperty toProperty;
     private ReorderableList reorderableList;
 
     private void OnEnable() {
         owner = target as UIRefCollector;
+        toProperty = serializedObject.FindProperty("fieldToProperty");
 
         var prop = serializedObject.FindProperty("bindList");
         reorderableList = new ReorderableList(serializedObject, prop);
@@ -65,6 +68,7 @@ public class UIRefCollectorInspector : Editor {
     public override void OnInspectorGUI() {
         serializedObject.Update();
 
+        EditorGUILayout.PropertyField(toProperty);
         reorderableList.DoLayoutList();
 
         if (GUILayout.Button("Check")) {
@@ -82,6 +86,19 @@ public class UIRefCollectorInspector : Editor {
 }
 #endif
 
+[Serializable]
+public class LayoutBase {
+    public GameObject gameObject { get; private set; } = null;
+    public Transform transform { get; private set; } = null;
+
+    public LayoutBase Bind(Transform transform) {
+        this.transform = transform;
+        this.gameObject = transform.gameObject;
+		return this;
+    }
+}
+
+[DisallowMultipleComponent]
 public class UIRefCollector : MonoBehaviour {
     [Serializable]
     public class BindItem {
@@ -107,6 +124,7 @@ public class UIRefCollector : MonoBehaviour {
     public List<BindItem> bindList = new List<BindItem>();
 
 #if UNITY_EDITOR
+    [SerializeField] private bool fieldToProperty = true;
     public static readonly string TAB = "    ";
 
     public string Copy() {
@@ -125,7 +143,13 @@ public class UIRefCollector : MonoBehaviour {
             sb.AppendFormat("// [{0}] Path: {1}", i.ToString(), item.GetComponentPath(this));
             sb.AppendLine();
             sb.AppendFormat("public {0} {1}", item.componentType, item.name);
-            sb.AppendLine(" { get; private set; } = null;");
+
+            if (fieldToProperty) {
+                sb.AppendLine(" { get; private set; } = null;");
+            }
+            else {
+                sb.AppendLine(" = null;");
+            }
         }
 
         sb.AppendLine();
