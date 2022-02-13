@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using UnityEngine;
 
 #if UNITY_EDITOR
 using System.Text;
+using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditorInternal;
 
