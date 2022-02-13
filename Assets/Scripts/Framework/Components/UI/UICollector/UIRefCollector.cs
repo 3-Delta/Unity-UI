@@ -180,8 +180,25 @@ public class UIRefCollector : MonoBehaviour {
         }
 
         sb.AppendLine("}");
+        
         sb.AppendLine();
+        sb.AppendLine("public partial void Find() {");
+        for (int i = 0, length = bindList.Count; i < length; ++i) {
+            var item = bindList[i];
+            sb.Append(TAB);
+            var path = item.GetComponentPath(this);
+            if (path == null) {
+                sb.AppendFormat("// this.{0} = this.transform.GetComponent<{1}>();", item.name, item.componentType);
+            }
+            else {
+                sb.AppendFormat("// this.{0} = this.transform.Find(\"{1}\").GetComponent<{2}>();", item.name, path, item.componentType);
+            }
 
+            sb.AppendLine();
+        }
+        sb.AppendLine("}");
+
+        sb.AppendLine();
         sb.AppendLine(@"public interface IListener {
     // void OnBtnExitClicked();
 }");
