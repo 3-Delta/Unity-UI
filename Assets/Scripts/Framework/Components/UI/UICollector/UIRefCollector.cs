@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-
 #if UNITY_EDITOR
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditorInternal;
+using UnityEngine.UI;
 
 [CustomPropertyDrawer(typeof(UIRefCollector.BindItem))]
 public class BindItemDrawer : PropertyDrawer {
@@ -22,9 +22,16 @@ public class BindItemDrawer : PropertyDrawer {
             var component = property.FindPropertyRelative("component");
             EditorGUI.PropertyField(componentRect, component, GUIContent.none);
 
-            Rect nameRect = new Rect(componentRect) {
-                x = componentRect.x + 130,
-                width = 160
+            Rect listenRect = new Rect(componentRect) {
+                x = componentRect.x + 135,
+                width = 30
+            };
+            var listen = property.FindPropertyRelative("toListen");
+            EditorGUI.PropertyField(listenRect, listen, GUIContent.none);
+
+            Rect nameRect = new Rect(listenRect) {
+                x = listenRect.x + 20,
+                width = 130
             };
             var name = property.FindPropertyRelative("name");
             name.stringValue = EditorGUI.TextField(nameRect, "", name.stringValue);
@@ -36,12 +43,12 @@ public class BindItemDrawer : PropertyDrawer {
 public class UIRefCollectorInspector : Editor {
     private UIRefCollector owner;
 
-    protected SerializedProperty toProperty;
+    protected SerializedProperty propertyStyle;
     private ReorderableList reorderableList;
 
     private void OnEnable() {
         owner = target as UIRefCollector;
-        toProperty = serializedObject.FindProperty("fieldToProperty");
+        propertyStyle = serializedObject.FindProperty("propertyStyle");
 
         var prop = serializedObject.FindProperty("bindList");
         reorderableList = new ReorderableList(serializedObject, prop);
@@ -62,20 +69,20 @@ public class UIRefCollectorInspector : Editor {
 
         reorderableList.onSelectCallback += rlist => { GUI.backgroundColor = Color.blue; };
 
-        reorderableList.drawHeaderCallback = rect => { EditorGUI.LabelField(rect, prop.displayName); };
+        reorderableList.drawHeaderCallback = rect => { EditorGUI.LabelField(rect, string.Format("{0}  [-> {1} | {2} | {3} <-]", prop.displayName, "Component", "ToListen", "Name")); };
     }
 
     public override void OnInspectorGUI() {
         serializedObject.Update();
 
-        EditorGUILayout.PropertyField(toProperty);
+        EditorGUILayout.PropertyField(propertyStyle);
         reorderableList.DoLayoutList();
 
-        if (GUILayout.Button("Check")) {
+        if (GUILayout.Button("CHECK")) {
             owner.Check();
         }
 
-        if (GUILayout.Button("Copy")) {
+        if (GUILayout.Button("COPY")) {
             string code = owner.Copy();
             GUIUtility.systemCopyBuffer = code;
             Debug.LogError(code);
@@ -94,7 +101,7 @@ public class LayoutBase {
     public LayoutBase Bind(Transform transform) {
         this.transform = transform;
         this.gameObject = transform.gameObject;
-		return this;
+        return this;
     }
 }
 
@@ -102,13 +109,26 @@ public class LayoutBase {
 public class UIRefCollector : MonoBehaviour {
     [Serializable]
     public class BindItem {
-        public string name;
         public Component component;
 #if UNITY_EDITOR
+        // 将name只在editor序列化，否则会占用运行时内存
+        public string name;
+        public bool toListen = false;
+
         public string componentType {
             get {
                 if (component != null) {
                     return component.GetType().ToString();
+                }
+
+                return null;
+            }
+        }
+
+        public Type type {
+            get {
+                if (component != null) {
+                    return component.GetType();
                 }
 
                 return null;
@@ -124,8 +144,22 @@ public class UIRefCollector : MonoBehaviour {
     public List<BindItem> bindList = new List<BindItem>();
 
 #if UNITY_EDITOR
-    [SerializeField] private bool fieldToProperty = true;
+    [SerializeField] private bool propertyStyle = true;
     public static readonly string TAB = "    ";
+
+    // tuple形式，方便后续动态的add，进行拓展
+    public static readonly Dictionary<Type, ValueTuple<string, string>> listenDescs = new Dictionary<Type, ValueTuple<string, string>>() {
+        {
+            typeof(Button), new ValueTuple<string, string>("void OnBtnClicked{0}();",
+                "this.{0}.onClick.AddListener(listener.OnBtnClicked{1});")
+        }, {
+            typeof(Toggle), new ValueTuple<string, string>("void OnValueChanged{0}(bool flag);",
+                "this.{0}.onValueChanged.AddListener(listener.OnValueChanged{1});")
+        }, {
+            typeof(Slider), new ValueTuple<string, string>("void OnValueChanged{0}(float currentValue);",
+                "this.{0}.onValueChanged.AddListener(listener.OnValueChanged{1});")
+        },
+    };
 
     public string Copy() {
         if (!Check()) {
@@ -144,7 +178,7 @@ public class UIRefCollector : MonoBehaviour {
             sb.AppendLine();
             sb.AppendFormat("public {0} {1}", item.componentType, item.name);
 
-            if (fieldToProperty) {
+            if (propertyStyle) {
                 sb.AppendLine(" { get; private set; } = null;");
             }
             else {
@@ -180,7 +214,7 @@ public class UIRefCollector : MonoBehaviour {
         }
 
         sb.AppendLine("}");
-        
+
         sb.AppendLine();
         sb.AppendLine("public partial void Find() {");
         for (int i = 0, length = bindList.Count; i < length; ++i) {
@@ -196,17 +230,40 @@ public class UIRefCollector : MonoBehaviour {
 
             sb.AppendLine();
         }
+
         sb.AppendLine("}");
 
         sb.AppendLine();
-        sb.AppendLine(@"public interface IListener {
-    // void OnBtnExitClicked();
-}");
+        sb.AppendLine(@"public interface IListener {");
+        for (int i = 0, length = bindList.Count; i < length; ++i) {
+            var item = bindList[i];
+            if (item.component != null && item.toListen) {
+                var type = item.type;
+                if (type != null && listenDescs.TryGetValue(type, out var desc)) {
+                    sb.Append(TAB);
+                    sb.AppendFormat(desc.Item1, item.name);
+                    sb.AppendLine();
+                }
+            }
+        }
+
+        sb.AppendLine("}");
         sb.AppendLine();
 
-        sb.AppendLine(@"public void Listen(IListener listener, bool toListen = true) { 
-    // this.btnExit.onClick.AddListener(listener.OnBtnExitClicked);
-}");
+        sb.AppendLine("public void Listen(IListener listener, bool toListen = true) {");
+        for (int i = 0, length = bindList.Count; i < length; ++i) {
+            var item = bindList[i];
+            if (item.component != null && item.toListen) {
+                var type = item.type;
+                if (type != null && listenDescs.TryGetValue(type, out var desc)) {
+                    sb.Append(TAB);
+                    sb.AppendFormat(desc.Item2, item.name, item.name);
+                    sb.AppendLine();
+                }
+            }
+        }
+
+        sb.AppendLine("}");
 
         return sb.ToString();
     }
