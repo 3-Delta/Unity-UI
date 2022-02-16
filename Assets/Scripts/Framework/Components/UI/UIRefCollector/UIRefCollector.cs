@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+
+#region Editor内容
 #if UNITY_EDITOR
 using System.Text;
 using System.Text.RegularExpressions;
@@ -43,16 +45,17 @@ public class BindItemDrawer : PropertyDrawer {
 public class UIRefCollectorInspector : Editor {
     private UIRefCollector owner;
 
-    private SerializedProperty propertyStyle;
-    private SerializedProperty codeStype;
+    private SerializedProperty csharpFieldStyle;
+    private SerializedProperty codeStyle;
     private ReorderableList reorderableList;
 
     private void OnEnable() {
         owner = target as UIRefCollector;
-        propertyStyle = serializedObject.FindProperty("propertyStyle");
-        codeStype = serializedObject.FindProperty("codeStype");
 
-        var prop = serializedObject.FindProperty("bindList");
+        codeStyle = serializedObject.FindProperty("codeStyle");
+        csharpFieldStyle = serializedObject.FindProperty("csharpFieldStyle");
+
+        var prop = serializedObject.FindProperty("bindComponents");
         reorderableList = new ReorderableList(serializedObject, prop);
         reorderableList.elementHeight = 20;
         reorderableList.drawElementCallback = (rect, index, active, focused) => {
@@ -71,14 +74,22 @@ public class UIRefCollectorInspector : Editor {
 
         reorderableList.onSelectCallback += rlist => { GUI.backgroundColor = Color.blue; };
 
-        reorderableList.drawHeaderCallback = rect => { EditorGUI.LabelField(rect, string.Format("{0}  [-> {1} | {2} | {3} <-]", prop.displayName, "Component", "ToListen", "Name")); };
+        reorderableList.drawHeaderCallback = rect => {
+            var oldColor = GUI.color;
+            GUI.color = Color.green;
+            EditorGUI.LabelField(rect, string.Format("{0}  [--> Index | {1} | {2} | {3} <--]", prop.displayName, "Component", "Listen", "Name"));
+            GUI.color = oldColor;
+        };
     }
 
     public override void OnInspectorGUI() {
         serializedObject.Update();
 
-        EditorGUILayout.PropertyField(propertyStyle);
-        EditorGUILayout.PropertyField(codeStype);
+        EditorGUILayout.PropertyField(codeStyle);
+        if (codeStyle.enumValueIndex == (int)UIRefCollector.ECodeStyle.CSharp) {
+            EditorGUILayout.PropertyField(csharpFieldStyle);
+        }
+
         reorderableList.DoLayoutList();
 
         if (GUILayout.Button("CHECK")) {
@@ -86,15 +97,18 @@ public class UIRefCollectorInspector : Editor {
         }
 
         if (GUILayout.Button("COPY")) {
-            string code = owner.Copy();
-            GUIUtility.systemCopyBuffer = code;
-            Debug.LogError(code);
+            if (owner.Check()) {
+                string code = owner.Copy();
+                GUIUtility.systemCopyBuffer = code;
+                Debug.LogError(code);
+            }
         }
 
         serializedObject.ApplyModifiedProperties();
     }
 }
 #endif
+#endregion
 
 [DisallowMultipleComponent]
 public class UIRefCollector : MonoBehaviour {
@@ -124,7 +138,7 @@ public class UIRefCollector : MonoBehaviour {
 #endif
     }
 
-    public List<BindItem> bindList = new List<BindItem>();
+    public List<BindItem> bindComponents = new List<BindItem>();
 
 #if UNITY_EDITOR
     public enum ECodeStyle {
@@ -132,8 +146,13 @@ public class UIRefCollector : MonoBehaviour {
         Lua,
     }
 
-    [SerializeField] private ECodeStyle codeStype = ECodeStyle.CSharp;
-    [SerializeField] private bool propertyStyle = true;
+    public enum ECSharpFieldStyle {
+        Field,
+        Property,
+    }
+
+    [SerializeField] private ECodeStyle codeStyle = ECodeStyle.CSharp;
+    [SerializeField] private ECSharpFieldStyle csharpFieldStyle = ECSharpFieldStyle.Property;
     public static readonly string TAB = "    ";
 
     // tuple形式，方便后续动态的add，进行拓展
@@ -151,24 +170,20 @@ public class UIRefCollector : MonoBehaviour {
     };
 
     public string Copy() {
-        if (!Check()) {
-            return null;
-        }
-
         StringBuilder sb = new StringBuilder();
 
-        if (codeStype == ECodeStyle.CSharp) {
+        if (codeStyle == ECodeStyle.CSharp) {
             sb.AppendLine("public GameObject gameObject { get; private set; } = null;");
             sb.AppendLine("public Transform transform { get; private set; } = null;");
             sb.AppendLine();
 
-            for (int i = 0, length = bindList.Count; i < length; ++i) {
-                var item = bindList[i];
+            for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+                var item = bindComponents[i];
                 sb.AppendFormat("// [{0}] Path: \"{1}\"", i.ToString(), item.GetComponentPath(this));
                 sb.AppendLine();
                 sb.AppendFormat("public {0} {1}", item.componentType, item.name);
 
-                if (propertyStyle) {
+                if (csharpFieldStyle == ECSharpFieldStyle.Property) {
                     sb.AppendLine(" { get; private set; } = null;");
                 }
                 else {
@@ -196,8 +211,8 @@ public class UIRefCollector : MonoBehaviour {
     }");
 
             sb.AppendLine();
-            for (int i = 0, length = bindList.Count; i < length; ++i) {
-                var item = bindList[i];
+            for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+                var item = bindComponents[i];
                 sb.Append(TAB);
                 sb.AppendFormat("this.{0} = refCollector.GetComponent<{1}>({2});", item.name, item.componentType, i.ToString());
                 sb.AppendLine();
@@ -207,8 +222,8 @@ public class UIRefCollector : MonoBehaviour {
 
             sb.AppendLine();
             sb.AppendLine("public partial void Find() {");
-            for (int i = 0, length = bindList.Count; i < length; ++i) {
-                var item = bindList[i];
+            for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+                var item = bindComponents[i];
                 sb.Append(TAB);
                 var path = item.GetComponentPath(this);
                 if (path == null) {
@@ -225,8 +240,8 @@ public class UIRefCollector : MonoBehaviour {
 
             sb.AppendLine();
             sb.AppendLine(@"public interface IListener {");
-            for (int i = 0, length = bindList.Count; i < length; ++i) {
-                var item = bindList[i];
+            for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+                var item = bindComponents[i];
                 if (item.component != null && item.toListen) {
                     var type = item.type;
                     if (type != null && csharpListenDescs.TryGetValue(type, out var desc)) {
@@ -241,8 +256,8 @@ public class UIRefCollector : MonoBehaviour {
             sb.AppendLine();
 
             sb.AppendLine("public void Listen(IListener listener, bool toListen = true) {");
-            for (int i = 0, length = bindList.Count; i < length; ++i) {
-                var item = bindList[i];
+            for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+                var item = bindComponents[i];
                 if (item.component != null && item.toListen) {
                     var type = item.type;
                     if (type != null && csharpListenDescs.TryGetValue(type, out var desc)) {
@@ -255,7 +270,9 @@ public class UIRefCollector : MonoBehaviour {
 
             sb.AppendLine("}");
         }
-        else if (codeStype == ECodeStyle.Lua) { }
+        else if (codeStyle == ECodeStyle.Lua) {
+            sb.AppendLine("暂未实现");
+        }
 
         return sb.ToString();
     }
@@ -263,8 +280,8 @@ public class UIRefCollector : MonoBehaviour {
     public bool Check() {
         bool rlt = true;
         HashSet<string> hashset = new HashSet<string>();
-        for (int i = 0, length = bindList.Count; i < length; ++i) {
-            var name = bindList[i].name;
+        for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+            var name = bindComponents[i].name;
             if (string.IsNullOrEmpty(name)) {
                 Debug.LogErrorFormat("index: {0} has empty name", i.ToString());
                 rlt = false;
@@ -276,7 +293,7 @@ public class UIRefCollector : MonoBehaviour {
                     Debug.LogErrorFormat("index: {0} start with number", i.ToString());
                 }
                 else {
-                    var component = bindList[i].component;
+                    var component = bindComponents[i].component;
                     if (component == null) {
                         Debug.LogErrorFormat("index: {0} component is null", i.ToString());
                         rlt = false;
@@ -299,18 +316,18 @@ public class UIRefCollector : MonoBehaviour {
 #endif
 
     public T GetComponent<T>(int index) where T : Component {
-        if (index < 0 || index >= bindList.Count) {
-            Debug.LogError("Index is out of range");
+        if (index < 0 || index >= bindComponents.Count) {
+            Debug.LogErrorFormat("Index: {0} is out of range", index.ToString());
             return null;
         }
 
-        T bindCom = bindList[index].component as T;
-        if (bindCom == null) {
-            Debug.LogErrorFormat("Index: {0} has invalid component", index.ToString());
+        T component = bindComponents[index].component as T;
+        if (component == null) {
+            Debug.LogErrorFormat("Index: {0} has invalid component {1}", index.ToString(), typeof(T));
             return null;
         }
 
-        return bindCom;
+        return component;
     }
 
     public static string GetPath(Component component, Component end = null) {
