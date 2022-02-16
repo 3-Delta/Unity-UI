@@ -43,12 +43,14 @@ public class BindItemDrawer : PropertyDrawer {
 public class UIRefCollectorInspector : Editor {
     private UIRefCollector owner;
 
-    protected SerializedProperty propertyStyle;
+    private SerializedProperty propertyStyle;
+    private SerializedProperty codeStype;
     private ReorderableList reorderableList;
 
     private void OnEnable() {
         owner = target as UIRefCollector;
         propertyStyle = serializedObject.FindProperty("propertyStyle");
+        codeStype = serializedObject.FindProperty("codeStype");
 
         var prop = serializedObject.FindProperty("bindList");
         reorderableList = new ReorderableList(serializedObject, prop);
@@ -76,6 +78,7 @@ public class UIRefCollectorInspector : Editor {
         serializedObject.Update();
 
         EditorGUILayout.PropertyField(propertyStyle);
+        EditorGUILayout.PropertyField(codeStype);
         reorderableList.DoLayoutList();
 
         if (GUILayout.Button("CHECK")) {
@@ -93,18 +96,6 @@ public class UIRefCollectorInspector : Editor {
 }
 #endif
 
-[Serializable]
-public class LayoutBase {
-    public GameObject gameObject { get; private set; } = null;
-    public Transform transform { get; private set; } = null;
-
-    public LayoutBase Bind(Transform transform) {
-        this.transform = transform;
-        this.gameObject = transform.gameObject;
-        return this;
-    }
-}
-
 [DisallowMultipleComponent]
 public class UIRefCollector : MonoBehaviour {
     [Serializable]
@@ -115,15 +106,7 @@ public class UIRefCollector : MonoBehaviour {
         public string name;
         public bool toListen = false;
 
-        public string componentType {
-            get {
-                if (component != null) {
-                    return component.GetType().ToString();
-                }
-
-                return null;
-            }
-        }
+        public string componentType => type?.ToString();
 
         public Type type {
             get {
@@ -144,11 +127,17 @@ public class UIRefCollector : MonoBehaviour {
     public List<BindItem> bindList = new List<BindItem>();
 
 #if UNITY_EDITOR
+    public enum ECodeStyle {
+        CSsharp,
+        Lua,
+    }
+
+    [SerializeField] private ECodeStyle codeStype = ECodeStyle.CSsharp;
     [SerializeField] private bool propertyStyle = true;
     public static readonly string TAB = "    ";
 
     // tuple形式，方便后续动态的add，进行拓展
-    public static readonly Dictionary<Type, ValueTuple<string, string>> listenDescs = new Dictionary<Type, ValueTuple<string, string>>() {
+    public static readonly Dictionary<Type, ValueTuple<string, string>> csharpListenDescs = new Dictionary<Type, ValueTuple<string, string>>() {
         {
             typeof(Button), new ValueTuple<string, string>("void OnBtnClicked{0}();",
                 "this.{0}.onClick.AddListener(listener.OnBtnClicked{1});")
@@ -168,102 +157,105 @@ public class UIRefCollector : MonoBehaviour {
 
         StringBuilder sb = new StringBuilder();
 
-        sb.AppendLine("public GameObject gameObject { get; private set; } = null;");
-        sb.AppendLine("public Transform transform { get; private set; } = null;");
-        sb.AppendLine();
-
-        for (int i = 0, length = bindList.Count; i < length; ++i) {
-            var item = bindList[i];
-            sb.AppendFormat("// [{0}] Path: {1}", i.ToString(), item.GetComponentPath(this));
+        if (codeStype == ECodeStyle.CSsharp) {
+            sb.AppendLine("public GameObject gameObject { get; private set; } = null;");
+            sb.AppendLine("public Transform transform { get; private set; } = null;");
             sb.AppendLine();
-            sb.AppendFormat("public {0} {1}", item.componentType, item.name);
 
-            if (propertyStyle) {
-                sb.AppendLine(" { get; private set; } = null;");
+            for (int i = 0, length = bindList.Count; i < length; ++i) {
+                var item = bindList[i];
+                sb.AppendFormat("// [{0}] Path: {1}", i.ToString(), item.GetComponentPath(this));
+                sb.AppendLine();
+                sb.AppendFormat("public {0} {1}", item.componentType, item.name);
+
+                if (propertyStyle) {
+                    sb.AppendLine(" { get; private set; } = null;");
+                }
+                else {
+                    sb.AppendLine(" = null;");
+                }
             }
-            else {
-                sb.AppendLine(" = null;");
-            }
-        }
 
-        sb.AppendLine();
-        sb.AppendLine("public void Bind(Transform transform) {");
+            sb.AppendLine();
+            sb.AppendLine("public void Bind(Transform transform) {");
 
-        sb.Append(TAB);
-        sb.AppendLine("this.transform = transform;");
-        sb.Append(TAB);
-        sb.AppendLine(@"this.gameObject = transform.gameObject;
+            sb.Append(TAB);
+            sb.AppendLine("this.transform = transform;");
+            sb.Append(TAB);
+            sb.AppendLine(@"this.gameObject = transform.gameObject;
 }");
 
-        sb.AppendLine();
-        sb.AppendLine("// 后续想不热更prefab,只通过代码查找组件的时候，写另外一个partial Find即可");
-        sb.AppendLine("public partial void Find() {");
-        sb.Append(TAB);
-        sb.AppendLine("var refCollector = transform.GetComponent<UIRefCollector>();");
-        sb.Append(TAB);
-        sb.AppendLine(@"if (refCollector == null) {
+            sb.AppendLine();
+            sb.AppendLine("// 后续想不热更prefab,只通过代码查找组件的时候，写另外一个partial Find即可");
+            sb.AppendLine("public partial void Find() {");
+            sb.Append(TAB);
+            sb.AppendLine("var refCollector = transform.GetComponent<UIRefCollector>();");
+            sb.Append(TAB);
+            sb.AppendLine(@"if (refCollector == null) {
         return;
     }");
 
-        sb.AppendLine();
-        for (int i = 0, length = bindList.Count; i < length; ++i) {
-            var item = bindList[i];
-            sb.Append(TAB);
-            sb.AppendFormat("this.{0} = refCollector.GetComponent<{1}>({2});", item.name, item.componentType, i.ToString());
             sb.AppendLine();
-        }
-
-        sb.AppendLine("}");
-
-        sb.AppendLine();
-        sb.AppendLine("public partial void Find() {");
-        for (int i = 0, length = bindList.Count; i < length; ++i) {
-            var item = bindList[i];
-            sb.Append(TAB);
-            var path = item.GetComponentPath(this);
-            if (path == null) {
-                sb.AppendFormat("// this.{0} = this.transform.GetComponent<{1}>();", item.name, item.componentType);
+            for (int i = 0, length = bindList.Count; i < length; ++i) {
+                var item = bindList[i];
+                sb.Append(TAB);
+                sb.AppendFormat("this.{0} = refCollector.GetComponent<{1}>({2});", item.name, item.componentType, i.ToString());
+                sb.AppendLine();
             }
-            else {
-                sb.AppendFormat("// this.{0} = this.transform.Find(\"{1}\").GetComponent<{2}>();", item.name, path, item.componentType);
-            }
+
+            sb.AppendLine("}");
 
             sb.AppendLine();
-        }
+            sb.AppendLine("public partial void Find() {");
+            for (int i = 0, length = bindList.Count; i < length; ++i) {
+                var item = bindList[i];
+                sb.Append(TAB);
+                var path = item.GetComponentPath(this);
+                if (path == null) {
+                    sb.AppendFormat("// this.{0} = this.transform.GetComponent<{1}>();", item.name, item.componentType);
+                }
+                else {
+                    sb.AppendFormat("// this.{0} = this.transform.Find(\"{1}\").GetComponent<{2}>();", item.name, path, item.componentType);
+                }
 
-        sb.AppendLine("}");
+                sb.AppendLine();
+            }
 
-        sb.AppendLine();
-        sb.AppendLine(@"public interface IListener {");
-        for (int i = 0, length = bindList.Count; i < length; ++i) {
-            var item = bindList[i];
-            if (item.component != null && item.toListen) {
-                var type = item.type;
-                if (type != null && listenDescs.TryGetValue(type, out var desc)) {
-                    sb.Append(TAB);
-                    sb.AppendFormat(desc.Item1, item.name);
-                    sb.AppendLine();
+            sb.AppendLine("}");
+
+            sb.AppendLine();
+            sb.AppendLine(@"public interface IListener {");
+            for (int i = 0, length = bindList.Count; i < length; ++i) {
+                var item = bindList[i];
+                if (item.component != null && item.toListen) {
+                    var type = item.type;
+                    if (type != null && csharpListenDescs.TryGetValue(type, out var desc)) {
+                        sb.Append(TAB);
+                        sb.AppendFormat(desc.Item1, item.name);
+                        sb.AppendLine();
+                    }
                 }
             }
-        }
 
-        sb.AppendLine("}");
-        sb.AppendLine();
+            sb.AppendLine("}");
+            sb.AppendLine();
 
-        sb.AppendLine("public void Listen(IListener listener, bool toListen = true) {");
-        for (int i = 0, length = bindList.Count; i < length; ++i) {
-            var item = bindList[i];
-            if (item.component != null && item.toListen) {
-                var type = item.type;
-                if (type != null && listenDescs.TryGetValue(type, out var desc)) {
-                    sb.Append(TAB);
-                    sb.AppendFormat(desc.Item2, item.name, item.name);
-                    sb.AppendLine();
+            sb.AppendLine("public void Listen(IListener listener, bool toListen = true) {");
+            for (int i = 0, length = bindList.Count; i < length; ++i) {
+                var item = bindList[i];
+                if (item.component != null && item.toListen) {
+                    var type = item.type;
+                    if (type != null && csharpListenDescs.TryGetValue(type, out var desc)) {
+                        sb.Append(TAB);
+                        sb.AppendFormat(desc.Item2, item.name, item.name);
+                        sb.AppendLine();
+                    }
                 }
             }
-        }
 
-        sb.AppendLine("}");
+            sb.AppendLine("}");
+        }
+        else if (codeStype == ECodeStyle.Lua) { }
 
         return sb.ToString();
     }
