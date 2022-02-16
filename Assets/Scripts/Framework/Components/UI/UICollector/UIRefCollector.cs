@@ -128,11 +128,11 @@ public class UIRefCollector : MonoBehaviour {
 
 #if UNITY_EDITOR
     public enum ECodeStyle {
-        CSsharp,
+        CSharp,
         Lua,
     }
 
-    [SerializeField] private ECodeStyle codeStype = ECodeStyle.CSsharp;
+    [SerializeField] private ECodeStyle codeStype = ECodeStyle.CSharp;
     [SerializeField] private bool propertyStyle = true;
     public static readonly string TAB = "    ";
 
@@ -157,7 +157,7 @@ public class UIRefCollector : MonoBehaviour {
 
         StringBuilder sb = new StringBuilder();
 
-        if (codeStype == ECodeStyle.CSsharp) {
+        if (codeStype == ECodeStyle.CSharp) {
             sb.AppendLine("public GameObject gameObject { get; private set; } = null;");
             sb.AppendLine("public Transform transform { get; private set; } = null;");
             sb.AppendLine();
