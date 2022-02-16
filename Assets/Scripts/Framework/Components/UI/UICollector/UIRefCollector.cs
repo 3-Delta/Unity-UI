@@ -164,7 +164,7 @@ public class UIRefCollector : MonoBehaviour {
 
             for (int i = 0, length = bindList.Count; i < length; ++i) {
                 var item = bindList[i];
-                sb.AppendFormat("// [{0}] Path: {1}", i.ToString(), item.GetComponentPath(this));
+                sb.AppendFormat("// [{0}] Path: \"{1}\"", i.ToString(), item.GetComponentPath(this));
                 sb.AppendLine();
                 sb.AppendFormat("public {0} {1}", item.componentType, item.name);
 
