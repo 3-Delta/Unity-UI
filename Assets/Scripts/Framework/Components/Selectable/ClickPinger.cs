@@ -2,9 +2,9 @@
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
-
 #if UNITY_EDITOR
 using UnityEditor;
+
 #endif
 
 // https://zhuanlan.zhihu.com/p/144098931
@@ -20,10 +20,10 @@ public class ClickPinger : MonoBehaviour {
             return;
         }
 
-        ///相应的GameObject对象
+        // 相应的GameObject对象
         GameObject go = null;
 
-        ///判断是否点再ui上
+        // 判断是否点再ui上
         if (EventSystem.current.IsPointerOverGameObject()) {
             go = ClickUI();
         }

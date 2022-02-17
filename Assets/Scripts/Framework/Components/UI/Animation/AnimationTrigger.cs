@@ -3,7 +3,7 @@ using UnityEngine;
 
 // UI动画的开始结束
 [DisallowMultipleComponent]
-public class UIAnimationTrigger : MonoBehaviour {
+public class AnimationTrigger : MonoBehaviour {
     public Action<string> onBegin;
     public Action<string> onEnd;
 

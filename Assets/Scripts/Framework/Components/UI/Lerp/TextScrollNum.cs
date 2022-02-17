@@ -25,9 +25,9 @@ public class TextScrollNum : TLerp<Text> {
         base.OnBegin();
     }
 
-    protected override void OnChange(float rate, float current) {
+    protected override void OnLerp(float rate, float current) {
         component.text = Mathf.RoundToInt(current).ToString();
-        base.OnChange(rate, current);
+        base.OnLerp(rate, current);
     }
 
     protected override void OnEnd() {

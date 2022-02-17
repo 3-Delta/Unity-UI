@@ -8,15 +8,16 @@ public class MaskStencilInverter : MonoBehaviour {
     [SerializeField] private Graphic[] graphics = new Graphic[0];
 
     private Graphic _selfGraphic;
+
     public Graphic SelfGraphic {
         get {
             if (_selfGraphic == null) {
                 _selfGraphic = GetComponent<Graphic>();
             }
+
             return _selfGraphic;
         }
     }
-
 
     private void Awake() {
         ReCollect();
@@ -32,7 +33,7 @@ public class MaskStencilInverter : MonoBehaviour {
         UnityEngine.Rendering.CompareFunction comp = invert ? UnityEngine.Rendering.CompareFunction.NotEqual : UnityEngine.Rendering.CompareFunction.Equal;
         foreach (var item in graphics) {
             if (SelfGraphic != item) {
-                item.materialForRendering.SetInt("_StencilComp", (int)comp);
+                item.materialForRendering.SetInt("_StencilComp", (int) comp);
             }
         }
     }

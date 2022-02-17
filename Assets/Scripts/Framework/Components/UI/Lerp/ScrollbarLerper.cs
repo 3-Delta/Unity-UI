@@ -27,9 +27,9 @@ public class ScrollbarLerper : TLerp<Scrollbar> {
         component.value = from;
     }
 
-    protected override void OnChange(float rate, float current) {
+    protected override void OnLerp(float rate, float current) {
         component.value = current;
-        base.OnChange(rate, current);
+        base.OnLerp(rate, current);
     }
 
     protected override void OnEnd() {

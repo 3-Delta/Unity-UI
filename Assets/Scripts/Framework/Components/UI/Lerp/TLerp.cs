@@ -62,7 +62,7 @@ public class TLerp<T> : MonoBehaviour where T : Component {
         onBegin?.Invoke(from);
     }
 
-    protected virtual void OnChange(float rate, float current) {
+    protected virtual void OnLerp(float rate, float current) {
         onLerp?.Invoke(current, rate, from, to);
     }
 
@@ -84,7 +84,7 @@ public class TLerp<T> : MonoBehaviour where T : Component {
                 if (refreshRate == ERefreshRate.PerFrame) {
                     float rate = diff / duration;
                     float current = Mathf.Lerp(from, to, rate);
-                    OnChange(rate, current);
+                    OnLerp(rate, current);
                 }
                 else if (refreshRate == ERefreshRate.PerSecond) {
                     _accumulateTime += Time.deltaTime;
@@ -92,7 +92,7 @@ public class TLerp<T> : MonoBehaviour where T : Component {
                         _accumulateTime = 0f;
                         float rate = diff / duration;
                         float current = Mathf.Lerp(from, to, rate);
-                        OnChange(rate, current);
+                        OnLerp(rate, current);
                     }
                 }
                 else if (refreshRate == ERefreshRate.PerMinute) {
@@ -101,7 +101,7 @@ public class TLerp<T> : MonoBehaviour where T : Component {
                         _accumulateTime = 0f;
                         float rate = diff / duration;
                         float current = Mathf.Lerp(from, to, rate);
-                        OnChange(rate, current);
+                        OnLerp(rate, current);
                     }
                 }
             }

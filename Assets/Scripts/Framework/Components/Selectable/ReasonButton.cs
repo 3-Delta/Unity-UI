@@ -10,7 +10,7 @@ public class ReasonButton : MonoBehaviour {
     public Button button;
 
     [Header("results和reasons要等长")] [SerializeField]
-    private List<Func<bool>> results;
+    private List<Func<int, bool>> results;
 
     [SerializeField] private List<string> reasons;
 
@@ -25,7 +25,7 @@ public class ReasonButton : MonoBehaviour {
         button.onClick.AddListener(OnBtnClicked);
     }
 
-    public void Init(List<Func<bool>> results, List<string> reasons, Action onSuccess, Action<int, string> onFail) {
+    public void Init(List<Func<int, bool>> results, List<string> reasons, Action onSuccess, Action<int, string> onFail) {
         this.results = results;
         this.reasons = reasons;
         this.onSuccess = onSuccess;
@@ -35,7 +35,7 @@ public class ReasonButton : MonoBehaviour {
     private void OnBtnClicked() {
         if (results != null) {
             for (int i = 0; i < results.Count; ++i) {
-                if (results[i] != null && !results[i].Invoke()) {
+                if (results[i] != null && !results[i].Invoke(i)) {
                     onFail?.Invoke(i, reasons[i]);
                     return;
                 }
