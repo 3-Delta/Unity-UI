@@ -10,7 +10,7 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine.UI;
 
-[CustomPropertyDrawer(typeof(UIRefCollector.BindComponent))]
+[CustomPropertyDrawer(typeof(UIBindComponents.BindComponent))]
 public class BindItemDrawer : PropertyDrawer {
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
         using (new EditorGUI.PropertyScope(position, label, property)) {
@@ -41,16 +41,16 @@ public class BindItemDrawer : PropertyDrawer {
     }
 }
 
-[CustomEditor(typeof(UIRefCollector))]
-public class UIRefCollectorInspector : Editor {
-    private UIRefCollector owner;
+[CustomEditor(typeof(UIBindComponents))]
+public class UIBindComponentsInspector : Editor {
+    private UIBindComponents owner;
 
     private SerializedProperty csharpFieldStyle;
     private SerializedProperty codeStyle;
     private ReorderableList reorderableList;
 
     private void OnEnable() {
-        owner = target as UIRefCollector;
+        owner = target as UIBindComponents;
 
         codeStyle = serializedObject.FindProperty("codeStyle");
         csharpFieldStyle = serializedObject.FindProperty("csharpFieldStyle");
@@ -86,7 +86,7 @@ public class UIRefCollectorInspector : Editor {
         serializedObject.Update();
 
         EditorGUILayout.PropertyField(codeStyle);
-        if (codeStyle.enumValueIndex == (int)UIRefCollector.ECodeStyle.CSharp) {
+        if (codeStyle.enumValueIndex == (int)UIBindComponents.ECodeStyle.CSharp) {
             EditorGUILayout.PropertyField(csharpFieldStyle);
         }
 
@@ -111,7 +111,7 @@ public class UIRefCollectorInspector : Editor {
 #endregion
 
 [DisallowMultipleComponent]
-public class UIRefCollector : MonoBehaviour {
+public class UIBindComponents : MonoBehaviour {
     [Serializable]
     public class BindComponent {
         public Component component;
@@ -175,9 +175,6 @@ public class UIRefCollector : MonoBehaviour {
 
     private string CSharpCopy() {
         StringBuilder sb = new StringBuilder();
-        sb.AppendLine("public GameObject gameObject { get; private set; } = null;");
-        sb.AppendLine("public Transform transform { get; private set; } = null;");
-        sb.AppendLine();
 
         for (int i = 0, length = bindComponents.Count; i < length; ++i) {
             var item = bindComponents[i];
@@ -194,21 +191,11 @@ public class UIRefCollector : MonoBehaviour {
         }
 
         sb.AppendLine();
-        sb.AppendLine("public void Bind(Transform transform) {");
-
+        sb.AppendLine("public void Find(Transform transform) {");
         sb.Append(TAB);
-        sb.AppendLine("this.transform = transform;");
+        sb.AppendLine("var binds = transform.GetComponent<UIBindComponents>();");
         sb.Append(TAB);
-        sb.AppendLine(@"this.gameObject = transform.gameObject;
-}");
-
-        sb.AppendLine();
-        sb.AppendLine("// 后续想不热更prefab,只通过代码查找组件的时候，写另外一个partial Find即可");
-        sb.AppendLine("public partial void Find() {");
-        sb.Append(TAB);
-        sb.AppendLine("var refCollector = transform.GetComponent<UIRefCollector>();");
-        sb.Append(TAB);
-        sb.AppendLine(@"if (refCollector == null) {
+        sb.AppendLine(@"if (binds == null) {
         return;
     }");
 
@@ -216,23 +203,28 @@ public class UIRefCollector : MonoBehaviour {
         for (int i = 0, length = bindComponents.Count; i < length; ++i) {
             var item = bindComponents[i];
             sb.Append(TAB);
-            sb.AppendFormat("this.{0} = refCollector.GetComponent<{1}>({2});", item.name, item.componentType, i.ToString());
+            sb.AppendFormat("this.{0} = binds.Find<{1}>({2});", item.name, item.componentType, i.ToString());
             sb.AppendLine();
         }
+
+        sb.AppendLine();
+        sb.Append(TAB);
+        sb.AppendLine("this.FindByPath(transform);");
 
         sb.AppendLine("}");
 
         sb.AppendLine();
-        sb.AppendLine("public partial void Find() {");
+        sb.AppendLine("// 后续想不热更prefab,只热更脚本的形式获取组件,再次函数内部添加查找逻辑即可");
+        sb.AppendLine("public void FindByPath(Transform transform) {");
         for (int i = 0, length = bindComponents.Count; i < length; ++i) {
             var item = bindComponents[i];
             sb.Append(TAB);
             var path = item.GetComponentPath(this);
             if (path == null) {
-                sb.AppendFormat("// this.{0} = this.transform.GetComponent<{1}>();", item.name, item.componentType);
+                sb.AppendFormat("// this.{0} = transform.GetComponent<{1}>();", item.name, item.componentType);
             }
             else {
-                sb.AppendFormat("// this.{0} = this.transform.Find(\"{1}\").GetComponent<{2}>();", item.name, path, item.componentType);
+                sb.AppendFormat("// this.{0} = transform.Find(\"{1}\").GetComponent<{2}>();", item.name, path, item.componentType);
             }
 
             sb.AppendLine();
@@ -326,7 +318,7 @@ public class UIRefCollector : MonoBehaviour {
     }
 #endif
 
-    public T GetComponent<T>(int index) where T : Component {
+    public T Find<T>(int index) where T : Component {
         if (index < 0 || index >= bindComponents.Count) {
             Debug.LogErrorFormat("Index: {0} is out of range", index.ToString());
             return null;
