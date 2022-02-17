@@ -13,6 +13,7 @@ public class GraphicGrayer : MonoBehaviour {
     }
 
     public void Collect() {
+        // 收集原始材质
         dict.Clear();
         var ls = GetComponentsInChildren<Graphic>();
         foreach (var item in ls) {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // 一般工作在框架层
+[DisallowMultipleComponent]
 public class COWComponent<T> : MonoBehaviour where T : Component {
     private readonly List<T> components = new List<T>();
 
@@ -22,8 +23,7 @@ public class COWComponent<T> : MonoBehaviour where T : Component {
         }
     }
 
-    public COWComponent<T> TryBuild(GameObject proto, Transform parent, int targetCount,
-        Action<T, int /* index */> onInit) {
+    public COWComponent<T> TryBuild(GameObject proto, Transform parent, int targetCount, Action<T, int /* index */> onInit) {
         proto.SetActive(false);
         while (targetCount > this.Count) {
             GameObject clone = Instantiate<GameObject>(proto, parent);
@@ -58,8 +58,7 @@ public class COWComponent<T> : MonoBehaviour where T : Component {
         return this;
     }
 
-    public COWComponent<T> TryBuildOrRefresh(GameObject proto, Transform parent, int targetCount,
-        Action<T, int /* index */> onInit, Action<T, int /* index */> onRrfresh) {
+    public COWComponent<T> TryBuildOrRefresh(GameObject proto, Transform parent, int targetCount, Action<T, int /* index */> onInit, Action<T, int /* index */> onRrfresh) {
         this.TryBuild(proto, parent, targetCount, onInit);
         return this.TryRefresh(targetCount, onRrfresh);
     }
@@ -74,6 +73,7 @@ public class COWComponent<T> : MonoBehaviour where T : Component {
     }
 }
 
+[DisallowMultipleComponent]
 public class COWComponentTabCollector<T> : MonoBehaviour where T : Component {
     public COWComponent<T> cow { get; private set; } = new COWComponent<T>();
 
@@ -119,6 +119,7 @@ public class COWComponentTabCollector<T> : MonoBehaviour where T : Component {
 }
 
 // 带有id管理的collector
+[DisallowMultipleComponent]
 public class COWComponentTabCollector<T_CP, T_Id> : MonoBehaviour where T_CP : Component {
     private readonly COWComponent<T_CP> cow = new COWComponent<T_CP>();
     private IList<T_Id> idList = new List<T_Id>();
