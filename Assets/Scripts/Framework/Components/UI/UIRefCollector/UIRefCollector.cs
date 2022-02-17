@@ -10,7 +10,7 @@ using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine.UI;
 
-[CustomPropertyDrawer(typeof(UIRefCollector.BindItem))]
+[CustomPropertyDrawer(typeof(UIRefCollector.BindComponent))]
 public class BindItemDrawer : PropertyDrawer {
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
         using (new EditorGUI.PropertyScope(position, label, property)) {
@@ -77,7 +77,7 @@ public class UIRefCollectorInspector : Editor {
         reorderableList.drawHeaderCallback = rect => {
             var oldColor = GUI.color;
             GUI.color = Color.green;
-            EditorGUI.LabelField(rect, string.Format("{0}  [--> Index | {1} | {2} | {3} <--]", prop.displayName, "Component", "Listen", "Name"));
+            EditorGUI.LabelField(rect, string.Format("[--> Index | {0} | {1} | {2} <--]", /*prop.displayName, */"Component", "Listen", "Name"));
             GUI.color = oldColor;
         };
     }
@@ -113,7 +113,7 @@ public class UIRefCollectorInspector : Editor {
 [DisallowMultipleComponent]
 public class UIRefCollector : MonoBehaviour {
     [Serializable]
-    public class BindItem {
+    public class BindComponent {
         public Component component;
 #if UNITY_EDITOR
         // 将name只在editor序列化，否则会占用运行时内存
@@ -138,7 +138,7 @@ public class UIRefCollector : MonoBehaviour {
 #endif
     }
 
-    public List<BindItem> bindComponents = new List<BindItem>();
+    public List<BindComponent> bindComponents = new List<BindComponent>();
 
 #if UNITY_EDITOR
     public enum ECodeStyle {
@@ -169,114 +169,125 @@ public class UIRefCollector : MonoBehaviour {
         },
     };
 
-    public string Copy() {
+    private string LuaCopy() {
+        return "暂未实现";
+    }
+
+    private string CSharpCopy() {
         StringBuilder sb = new StringBuilder();
+        sb.AppendLine("public GameObject gameObject { get; private set; } = null;");
+        sb.AppendLine("public Transform transform { get; private set; } = null;");
+        sb.AppendLine();
 
-        if (codeStyle == ECodeStyle.CSharp) {
-            sb.AppendLine("public GameObject gameObject { get; private set; } = null;");
-            sb.AppendLine("public Transform transform { get; private set; } = null;");
+        for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+            var item = bindComponents[i];
+            sb.AppendFormat("// [{0}] Path: \"{1}\"", i.ToString(), item.GetComponentPath(this));
             sb.AppendLine();
+            sb.AppendFormat("public {0} {1}", item.componentType, item.name);
 
-            for (int i = 0, length = bindComponents.Count; i < length; ++i) {
-                var item = bindComponents[i];
-                sb.AppendFormat("// [{0}] Path: \"{1}\"", i.ToString(), item.GetComponentPath(this));
-                sb.AppendLine();
-                sb.AppendFormat("public {0} {1}", item.componentType, item.name);
-
-                if (csharpFieldStyle == ECSharpFieldStyle.Property) {
-                    sb.AppendLine(" { get; private set; } = null;");
-                }
-                else {
-                    sb.AppendLine(" = null;");
-                }
+            if (csharpFieldStyle == ECSharpFieldStyle.Property) {
+                sb.AppendLine(" { get; private set; } = null;");
             }
+            else if (csharpFieldStyle == ECSharpFieldStyle.Field) {
+                sb.AppendLine(" = null;");
+            }
+        }
 
-            sb.AppendLine();
-            sb.AppendLine("public void Bind(Transform transform) {");
+        sb.AppendLine();
+        sb.AppendLine("public void Bind(Transform transform) {");
 
-            sb.Append(TAB);
-            sb.AppendLine("this.transform = transform;");
-            sb.Append(TAB);
-            sb.AppendLine(@"this.gameObject = transform.gameObject;
+        sb.Append(TAB);
+        sb.AppendLine("this.transform = transform;");
+        sb.Append(TAB);
+        sb.AppendLine(@"this.gameObject = transform.gameObject;
 }");
 
-            sb.AppendLine();
-            sb.AppendLine("// 后续想不热更prefab,只通过代码查找组件的时候，写另外一个partial Find即可");
-            sb.AppendLine("public partial void Find() {");
-            sb.Append(TAB);
-            sb.AppendLine("var refCollector = transform.GetComponent<UIRefCollector>();");
-            sb.Append(TAB);
-            sb.AppendLine(@"if (refCollector == null) {
+        sb.AppendLine();
+        sb.AppendLine("// 后续想不热更prefab,只通过代码查找组件的时候，写另外一个partial Find即可");
+        sb.AppendLine("public partial void Find() {");
+        sb.Append(TAB);
+        sb.AppendLine("var refCollector = transform.GetComponent<UIRefCollector>();");
+        sb.Append(TAB);
+        sb.AppendLine(@"if (refCollector == null) {
         return;
     }");
 
+        sb.AppendLine();
+        for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+            var item = bindComponents[i];
+            sb.Append(TAB);
+            sb.AppendFormat("this.{0} = refCollector.GetComponent<{1}>({2});", item.name, item.componentType, i.ToString());
             sb.AppendLine();
-            for (int i = 0, length = bindComponents.Count; i < length; ++i) {
-                var item = bindComponents[i];
-                sb.Append(TAB);
-                sb.AppendFormat("this.{0} = refCollector.GetComponent<{1}>({2});", item.name, item.componentType, i.ToString());
-                sb.AppendLine();
-            }
-
-            sb.AppendLine("}");
-
-            sb.AppendLine();
-            sb.AppendLine("public partial void Find() {");
-            for (int i = 0, length = bindComponents.Count; i < length; ++i) {
-                var item = bindComponents[i];
-                sb.Append(TAB);
-                var path = item.GetComponentPath(this);
-                if (path == null) {
-                    sb.AppendFormat("// this.{0} = this.transform.GetComponent<{1}>();", item.name, item.componentType);
-                }
-                else {
-                    sb.AppendFormat("// this.{0} = this.transform.Find(\"{1}\").GetComponent<{2}>();", item.name, path, item.componentType);
-                }
-
-                sb.AppendLine();
-            }
-
-            sb.AppendLine("}");
-
-            sb.AppendLine();
-            sb.AppendLine(@"public interface IListener {");
-            for (int i = 0, length = bindComponents.Count; i < length; ++i) {
-                var item = bindComponents[i];
-                if (item.component != null && item.toListen) {
-                    var type = item.type;
-                    if (type != null && csharpListenDescs.TryGetValue(type, out var desc)) {
-                        sb.Append(TAB);
-                        sb.AppendFormat(desc.Item1, item.name);
-                        sb.AppendLine();
-                    }
-                }
-            }
-
-            sb.AppendLine("}");
-            sb.AppendLine();
-
-            sb.AppendLine("public void Listen(IListener listener, bool toListen = true) {");
-            for (int i = 0, length = bindComponents.Count; i < length; ++i) {
-                var item = bindComponents[i];
-                if (item.component != null && item.toListen) {
-                    var type = item.type;
-                    if (type != null && csharpListenDescs.TryGetValue(type, out var desc)) {
-                        sb.Append(TAB);
-                        sb.AppendFormat(desc.Item2, item.name, item.name);
-                        sb.AppendLine();
-                    }
-                }
-            }
-
-            sb.AppendLine("}");
-        }
-        else if (codeStyle == ECodeStyle.Lua) {
-            sb.AppendLine("暂未实现");
         }
 
+        sb.AppendLine("}");
+
+        sb.AppendLine();
+        sb.AppendLine("public partial void Find() {");
+        for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+            var item = bindComponents[i];
+            sb.Append(TAB);
+            var path = item.GetComponentPath(this);
+            if (path == null) {
+                sb.AppendFormat("// this.{0} = this.transform.GetComponent<{1}>();", item.name, item.componentType);
+            }
+            else {
+                sb.AppendFormat("// this.{0} = this.transform.Find(\"{1}\").GetComponent<{2}>();", item.name, path, item.componentType);
+            }
+
+            sb.AppendLine();
+        }
+
+        sb.AppendLine("}");
+
+        sb.AppendLine();
+        sb.AppendLine(@"public interface IListener {");
+        for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+            var item = bindComponents[i];
+            if (item.component != null && item.toListen) {
+                var type = item.type;
+                if (type != null && csharpListenDescs.TryGetValue(type, out var desc)) {
+                    sb.Append(TAB);
+                    sb.AppendFormat(desc.Item1, item.name);
+                    sb.AppendLine();
+                }
+            }
+        }
+
+        sb.AppendLine("}");
+        sb.AppendLine();
+
+        sb.AppendLine("public void Listen(IListener listener, bool toListen = true) {");
+        for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+            var item = bindComponents[i];
+            if (item.component != null && item.toListen) {
+                var type = item.type;
+                if (type != null && csharpListenDescs.TryGetValue(type, out var desc)) {
+                    sb.Append(TAB);
+                    sb.AppendFormat(desc.Item2, item.name, item.name);
+                    sb.AppendLine();
+                }
+            }
+        }
+
+        sb.AppendLine("}");
         return sb.ToString();
     }
 
+    public string Copy() {
+        if (codeStyle == ECodeStyle.CSharp) {
+            return CSharpCopy();
+        }
+        else if (codeStyle == ECodeStyle.Lua) {
+            return LuaCopy();
+        }
+
+        return "暂未实现";
+    }
+
+    // 重名检测
+    // 命名合理性检测
+    // 组件null检测
     public bool Check() {
         bool rlt = true;
         HashSet<string> hashset = new HashSet<string>();
@@ -303,7 +314,7 @@ public class UIRefCollector : MonoBehaviour {
                             hashset.Add(name);
                         }
                         else {
-                            Debug.LogErrorFormat("index: {0} has same name with alreaady item", i.ToString());
+                            Debug.LogErrorFormat("index: {0} has same name with already item", i.ToString());
                             rlt = false;
                         }
                     }
