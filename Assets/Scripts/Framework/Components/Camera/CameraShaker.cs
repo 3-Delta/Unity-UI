@@ -2,12 +2,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 // using DG.Tweening;
 
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Camera))]
-public class CameraShaker : MonoBehaviour
-{
+public class CameraShaker : MonoBehaviour {
     private Camera _camera;
 
     public Camera camera {
@@ -21,6 +21,7 @@ public class CameraShaker : MonoBehaviour
     }
 
     public bool resetWhenFinish = true;
+
     [SerializeField] private Vector3 posBeforeShake;
     // private Tweener shakeTwener;
 
@@ -39,7 +40,7 @@ public class CameraShaker : MonoBehaviour
 
 #if UNITY_EDITOR
     [SerializeField] private Vector3 strength;
-    [SerializeField] private float duration;
+    [SerializeField] [Range(0.02f, 99f)] private float duration;
     [SerializeField] private float randomness;
     [SerializeField] private int vibrato;
 
@@ -47,10 +48,10 @@ public class CameraShaker : MonoBehaviour
     public void Begin() {
         Begin(this.duration, this.strength, this.vibrato, this.randomness);
     }
-    
+
 #endif
-    
-    public void Begin(float duration, Vector3 strength, int vibrato = 10, float randomness = 90f, bool fadeout = true ) {
+
+    public void Begin(float duration, Vector3 strength, int vibrato = 10, float randomness = 90f, bool fadeout = true) {
         // if (shakeTwener != null) {
         //     shakeTwener.Kill(true);
         // }
@@ -59,7 +60,7 @@ public class CameraShaker : MonoBehaviour
         // shakeTwener.onComplete += this.OnTweenFinish;
         // shakeTwener.onKill += this.OnTweenFinish;
     }
-    
+
     [ContextMenu(nameof(End))]
     public void End() {
         // if (shakeTwener != null) {
