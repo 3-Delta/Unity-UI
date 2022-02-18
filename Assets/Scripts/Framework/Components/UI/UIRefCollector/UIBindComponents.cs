@@ -193,6 +193,8 @@ public class UIBindComponents : MonoBehaviour {
         sb.AppendLine();
         sb.AppendLine("public void Find(Transform transform) {");
         sb.Append(TAB);
+        sb.AppendLine("this.FindByPath(transform);");
+        sb.Append(TAB);
         sb.AppendLine("var binds = transform.GetComponent<UIBindComponents>();");
         sb.Append(TAB);
         sb.AppendLine(@"if (binds == null) {
@@ -206,10 +208,6 @@ public class UIBindComponents : MonoBehaviour {
             sb.AppendFormat("this.{0} = binds.Find<{1}>({2});", item.name, item.componentType, i.ToString());
             sb.AppendLine();
         }
-
-        sb.AppendLine();
-        sb.Append(TAB);
-        sb.AppendLine("this.FindByPath(transform);");
 
         sb.AppendLine("}");
 
