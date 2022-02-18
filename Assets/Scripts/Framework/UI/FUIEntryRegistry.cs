@@ -8,19 +8,20 @@ public enum EUIOption {
     Disable3DCamera = 1 << 2,
     CheckGuide = 1 << 3,
     CheckNetwork = 1 << 4,
+    CheckQUality = 1 << 5,
 }
 
 public enum EUILayer {
-    Normal = 1,
-    Base = 2,
-    Top = 3,
+    Basement = 0,
+    NormalStack = 10000,
+    TopStack = 20000,
 }
 
 [Serializable]
 public class UIEntry {
     public readonly int uiType;
     public readonly string prefabPath;
-    public readonly Type uiController;
+    public readonly Type script;
     public readonly EUIOption option;
     public readonly EUILayer layer;
 
@@ -30,11 +31,11 @@ public class UIEntry {
     public UIEntry() {
     }
 
-    public UIEntry(int uiType, string prefabPath, Type uiController, EUIOption option = EUIOption.None,
-        EUILayer layer = EUILayer.Normal, bool hasMask = false, int renderFrameInterval = 1) {
+    public UIEntry(int uiType, string prefabPath, Type script, EUIOption option = EUIOption.None,
+        EUILayer layer = EUILayer.NormalStack, bool hasMask = false, int renderFrameInterval = 1) {
         this.uiType = uiType;
         this.prefabPath = prefabPath;
-        this.uiController = uiController;
+        this.script = script;
         this.option = option;
         this.layer = layer;
 
@@ -46,18 +47,15 @@ public class UIEntry {
     }
 }
 
-public class UIEntryRegistry {
+// ui配置
+public class FUIEntryRegistry {
+    // 热更层动态插入框架层
     private static readonly Dictionary<int, UIEntry> registry = new Dictionary<int, UIEntry>();
 
     public static bool TryGet(int uiType, out UIEntry entry) {
-        entry = null;
         return registry.TryGetValue(uiType, out entry);
     }
-
-    public static void Clear() {
-        registry.Clear();
-    }
-
+    
     public static void Register(UIEntry entry) {
         if (entry != null && !registry.TryGetValue(entry.uiType, out _)) {
             registry.Add(entry.uiType, entry);

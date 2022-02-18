@@ -7,12 +7,20 @@ public interface IRegisterEvent {
     void RegisterEvent(bool toRegister);
 }
 
+public interface IListenReconnect {
+    void OnBeginReconnect();
+    void OnEndReconnect();
+}
+
 [Serializable]
-public class UIBaseT {
-    public UIEntry entry;
+public class FUIBase : IListenReconnect {
+    public int uiType;
+    public UIEntry cfg;
+
+    public int order;
 
     // UIEntry能否将UIEntry设置为表格填写的形式，也就是提剔除uiconfig
-    // 因为有时候，可能需要在B ui打开的时候，将前面的A ui关闭掉。所以需要外部设置这些回调。
+    // 因为有时候，可能需要在B ui打开的时候，将前面的A ui关闭掉。所以需要外部设置这些回调
     public Action<UIEntry> onOpen { get; set; }
     public Action<UIEntry> onClose { get; set; }
 
@@ -20,6 +28,11 @@ public class UIBaseT {
     public Action<UIEntry> onEndShow { get; set; }
     public Action<UIEntry> onBeginHide { get; set; }
     public Action<UIEntry> onEndHide { get; set; }
+
+    public void Init(int uiType, UIEntry cfg) {
+        this.uiType = uiType;
+        this.cfg = cfg;
+    }
 
     public void Open(bool toOpen) {
         if (toOpen) {
@@ -57,7 +70,7 @@ public class UIBaseT {
 
     #region 生命周期
 
-    protected virtual void OnInit() {
+    protected virtual void OnLoaded(Transform transform) {
         // 资源组件解析
     }
 
@@ -78,11 +91,11 @@ public class UIBaseT {
     protected virtual void OnHide() {
     }
 
-    protected virtual void OnReconnectBegin() {
+    public virtual void OnBeginReconnect() {
         // 断线重连UI打开之前
     }
-
-    protected virtual void OnReconnectEnd() {
+    
+    public virtual void OnEndReconnect() {
         // 断线重连UI关闭之后
     }
 
