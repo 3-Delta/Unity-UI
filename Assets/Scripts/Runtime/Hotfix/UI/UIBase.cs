@@ -2,10 +2,12 @@
 using UnityEngine;
 
 [Serializable]
-public class LUIBase : FUIBase { }
+public class UIBase : FUIBase {
+    
+}
 
 [Serializable]
-public class UIBaseWithLayout<TLayout> : LUIBase where TLayout : FUILayoutBase, new() {
+public class UIBaseWithLayout<TLayout> : UIBase where TLayout : UILayoutBase, new() {
     [SerializeField] protected TLayout layout;
 
     protected override void OnLoaded(Transform transform) {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-
 #region Editor内容
 #if UNITY_EDITOR
 using System.Text;
@@ -153,7 +152,7 @@ public class UIBindComponents : MonoBehaviour {
 
     [SerializeField] private ECodeStyle codeStyle = ECodeStyle.CSharp;
     [SerializeField] private ECSharpFieldStyle csharpFieldStyle = ECSharpFieldStyle.Property;
-    public static readonly string TAB = "    ";
+    public const string TAB = "    ";
 
     // tuple形式，方便后续动态的add，进行拓展
     public static readonly Dictionary<Type, ValueTuple<string, string>> csharpListenDescs = new Dictionary<Type, ValueTuple<string, string>>() {
@@ -170,16 +169,33 @@ public class UIBindComponents : MonoBehaviour {
     };
 
     private string LuaCopy() {
-        return "暂未实现";
+        return "---暂未实现---";
     }
 
     private string CSharpCopy() {
+        string AppendTab(int level, string Tab = UIBindComponents.TAB) {
+            StringBuilder rlt = new StringBuilder();
+            if (level <= 0) {
+                return "";
+            }
+
+            for (int i = 0; i < level; ++i) {
+                rlt.Append(Tab);
+            }
+
+            return rlt.ToString();
+        }
+
         StringBuilder sb = new StringBuilder();
 
+        sb.AppendLine("public class Layout : UILayoutBase {");
         for (int i = 0, length = bindComponents.Count; i < length; ++i) {
             var item = bindComponents[i];
+            sb.Append(AppendTab(1));
             sb.AppendFormat("// [{0}] Path: \"{1}\"", i.ToString(), item.GetComponentPath(this));
             sb.AppendLine();
+
+            sb.Append(AppendTab(1));
             sb.AppendFormat("public {0} {1}", item.componentType, item.name);
 
             if (csharpFieldStyle == ECSharpFieldStyle.Property) {
@@ -191,32 +207,27 @@ public class UIBindComponents : MonoBehaviour {
         }
 
         sb.AppendLine();
-        sb.AppendLine("public void Find(Transform transform) {");
-        sb.Append(TAB);
-        sb.AppendLine("this.FindByPath(transform);");
-        sb.Append(TAB);
-        sb.AppendLine("var binds = transform.GetComponent<UIBindComponents>();");
-        sb.Append(TAB);
-        sb.AppendLine(@"if (binds == null) {
-        return;
-    }");
 
-        sb.AppendLine();
+        sb.Append(AppendTab(1));
+        sb.AppendLine("protected override void FindByIndex(UIBindComponents binder) {");
         for (int i = 0, length = bindComponents.Count; i < length; ++i) {
             var item = bindComponents[i];
-            sb.Append(TAB);
-            sb.AppendFormat("this.{0} = binds.Find<{1}>({2});", item.name, item.componentType, i.ToString());
+            sb.Append(AppendTab(2));
+            sb.AppendFormat("this.{0} = binder.Find<{1}>({2});", item.name, item.componentType, i.ToString());
             sb.AppendLine();
         }
 
+        sb.Append(AppendTab(1));
         sb.AppendLine("}");
 
         sb.AppendLine();
+        sb.Append(AppendTab(1));
         sb.AppendLine("// 后续想不热更prefab,只热更脚本的形式获取组件,再次函数内部添加查找逻辑即可");
-        sb.AppendLine("public void FindByPath(Transform transform) {");
+        sb.Append(AppendTab(1));
+        sb.AppendLine("protected override void FindByPath() {");
         for (int i = 0, length = bindComponents.Count; i < length; ++i) {
             var item = bindComponents[i];
-            sb.Append(TAB);
+            sb.Append(AppendTab(2));
             var path = item.GetComponentPath(this);
             if (path == null) {
                 sb.AppendFormat("// this.{0} = transform.GetComponent<{1}>();", item.name, item.componentType);
@@ -228,38 +239,45 @@ public class UIBindComponents : MonoBehaviour {
             sb.AppendLine();
         }
 
+        sb.Append(AppendTab(1));
         sb.AppendLine("}");
 
         sb.AppendLine();
+        sb.Append(AppendTab(1));
         sb.AppendLine(@"public interface IListener {");
         for (int i = 0, length = bindComponents.Count; i < length; ++i) {
             var item = bindComponents[i];
             if (item.component != null && item.toListen) {
                 var type = item.type;
                 if (type != null && csharpListenDescs.TryGetValue(type, out var desc)) {
-                    sb.Append(TAB);
+                    sb.Append(AppendTab(2));
                     sb.AppendFormat(desc.Item1, item.name);
                     sb.AppendLine();
                 }
             }
         }
 
+        sb.Append(AppendTab(1));
         sb.AppendLine("}");
         sb.AppendLine();
 
+        sb.Append(AppendTab(1));
         sb.AppendLine("public void Listen(IListener listener, bool toListen = true) {");
         for (int i = 0, length = bindComponents.Count; i < length; ++i) {
             var item = bindComponents[i];
             if (item.component != null && item.toListen) {
                 var type = item.type;
                 if (type != null && csharpListenDescs.TryGetValue(type, out var desc)) {
-                    sb.Append(TAB);
+                    sb.Append(AppendTab(2));
                     sb.AppendFormat(desc.Item2, item.name, item.name);
                     sb.AppendLine();
                 }
             }
         }
 
+        sb.Append(AppendTab(1));
+        sb.AppendLine("}");
+        
         sb.AppendLine("}");
         return sb.ToString();
     }
@@ -272,7 +290,7 @@ public class UIBindComponents : MonoBehaviour {
             return LuaCopy();
         }
 
-        return "暂未实现";
+        return "---暂未实现---";
     }
 
     // 重名检测

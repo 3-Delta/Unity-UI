@@ -5,8 +5,8 @@ using UnityEngine.UI;
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Canvas), typeof(CanvasScaler))]
 public class CanvasAdapter : MonoBehaviour {
-    public Canvas canvas;
-    public CanvasScaler canvasScaler;
+    private Canvas canvas;
+    private CanvasScaler canvasScaler;
 
     private RectTransform rectTrasnform;
 
