@@ -1,6 +1,8 @@
 ﻿using System;
 
 public class UIStack : FUIStack {
+    public UIStack(EUILayer layer) : base(layer) { }
+
     protected override FUIBase CreateInstance(FUIEntry cfg) {
         return Activator.CreateInstance(cfg.ui) as UIBase;
     }
@@ -12,7 +14,7 @@ public class UIMgr : FUIMgr {
         FUIMgr.Init();
     }
 
-    public static void Open(EUIType uiType, Tuple<ulong, ulong, ulong, object> arg) {
+    public static void Open(EUIType uiType, Tuple<ulong, ulong, ulong, object> arg = null) {
         Open((int)(uiType), arg);
     }
 

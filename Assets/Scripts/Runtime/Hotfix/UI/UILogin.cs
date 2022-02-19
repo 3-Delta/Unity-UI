@@ -17,10 +17,10 @@ public class UILogin : UIBaseWithLayout<UILogin.Layout> {
 
         public void Listen(IListener listener, bool toListen = true) {
         }
-
     }
 
     protected override void OnOpened() {
+        base.OnOpened();
         layout.x.text = "===========";
     }
 }
