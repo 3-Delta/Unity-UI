@@ -5,8 +5,8 @@ using UnityEngine;
 
 [DisallowMultipleComponent]
 public class Rotater : MonoBehaviour {
-    // 控制x/y/z轴是否需要旋转，false，0f  true，1f即可
-    public Vector3 axis = new Vector3(1f, 1f, 1f);
+    [Header("控制x/y/z轴是否需要旋转 false 0 | true 1")]
+    public Vector3 axis = new Vector3(0f, 0f, 1f);
     public Transform target;
     public float speed = 100f;
 

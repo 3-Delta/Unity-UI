@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class CanvasAdapter : MonoBehaviour {
     private Canvas canvas;
     private GraphicRaycaster raycaster;
-    
+
     private void Awake() {
         if (canvas == null) {
             canvas = GetComponent<Canvas>();
@@ -27,6 +27,10 @@ public class CanvasAdapter : MonoBehaviour {
     }
 
     private void Start() {
+        SetMode();
+    }
+
+    public void SetMode() {
         if (canvas != null) {
             canvas.renderMode = RenderMode.ScreenSpaceCamera;
             canvas.worldCamera = CameraService.Camera2d;

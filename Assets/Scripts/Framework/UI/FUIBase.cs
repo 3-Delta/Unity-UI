@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Object = System.Object;
 
@@ -13,10 +14,10 @@ public class FUIBase /*: IListenReconnect*/ {
     public FUIEntry cfg;
 
     public int order;
-    private CanvasAdapter adapter;
-
+    
     private Transform transform;
-
+    private CanvasAdapter adapter;
+    
 #if UNITY_EDITOR
     public bool showHide = true;
     public bool hasListenedEvent = false;
@@ -24,6 +25,7 @@ public class FUIBase /*: IListenReconnect*/ {
     public bool hasExecutedOpen;
     public bool firstShow = true;
     public bool hasExecutedShow;
+    public List<int> relatives = new List<int>();
 #else
     public bool showHide { get; private set; }
     private bool hasListenedEvent = false;
@@ -31,6 +33,7 @@ public class FUIBase /*: IListenReconnect*/ {
     public bool hasExecutedOpen { get; private set; }
     private bool firstShow = true;
     public bool hasExecutedShow { get; private set; }
+    public List<int> relatives { get; private set; } = new List<int>();
 #endif
 
     // UIEntry能否将UIEntry设置为表格填写的形式，也就是提剔除uiconfig
@@ -206,9 +209,12 @@ public class FUIBase /*: IListenReconnect*/ {
 
         injector.value = this;
 
-        if (!transform.TryGetComponent<CanvasAdapter>(out CanvasAdapter _)) {
-            adapter = transform.gameObject.AddComponent<CanvasAdapter>();
+        if (!transform.TryGetComponent<CanvasAdapter>(out var ad)) {
+            ad = transform.gameObject.AddComponent<CanvasAdapter>();
         }
+
+        adapter = ad;
+        adapter.SetMode();
 
         _request = null;
 
