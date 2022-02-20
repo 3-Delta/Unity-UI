@@ -4,11 +4,15 @@ using UnityEngine;
 
 #if UNITY_EDITOR
 public class FUIGuarder : MonoBehaviour {
-    public bool enableGuard = true;
+    public bool enableGuard = false;
 
     public List<FUIBase> uiDict = new List<FUIBase>();
     public List<FUIStack> uiStack = new List<FUIStack>();
 
+    private void Awake() {
+        hideFlags = HideFlags.DontSaveInBuild;
+    }
+    
     private void Update() {
         if (enableGuard) {
             uiDict.Clear();
@@ -20,6 +24,8 @@ public class FUIGuarder : MonoBehaviour {
             foreach (var kvp in FUIMgr.stacks) {
                 uiStack.Add(kvp.Value);
             }
+
+            gameObject.name = string.Format("{0} {1} - {2}", FUIMgr.UI_PARENT_NAME, uiDict.Count.ToString(), uiStack.Count.ToString());
         }
     }
 }

@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
 
-#if UNITY_EDITOR
 [DisallowMultipleComponent]
 public class TimeScaler : MonoBehaviour {
-    private void Awake() {
+    private void Start() {
         hideFlags = HideFlags.DontSaveInBuild;
     }
 
+#if UNITY_EDITOR
     private void Update() {
         if (Input.anyKeyDown) {
             if (Input.GetKeyDown(KeyCode.UpArrow)) {
@@ -23,5 +23,9 @@ public class TimeScaler : MonoBehaviour {
             }
         }
     }
-}
 #endif
+
+    public void Set(float target) {
+        Time.timeScale = target;
+    }
+}

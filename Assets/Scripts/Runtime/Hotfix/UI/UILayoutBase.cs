@@ -6,7 +6,7 @@ using UnityEngine;
 public abstract class UILayoutBase {
     public UILayoutBase TryBind(Transform transform) {
         this.FindByPath(transform);
-        
+
         var binder = transform.GetComponent<UIBindComponents>();
         if (binder != null) {
             FindByIndex(binder);
@@ -18,6 +18,9 @@ public abstract class UILayoutBase {
     protected virtual void FindByIndex(UIBindComponents binder) { }
 
     protected virtual void FindByPath(Transform transform) { }
+
+    // public interface IListener { }
+    // public void Listen(IListener listener) { }
 }
 
 // 用于实现空对象模式

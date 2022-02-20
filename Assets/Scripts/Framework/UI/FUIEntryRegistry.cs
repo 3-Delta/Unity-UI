@@ -4,17 +4,21 @@ using System.Collections.Generic;
 [Flags]
 public enum EUIOption {
     None = 1 << 1,
-    HideBefore = 1 << 1,
-    Disable3DCamera = 1 << 2,
-    CheckGuide = 1 << 3,
-    CheckNetwork = 1 << 4,
-    CheckQUality = 1 << 5,
+    HideBefore = 1 << 2, // 隐藏前UI
+    Disable3DCamera = 1 << 3, // 关闭3d相机
+    CheckQuality = 1 << 4, // 调整整体game的quality
+    DisableBeforeRaycaster = 1 << 5, // 关闭前UI的raycaster, 如果前ui被hide,则没必要执行此设置
+    Mask = 1 << 6, // 背景遮挡蒙版, 方便整体调控
+    CheckGuide = 1 << 7, // 检测引导
+    CheckNetwork = 1 << 8, // 网络等待，网络转圈
 }
 
 public enum EUILayer {
-    Basement = 0,
-    NormalStack = 10000,
-    TopStack = 20000,
+    BasementStack = 1, // 只允许场景的第一个UI，比如主界面，战斗主界面 进行该设置
+    NormalStack = 2,
+    TopStack = 3,
+    
+    Max, // 禁止使用
 }
 
 [Serializable]
@@ -25,35 +29,46 @@ public class FUIEntry {
     public Type ui;
     public EUIOption option;
     public EUILayer layer;
-
-    public bool hasMask; // 背景遮挡蒙版, 方便整体调控
-    public int renderFrameInterval = 1; // 渲染帧率
 #else
     public readonly int uiType;
     public readonly string prefabPath;
     public readonly Type ui;
     public readonly EUIOption option;
     public readonly EUILayer layer;
-
-    public readonly bool hasMask; // 背景遮挡蒙版, 方便整体调控
-    public readonly int renderFrameInterval = 1; // 渲染帧率
 #endif
 
     public FUIEntry() { }
 
-    public FUIEntry(int uiType, string prefabPath, Type ui, EUIOption option = EUIOption.None,
-        EUILayer layer = EUILayer.NormalStack, bool hasMask = false, int renderFrameInterval = 1) {
+    public FUIEntry(int uiType, string prefabPath, Type ui, EUIOption option = EUIOption.None, EUILayer layer = EUILayer.NormalStack) {
         this.uiType = uiType;
         this.prefabPath = prefabPath;
         this.ui = ui;
-        this.option = option;
         this.layer = layer;
-
-        this.renderFrameInterval = renderFrameInterval;
+        this.option = option;
     }
 
-    public bool Contains(EUIOption option) {
-        return ((this.option & option) == option);
+    public bool Contains(EUIOption target) {
+        return ((option & target) == target);
+    }
+
+    public static bool TryGetNextLayer(EUILayer layer, out EUILayer nextLayer) {
+        if (layer < EUILayer.TopStack) {
+            nextLayer = layer + 1;
+            return true;
+        }
+
+        nextLayer = layer;
+        return false;
+    }
+    
+    public static bool TryGetPreLayer(EUILayer layer, out EUILayer preLayer) {
+        if (layer > EUILayer.BasementStack) {
+            preLayer = layer - 1;
+            return true;
+        }
+
+        preLayer = layer;
+        return false;
     }
 }
 

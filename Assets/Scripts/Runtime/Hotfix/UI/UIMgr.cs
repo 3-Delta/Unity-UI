@@ -1,13 +1,5 @@
 ﻿using System;
 
-public class UIStack : FUIStack {
-    public UIStack(EUILayer layer) : base(layer) { }
-
-    protected override FUIBase CreateInstance(FUIEntry cfg) {
-        return Activator.CreateInstance(cfg.ui) as UIBase;
-    }
-}
-
 public class UIMgr : FUIMgr {
     public new static void Init() {
         UIEntryRegistry.Inject();
@@ -28,5 +20,9 @@ public class UIMgr : FUIMgr {
 
     public static void Hide(EUIType uiType) {
         Hide((int)(uiType));
+    }
+
+    public static void CloseUtil(EUIType uiType, bool onlyJudgeOwnerStack) {
+        CloseUtil((int)(uiType), onlyJudgeOwnerStack);
     }
 }

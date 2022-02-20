@@ -6,17 +6,15 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Canvas), typeof(CanvasScaler))]
 public class CanvasAdapter : MonoBehaviour {
     private Canvas canvas;
-    private CanvasScaler canvasScaler;
-
-    private RectTransform rectTrasnform;
-
+    private GraphicRaycaster raycaster;
+    
     private void Awake() {
         if (canvas == null) {
             canvas = GetComponent<Canvas>();
         }
 
-        if (canvasScaler == null) {
-            canvasScaler = GetComponent<CanvasScaler>();
+        if (raycaster == null) {
+            raycaster = GetComponent<GraphicRaycaster>();
         }
 
         if (!TryGetComponent<ResolutionAdjuster>(out ResolutionAdjuster _)) {
@@ -26,8 +24,6 @@ public class CanvasAdapter : MonoBehaviour {
         if (!TryGetComponent<SafeAreaAdjuster>(out SafeAreaAdjuster _)) {
             gameObject.AddComponent<SafeAreaAdjuster>();
         }
-
-        rectTrasnform = transform as RectTransform;
     }
 
     private void Start() {
@@ -35,19 +31,15 @@ public class CanvasAdapter : MonoBehaviour {
             canvas.renderMode = RenderMode.ScreenSpaceCamera;
             canvas.worldCamera = CameraService.Camera2d;
         }
-
-        if (canvasScaler != null) {
-            canvasScaler.referenceResolution =
-                new Vector2(GlobalSetting.ResolutionWidth, GlobalSetting.ResolutionHeight);
-            canvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Shrink;
-        }
-
-        rectTrasnform.anchoredPosition3D = Vector3.zero;
     }
 
     public void SetOrder(int order) {
         if (canvas != null) {
             canvas.sortingOrder = order;
         }
+    }
+
+    public void BlockRaycaster(bool toBlock) {
+        raycaster.enabled = toBlock;
     }
 }

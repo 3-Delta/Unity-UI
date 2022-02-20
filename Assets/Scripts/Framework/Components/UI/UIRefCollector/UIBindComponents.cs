@@ -224,7 +224,7 @@ public class UIBindComponents : MonoBehaviour {
         sb.Append(AppendTab(1));
         sb.AppendLine("// 后续想不热更prefab,只热更脚本的形式获取组件,再次函数内部添加查找逻辑即可");
         sb.Append(AppendTab(1));
-        sb.AppendLine("protected override void FindByPath() {");
+        sb.AppendLine("protected override void FindByPath(Transform transform) {");
         for (int i = 0, length = bindComponents.Count; i < length; ++i) {
             var item = bindComponents[i];
             sb.Append(AppendTab(2));

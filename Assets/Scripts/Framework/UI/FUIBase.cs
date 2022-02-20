@@ -13,46 +13,61 @@ public class FUIBase /*: IListenReconnect*/ {
     public FUIEntry cfg;
 
     public int order;
+    private CanvasAdapter adapter;
 
+    private Transform transform;
+    
 #if UNITY_EDITOR
-    public Transform transform;
     public bool showHide = true;
     public bool hasListenedEvent = false;
     public bool hasListenedEventForShowHide = false;
     public bool hasExecutedOpen;
-    public CanvasAdapter adapter;
-    public bool _firstShow = true;
+    public bool firstShow = true;
     public bool hasExecutedShow;
 #else
-    private Transform transform;
-    private bool showHide = true;
+    public bool showHide { get; private set; }
     private bool hasListenedEvent = false;
     private bool hasListenedEventForShowHide = false;
     public bool hasExecutedOpen { get; private set; }
-    public CanvasAdapter adapter { get; private set; }
-    private bool _firstShow = true;
+    private bool firstShow = true;
     public bool hasExecutedShow { get; private set; }
 #endif
 
     // UIEntry能否将UIEntry设置为表格填写的形式，也就是提剔除uiconfig
     // 因为有时候，可能需要在B ui打开的时候，将前面的A ui关闭掉。所以需要外部设置这些回调
     public void Init(int uiType, FUIEntry cfg) {
-        Debug.LogError(string.Format("Init {0}", uiType.ToString()));
+        Debug.LogError(string.Format("Init {0} {1}", uiType.ToString(), cfg.ui));
+
         this.uiType = uiType;
         this.cfg = cfg;
     }
 
-    public void BlcokRaycast(bool toBlcok) {
-        // 防止点击事件
+    // 防止点击事件
+    public void BlockRaycaster(bool toBlcok) {
+        Debug.LogError(string.Format("BlockRaycaster {0} {1} {2}", uiType.ToString(), cfg.ui, toBlcok.ToString()));
+
+        if (adapter != null) {
+            adapter.BlockRaycaster(toBlcok);
+        }
+    }
+
+    public void SetOrder(int order) {
+        Debug.LogError(string.Format("SetOrder {0} {1} {2}", uiType.ToString(), cfg.ui, order.ToString()));
+        this.order = order;
+
+        if (adapter != null) {
+            adapter.SetOrder(order);
+        }
     }
 
     #region Open/Close
     public void Open(Tuple<ulong, ulong, ulong, object> arg) {
         OnOpen(arg);
+        FUIMgr.OnOpen?.Invoke(uiType, cfg);
 
         // open的时候，如果prefab已经存在，则会调用show
         TryLoad();
-        _firstShow = true;
+        firstShow = true;
         Show();
 
         hasExecutedOpen = true;
@@ -60,7 +75,7 @@ public class FUIBase /*: IListenReconnect*/ {
 
     public void Transfer(Tuple<ulong, ulong, ulong, object> arg) {
         OnTransfer(arg);
-        _firstShow = true;
+        firstShow = true;
         Show();
     }
 
@@ -81,6 +96,7 @@ public class FUIBase /*: IListenReconnect*/ {
             hasListenedEvent = false;
 
             OnClose();
+            FUIMgr.OnClose?.Invoke(uiType, cfg);
             hasExecutedOpen = false;
 
             if (hasLoaded) {
@@ -89,6 +105,10 @@ public class FUIBase /*: IListenReconnect*/ {
 
             transform = null;
         }
+    }
+
+    public void CloseSelf() {
+        FUIMgr.Close(uiType);
     }
     #endregion
 
@@ -102,17 +122,19 @@ public class FUIBase /*: IListenReconnect*/ {
 
         transform.gameObject.SetActive(true);
 
+        if (firstShow) {
+            OnOpened();
+            firstShow = false;
+        }
+
         if (!hasListenedEventForShowHide) {
             ProcessEventForShowHide(true);
             hasListenedEventForShowHide = true;
         }
 
-        if (_firstShow) {
-            OnOpened();
-            _firstShow = false;
-        }
-
+        adapter.SetOrder(order);
         OnShow();
+        FUIMgr.OnShow?.Invoke(uiType, cfg);
         hasExecutedShow = true;
     }
 
@@ -131,6 +153,7 @@ public class FUIBase /*: IListenReconnect*/ {
 
         if (hasExecutedShow) {
             OnHide();
+            FUIMgr.OnHide?.Invoke(uiType, cfg);
             hasExecutedShow = false;
         }
     }
@@ -158,7 +181,7 @@ public class FUIBase /*: IListenReconnect*/ {
         _request.completed -= _Loaded;
         hasLoaded = true;
 
-        GameObject clone = GameObject.Instantiate(_request.asset, FUIMgr.uiParent) as GameObject;
+        GameObject clone = GameObject.Instantiate(_request.asset, FUIMgr.roots[cfg.layer].root.transform) as GameObject;
         if (clone == null) {
             Debug.LogError(string.Format("uiType {0}'s prefab {1} is not valid", uiType.ToString(), cfg.prefabPath));
             return;
@@ -170,7 +193,7 @@ public class FUIBase /*: IListenReconnect*/ {
         transform.localScale = Vector3.one;
 
 #if UNITY_EDITOR
-        transform.name = string.Format("{0} {1} {2}", uiType.ToString(), cfg.ui, transform.name);
+        transform.name = string.Format("{0} {1} {2} {3}", uiType.ToString(), order.ToString(), cfg.ui, transform.name);
 #endif
 
         if (!transform.TryGetComponent<UIInjector>(out var injector)) {
@@ -205,41 +228,41 @@ public class FUIBase /*: IListenReconnect*/ {
     #region 生命周期
     protected virtual void OnLoaded(Transform transform) {
         // 资源组件解析
-        Debug.LogError(string.Format("OnLoaded {0}", uiType.ToString()));
+        Debug.LogError(string.Format("OnLoaded {0} {1}", uiType.ToString(), cfg.ui));
     }
 
     protected virtual void OnTransfer(Object arg) {
         // ui已经打开的时候调用OnTransfer
-        Debug.LogError(string.Format("OnTransfer {0}", uiType.ToString()));
+        Debug.LogError(string.Format("OnTransfer {0} {1}", uiType.ToString(), cfg.ui));
     }
 
     protected virtual void OnOpen(Object arg) {
         // ui没有打开的时候调用UIMgr.Open
-        Debug.LogError(string.Format("OnOpen {0}", uiType.ToString()));
+        Debug.LogError(string.Format("OnOpen {0} {1}", uiType.ToString(), cfg.ui));
     }
 
     protected virtual void OnClose() {
-        Debug.LogError(string.Format("OnClose {0}", uiType.ToString()));
+        Debug.LogError(string.Format("OnClose {0} {1}", uiType.ToString(), cfg.ui));
     }
 
     protected virtual void OnOpened() {
-        Debug.LogError(string.Format("OnOpened {0}", uiType.ToString()));
+        Debug.LogError(string.Format("OnOpened {0} {1}", uiType.ToString(), cfg.ui));
     }
 
     protected virtual void OnShow() {
-        Debug.LogError(string.Format("OnShow {0}", uiType.ToString()));
+        Debug.LogError(string.Format("OnShow {0} {1}", uiType.ToString(), cfg.ui));
     }
 
     protected virtual void OnHide() {
-        Debug.LogError(string.Format("OnHide {0}", uiType.ToString()));
+        Debug.LogError(string.Format("OnHide {0} {1}", uiType.ToString(), cfg.ui));
     }
 
     protected virtual void ProcessEvent(bool toListen) {
-        Debug.LogError(string.Format("ProcessEvent {0} {1}", uiType.ToString(), toListen.ToString()));
+        Debug.LogError(string.Format("ProcessEvent {0} {1} {2}", uiType.ToString(), toListen.ToString(), cfg.ui));
     }
 
     protected virtual void ProcessEventForShowHide(bool toListen) {
-        Debug.LogError(string.Format("ProcessEventForShowHide {0} {1}", uiType.ToString(), toListen.ToString()));
+        Debug.LogError(string.Format("ProcessEventForShowHide {0} {1} {2}", uiType.ToString(), toListen.ToString(), cfg.ui));
     }
 
     // public virtual void OnBeginReconnect() {
