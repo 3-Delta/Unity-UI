@@ -26,5 +26,9 @@ public class UILauncherTest : MonoBehaviour {
             UIMgr.Open(EUIType.UIMain, null);
             UIMgr.Hide(EUIType.UIMain);
         }
+        else if (Input.GetKeyDown(KeyCode.U)) {
+            UIMgr.Open(EUIType.UIMain, null);
+            UIMgr.Open(EUIType.UIMain, null);
+        }
     }
 }

@@ -16,7 +16,7 @@ public class FUIBase /*: IListenReconnect*/ {
     private CanvasAdapter adapter;
 
     private Transform transform;
-    
+
 #if UNITY_EDITOR
     public bool showHide = true;
     public bool hasListenedEvent = false;
@@ -198,6 +198,10 @@ public class FUIBase /*: IListenReconnect*/ {
 
         if (!transform.TryGetComponent<UIInjector>(out var injector)) {
             injector = transform.gameObject.AddComponent<UIInjector>();
+        }
+
+        if (transform.TryGetComponent<FUICloser>(out FUICloser closer)) {
+            closer.uiType = uiType;
         }
 
         injector.value = this;

@@ -209,7 +209,7 @@ GameObject:
   - component: {fileID: 5554217666975664063}
   - component: {fileID: 4500259234903136819}
   - component: {fileID: 1432766885565254623}
-  - component: {fileID: 5205819934016952854}
+  - component: {fileID: 908520465704997137}
   m_Layer: 5
   m_Name: UILogin
   m_TagString: Untagged
@@ -316,7 +316,7 @@ MonoBehaviour:
     toListen: 0
   codeStyle: 0
   csharpFieldStyle: 1
---- !u!114 &5205819934016952854
+--- !u!114 &908520465704997137
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -325,8 +325,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 6233295630786618867}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f54e9533cf49e6149b9c6d4223ee1880, type: 3}
+  m_Script: {fileID: 11500000, guid: 9b84efd20ec1d0843b79b60eacee8621, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   uiType: 2
-  btnExit: {fileID: 7721495581460869142}
+  btnExit: {fileID: 0}
