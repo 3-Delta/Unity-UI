@@ -10,33 +10,38 @@ public class COWComponentLoader<T> : MonoBehaviour where T : Component {
     public GameObject proto;
     public Transform parent;
 
-    public int Count {
-        get { return this.components.Count; }
-    }
-
-    public int RealCount { get; private set; }
-
-    public T this[int index] {
+    public ComponentCell<T> this[int index] {
         get {
             if (0 <= index && index < this.Count) {
-                return this.components[index];
+                return this._components[index];
             }
 
             return null;
         }
     }
+#if UNITY_EDITOR
+    public int Count;
 
-    private readonly List<T> components = new List<T>();
+    public int RealCount;
+    public List<ComponentCell<T>> _components = new List<ComponentCell<T>>();
+#else
+    public int Count {
+        get { return this._components.Count; }
+    }
+
+    public int RealCount { get; private set; }
+    private readonly List<ComponentCell<T>> _components = new List<ComponentCell<T>>();
+#endif
 
     private int _leftCount = 0;
-    private Action<T, int /* index */> _onInit;
-    private Action<T, int /* index */> _onRefresh;
+    private Action<ComponentCell<T>, int /* index */> _onInit;
+    private Action<ComponentCell<T>, int /* index */> _onRefresh;
 
     private void Awake() {
         enabled = false;
     }
 
-    public COWComponentLoader<T> TryBuildOrRefresh(int targetCount, Action<T, int /* index */> onInit, Action<T, int /* index */> onRefresh) {
+    public COWComponentLoader<T> TryBuildOrRefresh(int targetCount, Action<ComponentCell<T>, int /* index */> onInit, Action<ComponentCell<T>, int /* index */> onRefresh) {
         RealCount = targetCount;
 
         _leftCount = targetCount - Count;
@@ -45,7 +50,7 @@ public class COWComponentLoader<T> : MonoBehaviour where T : Component {
 
         if (_leftCount < 0) {
             for (int i = 0, length = Count; i < length; ++i) {
-                T cur = this.components[i];
+                ComponentCell<T> cur = this._components[i];
                 if (i < targetCount) {
                     cur.gameObject.SetActive(true);
                     _onRefresh?.Invoke(cur, i);
@@ -62,27 +67,30 @@ public class COWComponentLoader<T> : MonoBehaviour where T : Component {
         return this;
     }
 
-    private T BuildOne() {
+    private ComponentCell<T> BuildOne() {
         GameObject clone = Instantiate<GameObject>(proto, parent);
         clone.transform.localPosition = Vector3.zero;
         clone.transform.localEulerAngles = Vector3.zero;
         clone.transform.localScale = Vector3.one;
         clone.SetActive(false);
 
-        T t = clone.GetComponent<T>();
-        return t;
+        if (!clone.TryGetComponent<ComponentCell<T>>(out var rlt)) {
+            rlt = clone.gameObject.AddComponent<ComponentCell<T>>();
+        }
+
+        return rlt;
     }
 
     private void Update() {
         if (_leftCount > 0) {
             if (Time.frameCount % rate == 0) {
-                T t = BuildOne();
+                ComponentCell<T> cell = BuildOne();
 
                 int index = Count;
-                _onInit?.Invoke(t, index);
-                _onRefresh(t, index);
+                _onInit?.Invoke(cell, index);
+                _onRefresh(cell, index);
 
-                components.Add(t);
+                _components.Add(cell);
                 --_leftCount;
             }
         }
