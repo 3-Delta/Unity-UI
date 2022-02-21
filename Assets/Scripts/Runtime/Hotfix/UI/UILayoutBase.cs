@@ -4,10 +4,14 @@ using UnityEngine;
 
 [Serializable]
 public abstract class UILayoutBase {
-    public UILayoutBase TryBind(Transform transform) {
-        this.FindByPath(transform);
+    public Transform transform;
 
-        var binder = transform.GetComponent<UIBindComponents>();
+    public UILayoutBase TryBind(Transform target) {
+        this.transform = target;
+        
+        this.FindByPath(target);
+
+        var binder = target.GetComponent<UIBindComponents>();
         if (binder != null) {
             FindByIndex(binder);
         }
