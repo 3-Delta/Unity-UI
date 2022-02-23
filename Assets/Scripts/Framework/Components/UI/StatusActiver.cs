@@ -7,12 +7,24 @@ public class StatusActiver : MonoBehaviour {
     [SerializeField] private int curStatusIndex = 0;
     public List<ActiverSingleGroup> groups = new List<ActiverSingleGroup>(0);
 
+    public Action<int, int, bool> onStatusChanged;
+
+    [ContextMenu(nameof(Set))]
+    public void Set() {
+        Set(curStatusIndex);
+    }
+
     public void Set(int statusIndex) {
+        int old = curStatusIndex;
         curStatusIndex = statusIndex;
-        if (0 <= statusIndex && statusIndex < groups.Count) {
-            for (int i = 0, length = groups.Count; i < length; ++i) {
+
+        int length = groups.Count;
+        if (0 <= statusIndex && statusIndex < length) {
+            for (int i = 0; i < length; ++i) {
                 groups[i].SetActive(i == statusIndex);
             }
         }
+
+        onStatusChanged?.Invoke(old, curStatusIndex, old != curStatusIndex);
     }
 }
