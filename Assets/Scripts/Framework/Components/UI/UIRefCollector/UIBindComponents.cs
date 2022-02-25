@@ -172,6 +172,7 @@ public class UIBindComponents : MonoBehaviour {
         return "---暂未实现---";
     }
 
+    // https://github.com/scriban/scriban
     private string CSharpCopy() {
         string AppendTab(int level, string Tab = UIBindComponents.TAB) {
             StringBuilder rlt = new StringBuilder();
