@@ -28,13 +28,13 @@ public class AssemblyReflection : IAssembly {
     }
 
     public void Load() {
-        string dllFullPath = ILRSettings.HotfixDllFullPath;
-        byte[] dllBytes = IOService.GetFileBytes(dllFullPath);
+        string dllFullPath = HotfixSettings.HotfixDllFullPath;
+        byte[] dllBytes = PathService.GetFileBytes(dllFullPath);
         try {
 #if UNITY_EDITOR
             // editor模式下，加载pdb for debug
-            string pdbFullPath = ILRSettings.HotfixPdbFullPath;
-            byte[] pdbBytes = IOService.GetFileBytes(pdbFullPath);
+            string pdbFullPath = HotfixSettings.HotfixPdbFullPath;
+            byte[] pdbBytes = PathService.GetFileBytes(pdbFullPath);
             assembly = Assembly.Load(dllBytes, pdbBytes);
 #else
         assembly = Assembly.Load(dllBytes);

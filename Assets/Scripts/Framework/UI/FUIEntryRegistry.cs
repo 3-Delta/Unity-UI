@@ -47,6 +47,10 @@ public class FUIEntry {
         this.option = option;
     }
 
+    public virtual FUIBase CreateInstance() {
+        return Activator.CreateInstance(ui) as FUIBase;
+    }
+
     public bool Contains(EUIOption target) {
         return ((option & target) == target);
     }

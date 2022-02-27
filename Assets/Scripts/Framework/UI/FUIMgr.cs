@@ -36,17 +36,13 @@ public class FUIStack {
         this.layer = layer;
     }
 
-    protected virtual FUIBase CreateInstance(FUIEntry cfg) {
-        return Activator.CreateInstance(cfg.ui) as FUIBase;
-    }
-
     protected virtual bool TryCreate(int uiType, FUIEntry cfg, out FUIBase ui) {
         if (!FUIMgr.TryGet(uiType, out ui)) {
             if (cfg == null) {
                 return false;
             }
 
-            ui = CreateInstance(cfg);
+            ui = cfg.CreateInstance();
             if (ui == null) {
                 return false;
             }
@@ -121,7 +117,6 @@ public class FUIMgr {
         public string name;
 #endif
 
-
         public UIRootCfg(GameObject root, EUILayer layer, string name) {
             this.root = root;
 #if UNITY_EDITOR
@@ -150,14 +145,14 @@ public class FUIMgr {
         for (int i = 1; i < (int)EUILayer.Max; ++i) {
             EUILayer layer = ((EUILayer)i);
             string name = layer.ToString();
-            
+
             GameObject go = new GameObject(name);
             go.transform.SetParent(parent);
-            
+
 #if UNITY_EDITOR
             go.AddComponent<FUIStackGuarder>().uiLayer = layer;
 #endif
-            
+
             roots.Add(layer, new UIRootCfg(go, layer, name));
         }
     }

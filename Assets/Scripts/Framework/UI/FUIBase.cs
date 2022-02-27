@@ -36,6 +36,8 @@ public class FUIBase /*: IListenReconnect*/ {
     public List<int> relatives { get; private set; } = new List<int>();
 #endif
 
+    public FUIBase() { }
+
     // UIEntry能否将UIEntry设置为表格填写的形式，也就是提剔除uiconfig
     // 因为有时候，可能需要在B ui打开的时候，将前面的A ui关闭掉。所以需要外部设置这些回调
     public void Init(int uiType, FUIEntry cfg) {
@@ -241,12 +243,12 @@ public class FUIBase /*: IListenReconnect*/ {
         Debug.LogError(string.Format("OnLoaded {0} {1}", uiType.ToString(), cfg.ui));
     }
 
-    protected virtual void OnTransfer(Object arg) {
+    protected virtual void OnTransfer(Tuple<ulong, ulong, ulong, object> arg) {
         // ui已经打开的时候调用OnTransfer
         Debug.LogError(string.Format("OnTransfer {0} {1}", uiType.ToString(), cfg.ui));
     }
 
-    protected virtual void OnOpen(Object arg) {
+    protected virtual void OnOpen(Tuple<ulong, ulong, ulong, object> arg) {
         // ui没有打开的时候调用UIMgr.Open
         Debug.LogError(string.Format("OnOpen {0} {1}", uiType.ToString(), cfg.ui));
     }

@@ -77,4 +77,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy $(TargetDir).\$(TargetName).dll $(ProjectDir)..\Assets\ABSource\DLL\$(TargetName).dll
+copy $(TargetDir).\$(TargetName).pdb $(ProjectDir)..\Assets\ABSource\DLL\$(TargetName).pdb
+copy $(TargetDir).\$(TargetName).dll $(ProjectDir)..\Assets\ABSource\DLL\$(TargetName).dll.bytes
+copy $(TargetDir).\$(TargetName).pdb $(ProjectDir)..\Assets\ABSource\DLL\$(TargetName).pdb.bytes</PostBuildEvent>
+  </PropertyGroup>
 </Project>

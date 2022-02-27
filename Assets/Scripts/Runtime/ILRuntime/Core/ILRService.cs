@@ -40,8 +40,8 @@ public static class ILRService {
     }
 
     private static void RegisterAdaptor(ILRuntime.Runtime.Enviorment.AppDomain appDomain) {
-        ILRuntime.Runtime.Generated.CLRManualAdapterRegistion.Register(appDomain);
-        ILRuntime.Runtime.Generated.CLRAnalysisAdapterRegistion.Register(appDomain);
+        ILRuntime.Runtime.Generated.CLRManualAdapterRegister.Register(appDomain);
+        ILRuntime.Runtime.Generated.CLRAnalysisAdapterRegister.Register(appDomain);
     }
 
     private static void RegisterBinder(ILRuntime.Runtime.Enviorment.AppDomain appDomain) {

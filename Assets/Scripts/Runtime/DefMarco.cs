@@ -1,0 +1,5 @@
+﻿#define LOAD_CODE_NATIVE
+
+// #define LOAD_CODE_REFLECTION
+
+// #define LOAD_CODE_ILRUNTIME

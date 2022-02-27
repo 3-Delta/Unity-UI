@@ -20,6 +20,12 @@ public class FLogicUILoader : MonoBehaviour {
     public void Close() {
         FUIMgr.Close(uiType);
     }
+    
+    // 快速刷新
+    [ContextMenu(nameof(Show))]
+    public void Show() {
+        FUIMgr.Show(uiType);
+    }
 }
 
 #endif
