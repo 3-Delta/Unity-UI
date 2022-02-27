@@ -18,7 +18,7 @@ public static class UnitySynchronizationContext {
     public static SynchronizationContext UnitySyncContext { get; private set; }
 
     public static bool IsUnityThread {
-        get { return Thread.CurrentThread.ManagedThreadId == UnityThreadId; }
+        get { return ThreadService.CurrentThreadId == UnityThreadId; }
     }
 
     public static void ExecuteOnUnityScheduler(Action action, bool post = true) {

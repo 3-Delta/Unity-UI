@@ -1,5 +1,4 @@
 ﻿using System.IO;
-
 using UnityEngine;
 
 public interface IJsonSerialize {
@@ -26,6 +25,7 @@ public class DefaultJsonSerialize : IJsonSerialize {
         if (!File.Exists(filePath)) {
             using (File.Create(filePath)) { }
         }
+
         File.WriteAllText(filePath, json);
     }
 

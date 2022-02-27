@@ -6,8 +6,7 @@ public class PreCurrent<T> {
     public T current { get; private set; } = default;
     public Action<T, T> onChanged = null;
 
-    public PreCurrent() {
-    }
+    public PreCurrent() { }
 
     public PreCurrent(Action<T, T> onChanged) {
         this.onChanged = onChanged;

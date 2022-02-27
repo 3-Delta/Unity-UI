@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UILogin : UIBaseWithLayout<UILogin.Layout> {
     public class Layout : UILayoutBase {
@@ -21,6 +22,6 @@ public class UILogin : UIBaseWithLayout<UILogin.Layout> {
 
     protected override void OnOpened() {
         base.OnOpened();
-        layout.x.text = "===========";
+        layout.x.GetComponent<Text>().text = "===========";
     }
 }
