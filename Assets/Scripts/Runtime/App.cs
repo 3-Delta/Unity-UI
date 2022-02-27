@@ -8,9 +8,11 @@ public class App : MonoBehaviour {
     public static App instance { get; private set; } = null;
 
 #if UNITY_EDITOR
+    public EAssemblyLoadType assemblyLoadType = EAssemblyLoadType.ByNative;
     public EAssetLoadType assetLoadType = EAssetLoadType.FromResources;
 
     private void OnValidate() {
+        AssemblyProxy.assemblyLoadType = assemblyLoadType;
         AssetService.loadType = assetLoadType;
     }
 #endif
@@ -24,10 +26,13 @@ public class App : MonoBehaviour {
     }
 
     private void Start() {
-        AssemblyProxy.Init();
-        StaticMethod buildMethod = AssemblyProxy.CreateStaticMethod("Bridge", "Init", 0);
-        buildMethod.Exec();
-
-        // Bridge.Init();
+        if (assemblyLoadType != EAssemblyLoadType.ByNative) {
+            AssemblyProxy.Init();
+            StaticMethod buildMethod = AssemblyProxy.CreateStaticMethod("Bridge", "Init", 0);
+            buildMethod.Exec();
+        }
+        else {
+            Bridge.Init();
+        }
     }
 }
