@@ -5,12 +5,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum EAssetLoadType {
-    Editor,
-    Device, // editor下就使用editor下的ab加载
+    FromAssetBundle,
+    FromAssetDatabase,
+    FromResources,
 }
 
 public class AssetService {
-    public static EAssetLoadType loadType = EAssetLoadType.Device;
+    public static EAssetLoadType loadType = EAssetLoadType.FromAssetBundle;
 
     public static RequestAsset Load(string assetPath) {
         RequestAsset request = new RequestAsset();

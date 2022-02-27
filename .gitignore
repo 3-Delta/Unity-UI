@@ -72,3 +72,6 @@
 /Hotfix/obj/Debug/.NETFramework,Version=v4.7.1.AssemblyAttributes.cs
 /Hotfix/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
 /Hotfix/obj/Debug/Hotfix.csproj.AssemblyReference.cache
+/Hotfix/.vs
+/Hotfix/bin
+/Hotfix/obj

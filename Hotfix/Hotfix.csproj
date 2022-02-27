@@ -56,6 +56,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Script\Bridge.cs" />
     <Compile Include="Script\Utility\UI\TextSetter.cs" />
     <Compile Include="Script\Logic\System\Core\SysBase.cs" />
     <Compile Include="Script\Logic\System\SysAccount.cs" />

@@ -24,7 +24,6 @@ public abstract class SysBase<T> : ISysModule where T : ISysModule, new() {
 
     public static T Instance = System.Activator.CreateInstance<T>();
 
-    protected virtual void ProcessEvent(bool toRegister) { }
 
     public void Enter() {
         OnEnter();
@@ -39,6 +38,8 @@ public abstract class SysBase<T> : ISysModule where T : ISysModule, new() {
     protected virtual void OnEnter() { }
 
     protected virtual void OnExit() { }
+    protected virtual void ProcessEvent(bool toRegister) { }
+
 
     public virtual void OnLogin() { }
 
