@@ -1,6 +1,6 @@
 ﻿using System;
 
-public class UIMgr {
+public class UIMgr : FUIMgr {
     public static void Init() {
         UIEntryRegistry.Inject();
         FUIMgr.Init();

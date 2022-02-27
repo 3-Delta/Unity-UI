@@ -11,6 +11,7 @@ namespace ILRuntime.Runtime.Generated {
             
             appDomain.RegisterCrossBindingAdaptor(new FUIBaseAdapter());
             appDomain.RegisterCrossBindingAdaptor(new FUIEntryAdapter());
+            appDomain.RegisterCrossBindingAdaptor(new FUIMgrAdapter());
         }
     }
 }
