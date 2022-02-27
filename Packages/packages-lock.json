@@ -7,6 +7,13 @@
       "dependencies": {},
       "hash": "b00fee6b4415cb66cfe1664c47e8aa683b834565"
     },
+    "com.ourpalm.ilruntime": {
+      "version": "2.0.2",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.cn"
+    },
     "com.unity.build-report-inspector": {
       "version": "0.2.2-preview",
       "depth": 0,

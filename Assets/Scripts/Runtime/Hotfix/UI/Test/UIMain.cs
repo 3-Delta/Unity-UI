@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UIMain : UIBaseWithLayout<UIMain.Layout>, UIMain.Layout.IListener {
+public class UIMain : UIBaseWithLayout<UIMain.Layout>, UIMain.Layout.IListener, IReload{
     public class Layout : UILayoutBase {
         // [0] Path: "Image"
         public UnityEngine.UI.Button btnOpenUI { get; private set; } = null;
@@ -33,5 +33,9 @@ public class UIMain : UIBaseWithLayout<UIMain.Layout>, UIMain.Layout.IListener {
 
     public void OnBtnClickedbtnOpenUI() {
         UIMgr.Open(EUIType.UILogin);
+    }
+
+    public void OnReload() {
+        // 表格重载，进行动态表格更新
     }
 }

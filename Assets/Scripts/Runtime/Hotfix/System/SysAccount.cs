@@ -1,6 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿#define DEVELOPMENT_MODE
+
+public interface IReload {
+#if DEVELOPMENT_MODE
+    // 只在开发模式下使用
+    void OnReload();
+#else
+    // do nothing
+#endif
+}
 
 public interface ISysModule {
     void Enter();
@@ -28,7 +35,7 @@ public abstract class SysBase<T> : ISysModule where T : ISysModule, new() {
         ProcessEvent(false);
         OnEnter();
     }
-    
+
     protected virtual void OnEnter() { }
 
     protected virtual void OnExit() { }
@@ -40,7 +47,7 @@ public abstract class SysBase<T> : ISysModule where T : ISysModule, new() {
     public virtual void OnSynced() { }
 }
 
-public class SysAccount : SysBase<SysAccount> {
+public class SysAccount : SysBase<SysAccount>, IReload {
     // 数据同步
     public bool hasSynced {
         get { return syncCount > 0; }
@@ -55,7 +62,7 @@ public class SysAccount : SysBase<SysAccount> {
     }
 
     // 游戏是否进行过重连操作
-    public int syncCount { get; private set; } = 0;
+    private int syncCount = 0;
 
     // 正式登陆调用，重连不调用
     public void ReqLogin() {
@@ -63,12 +70,14 @@ public class SysAccount : SysBase<SysAccount> {
     }
 
     // 登录回包
-    public void OnResLogin() {
-        
-    }
+    public void OnResLogin() { }
 
     protected virtual void OnSynced() {
         ++syncCount;
+    }
+
+    public void OnReload() {
+        // 表格热更新
     }
 }
 
