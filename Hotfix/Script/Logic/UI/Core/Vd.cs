@@ -23,11 +23,12 @@ public class VD {
 
 // VDL ：VDListener
 public class VDL : VD {
-    private AwakeDestroy listener;
+    // 防止忘记调用ProcessEvent(false)
+    private StartDestroy listener;
 
     protected override void OnLoaded(Transform transform) {
-        if (!transform.TryGetComponent<AwakeDestroy>(out listener)) {
-            listener = transform.gameObject.AddComponent<AwakeDestroy>();
+        if (!transform.TryGetComponent<StartDestroy>(out listener)) {
+            listener = transform.gameObject.AddComponent<StartDestroy>();
         }
 
         if (listener) {

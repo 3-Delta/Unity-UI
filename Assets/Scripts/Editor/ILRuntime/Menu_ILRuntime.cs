@@ -24,7 +24,7 @@ public static class Menu_ILRuntime {
     private static void GenerateCLRBindingByManual() { }
 
     [MenuItem("Tools/ILRuntime/Generate CLR Binding Code by Analysis")]
-    private static void GenerateCLRBindingByAnalysis() {
+    public static void GenerateCLRBindingByAnalysis() {
         // 先删除旧代码
         AssetDatabase.DeleteAsset(HotfixSettings.BindingAnalysisFolderPath);
         Directory.CreateDirectory(HotfixSettings.BindingAnalysisFolderPath);

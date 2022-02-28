@@ -2,14 +2,15 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class AwakeDestroy : MonoBehaviour {
+public class StartDestroy : MonoBehaviour {
     public Action<bool> onTrigger;
 
-    private void Awake() {
+    private void Start() {
         onTrigger?.Invoke(true);
     }
 
     private void OnDestroy() {
         onTrigger?.Invoke(false);
+        onTrigger = null;
     }
 }

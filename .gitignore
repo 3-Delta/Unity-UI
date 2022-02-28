@@ -75,3 +75,6 @@
 /Hotfix/.vs
 /Hotfix/bin
 /Hotfix/obj
+/Assets/Scripts/Runtime/ILRuntime/Bindings/Analysis.meta
+/Assets/Scripts/Runtime/ILRuntime/Bindings/Analysis
+/Assets/3rd/ShaderControl/Editor/Resources/BuiltShaders.asset

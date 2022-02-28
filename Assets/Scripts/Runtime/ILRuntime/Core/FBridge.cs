@@ -24,8 +24,8 @@ public class FBridge : MonoBehaviour {
         _hotfixInit = AssemblyProxy.CreateStaticMethod("HotfixBridge", "Init", 0);
 
         // 给热更层传递值类型参数，可以使用BeginInvoke的形式，避免装箱
-        _playAudio = AssemblyProxy.CreateStaticMethod("Logic.Hotfix.AudioMgr", "Play", 1);
-        _stopAudio = AssemblyProxy.CreateStaticMethod("Logic.Hotfix.AudioMgr", "Stop", 1);
+        // _playAudio = AssemblyProxy.CreateStaticMethod("Logic.Hotfix.AudioMgr", "Play", 1);
+        // _stopAudio = AssemblyProxy.CreateStaticMethod("Logic.Hotfix.AudioMgr", "Stop", 1);
 
         _hasInited = true;
     }
@@ -36,7 +36,7 @@ public class FBridge : MonoBehaviour {
         }
 
         if (assemblyLoadType == EAssemblyLoadType.ByNative) {
-            Bridge.Init();
+            HotfixBridge.Init();
         }
         else {
             _hotfixInit?.Exec();
