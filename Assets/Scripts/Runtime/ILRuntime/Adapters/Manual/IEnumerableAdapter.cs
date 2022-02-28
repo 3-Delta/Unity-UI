@@ -44,7 +44,6 @@ public class IEnumerableAdapter : CrossBindingAdaptor
 	    public ILTypeInstance ILInstance { get { return instance; } }
 
 		bool m_bGetEnumeratorGot = false;
-		bool m_bGetEnumeratorGotVirtual = false;
 		IMethod m_GetEnumerator = null;
 		public new System.Collections.IEnumerator GetEnumerator ()
 		{

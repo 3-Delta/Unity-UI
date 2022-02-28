@@ -16,7 +16,13 @@ public static class AssemblyProxy {
 
     private static IAssembly assembly = null;
 
-    public static void Init() {
+    private static bool hasInited = false;
+
+    public static bool TryInit() {
+        if (hasInited) {
+            return false;
+        }
+
         if (assemblyLoadType == EAssemblyLoadType.ByNative) {
             assembly = null;
         }
@@ -28,11 +34,15 @@ public static class AssemblyProxy {
         }
 
         assembly?.Load();
+        hasInited = true;
+        FBridge.Init();
+        return true;
     }
 
     public static void Clear() {
         assembly?.Clear();
         assembly = null;
+        hasInited = false;
     }
 
     public static Type[] GetTypes() {

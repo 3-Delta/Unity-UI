@@ -13,6 +13,7 @@ public class App : MonoBehaviour {
 
     private void OnValidate() {
         AssemblyProxy.assemblyLoadType = assemblyLoadType;
+        FBridge.assemblyLoadType = assemblyLoadType;
         AssetService.loadType = assetLoadType;
     }
 #endif
@@ -26,13 +27,8 @@ public class App : MonoBehaviour {
     }
 
     private void Start() {
-        if (assemblyLoadType != EAssemblyLoadType.ByNative) {
-            AssemblyProxy.Init();
-            StaticMethod buildMethod = AssemblyProxy.CreateStaticMethod("Bridge", "Init", 0);
-            buildMethod.Exec();
-        }
-        else {
-            Bridge.Init();
+        if (AssemblyProxy.TryInit()) {
+            FBridge.HotfixInit();
         }
     }
 }
