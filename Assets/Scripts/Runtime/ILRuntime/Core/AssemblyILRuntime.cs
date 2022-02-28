@@ -43,6 +43,9 @@ public class AssemblyILRuntime : IAssembly {
 
     public void Load() {
         appDomain = new ILRuntime.Runtime.Enviorment.AppDomain(ILRuntimeJITFlags.JITOnDemand);
+        
+        // 强制走绑定代码，而不是走反射
+        appDomain.AllowUnboundCLRMethod = false;
 
         string dllFullPath = HotfixSettings.HotfixDllFullPath;
         byte[] dllBytes = PathService.GetFileBytes(dllFullPath);
