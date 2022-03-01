@@ -3,8 +3,8 @@ using System.Collections.Generic;
 
 [Serializable]
 public class UIEntry : FUIEntry {
-    public UIEntry(EUIType uiType, string prefabPath, Type ui, EUIOption option = EUIOption.None, EUILayer layer = EUILayer.NormalStack) 
-        : base((int)uiType, prefabPath, ui , option, layer) {
+    public UIEntry(EUIType uiType, string prefabPath, Type ui, EUIOption option = EUIOption.None, EUILayer layer = EUILayer.NormalStack)
+        : base((int)uiType, prefabPath, ui, option, layer) {
     }
 
     public override FUIBase CreateInstance() {

@@ -3,12 +3,14 @@
 
 set LINK_DIR=..\__MultiUnityEditor__
 
-rmdir %LINK_DIR%
-mkdir %LINK_DIR%
+if exist %LINK_DIR% (
+	rd /s/q %LINK_DIR%
+)
 
-rmdir %LINK_DIR%\Assets
-rmdir %LINK_DIR%\ProjectSettings
-rmdir %LINK_DIR%\Library
+md %LINK_DIR%
+
+::rmdir %LINK_DIR%
+::mkdir %LINK_DIR%
 
 mklink /J %LINK_DIR%\Assets Assets
 mklink /J %LINK_DIR%\ProjectSettings ProjectSettings
