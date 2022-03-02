@@ -6,7 +6,7 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class FUIStackGuarder : MonoBehaviour
 {
-    public bool enableGuard = true;
+    public bool enableGuard = false;
     public EUILayer uiLayer = EUILayer.NormalStack;
     
     public List<FUIBase> uiList = new List<FUIBase>();

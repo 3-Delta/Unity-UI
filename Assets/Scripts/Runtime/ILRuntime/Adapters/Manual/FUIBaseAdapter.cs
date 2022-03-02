@@ -56,7 +56,7 @@ public class FUIBaseAdapter : CrossBindingAdaptor {
 
         protected override void OnClose() {
             if (!hasCloseGot) {
-                _onClose = instance.Type.GetMethod("OnCloses", 0);
+                _onClose = instance.Type.GetMethod("OnClose", 0);
                 hasCloseGot = true;
             }
 
@@ -69,7 +69,7 @@ public class FUIBaseAdapter : CrossBindingAdaptor {
                 base.OnClose();
             }
         }
-        
+
         bool hasHideGot = false;
         bool hasVirtualHideGot = false;
         IMethod _onHide = null;
@@ -93,6 +93,7 @@ public class FUIBaseAdapter : CrossBindingAdaptor {
         bool hasLoadedGot = false;
         bool hasVirtualLoadedGot = false;
         IMethod _onLoaded = null;
+
         protected override void OnLoaded(Transform transform) {
             if (!hasLoadedGot) {
                 _onLoaded = instance.Type.GetMethod("OnLoaded", 1);
@@ -113,6 +114,7 @@ public class FUIBaseAdapter : CrossBindingAdaptor {
         bool hasOpenGot = false;
         bool hasVirtualOpenGot = false;
         IMethod _onOpen = null;
+
         protected override void OnOpen(Tuple<ulong, ulong, ulong, object> arg) {
             if (!hasOpenGot) {
                 _onOpen = instance.Type.GetMethod("OnOpen", 1);
@@ -133,6 +135,7 @@ public class FUIBaseAdapter : CrossBindingAdaptor {
         bool hasOpenedGot = false;
         bool hasVirtualOpenedGot = false;
         IMethod _onOpened = null;
+
         protected override void OnOpened() {
             if (!hasOpenedGot) {
                 _onOpened = instance.Type.GetMethod("OnOpened", 0);
@@ -152,6 +155,7 @@ public class FUIBaseAdapter : CrossBindingAdaptor {
         bool hasShowGot = false;
         bool hasVirtualShowGot = false;
         IMethod _onShow = null;
+
         protected override void OnShow() {
             if (!hasShowGot) {
                 _onShow = instance.Type.GetMethod("OnShow", 0);
@@ -171,6 +175,7 @@ public class FUIBaseAdapter : CrossBindingAdaptor {
         bool hasTransferGot = false;
         bool hasVirtualTransferGot = false;
         IMethod _onTransfer = null;
+
         protected override void OnTransfer(Tuple<ulong, ulong, ulong, object> arg) {
             if (!hasTransferGot) {
                 _onTransfer = instance.Type.GetMethod("OnTransfer", 1);
@@ -191,6 +196,7 @@ public class FUIBaseAdapter : CrossBindingAdaptor {
         bool hasProcessEventGot = false;
         bool hasVirtualProcessEventGot = false;
         IMethod _ProcessEvent = null;
+
         protected override void ProcessEvent(bool toListen) {
             if (!hasProcessEventGot) {
                 _ProcessEvent = instance.Type.GetMethod("ProcessEvent", 1);
@@ -211,6 +217,7 @@ public class FUIBaseAdapter : CrossBindingAdaptor {
         bool hasProcessEventForShowHideGot = false;
         bool hasVirtualProcessEventForShowHideGot = false;
         IMethod _ProcessEventForShowHide = null;
+
         protected override void ProcessEventForShowHide(bool toListen) {
             if (!hasProcessEventForShowHideGot) {
                 _ProcessEventForShowHide = instance.Type.GetMethod("ProcessEventForShowHide", 1);

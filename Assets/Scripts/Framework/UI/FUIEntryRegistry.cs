@@ -37,6 +37,8 @@ public class FUIEntry {
     public EUILayer layer { get; private set; }
 #endif
 
+    public FUIEntry() { }
+
     public FUIEntry Reset(int uiType, string prefabPath, Type ui, EUIOption option = EUIOption.None, EUILayer layer = EUILayer.NormalStack) {
         this.uiType = uiType;
         this.prefabPath = prefabPath;
@@ -77,7 +79,11 @@ public class FUIEntry {
 
 // ui配置 // 热更层动态插入框架层
 public class FUIEntryRegistry {
+#if UNITY_EDITOR
+    public static readonly Dictionary<int, FUIEntry> registry = new Dictionary<int, FUIEntry>();
+#else
     private static readonly Dictionary<int, FUIEntry> registry = new Dictionary<int, FUIEntry>();
+#endif
 
     public static bool TryGet(int uiType, out FUIEntry entry) {
         return registry.TryGetValue(uiType, out entry);

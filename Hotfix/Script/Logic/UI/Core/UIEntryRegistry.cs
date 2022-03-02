@@ -2,19 +2,25 @@
 using System.Collections.Generic;
 
 [Serializable]
-public class UIEntry : FUIEntry {
-    public UIEntry(EUIType uiType, string prefabPath, Type ui, EUIOption option = EUIOption.None, EUILayer layer = EUILayer.NormalStack)
-        : base((int)uiType, prefabPath, ui, option, layer) {
+public class UIEntry : FUIEntry
+{
+    public FUIEntry Reset(EUIType uiType, string prefabPath, Type ui, EUIOption option = EUIOption.None, EUILayer layer = EUILayer.NormalStack)
+    {
+        return base.Reset((int)uiType, prefabPath, ui, option, layer) as FUIEntry;
     }
 
-    public override FUIBase CreateInstance() {
+    public override FUIBase CreateInstance()
+    {
         return Activator.CreateInstance(ui) as FUIBase;
     }
 }
 
-public class UIEntryRegistry {
-    public static void Inject() {
-        for (int i = 0, length = registry.Count; i < length; ++i) {
+public class UIEntryRegistry
+{
+    public static void Inject()
+    {
+        for (int i = 0, length = registry.Count; i < length; ++i)
+        {
             FUIEntryRegistry.Register(registry[i]);
         }
 
@@ -22,9 +28,9 @@ public class UIEntryRegistry {
         registry = null;
     }
 
-    private static List<UIEntry> registry = new List<UIEntry>() {
-        new UIEntry(EUIType.UIMain, "UIMain", typeof(UIMain), EUIOption.None, EUILayer.BasementStack),
-        new UIEntry(EUIType.UILogin, "UILogin", typeof(UILogin), EUIOption.HideBefore | EUIOption.CheckGuide | EUIOption.CheckNetwork | EUIOption.CheckQuality | EUIOption.Disable3DCamera | EUIOption.DisableBeforeRaycaster | EUIOption.Mask),
-        new UIEntry(EUIType.UIWairForNetwork, "UIWairForNetwork", typeof(UIWairForNetwork), EUIOption.None),
+    private static List<FUIEntry> registry = new List<FUIEntry>() {
+        new UIEntry().Reset(EUIType.UIMain, "UIMain", typeof(UIMain), EUIOption.None, EUILayer.BasementStack),
+        new UIEntry().Reset(EUIType.UILogin, "UILogin", typeof(UILogin), EUIOption.HideBefore | EUIOption.CheckGuide | EUIOption.CheckNetwork | EUIOption.CheckQuality | EUIOption.Disable3DCamera | EUIOption.DisableBeforeRaycaster | EUIOption.Mask),
+        new UIEntry().Reset(EUIType.UIWairForNetwork, "UIWairForNetwork", typeof(UIWairForNetwork), EUIOption.None),
     };
 }
