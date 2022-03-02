@@ -17,7 +17,7 @@ public enum EUILayer {
     BasementStack = 1, // 只允许场景的第一个UI，比如主界面，战斗主界面 进行该设置
     NormalStack = 2,
     TopStack = 3,
-    
+
     Max, // 禁止使用
 }
 
@@ -30,21 +30,20 @@ public class FUIEntry {
     public EUIOption option;
     public EUILayer layer;
 #else
-    public readonly int uiType;
-    public readonly string prefabPath;
-    public readonly Type ui;
-    public readonly EUIOption option;
-    public readonly EUILayer layer;
+    public int uiType { get; private set; }
+    public string prefabPath { get; private set; }
+    public Type ui { get; private set; }
+    public EUIOption option { get; private set; }
+    public EUILayer layer { get; private set; }
 #endif
 
-    public FUIEntry() { }
-
-    public FUIEntry(int uiType, string prefabPath, Type ui, EUIOption option = EUIOption.None, EUILayer layer = EUILayer.NormalStack) {
+    public FUIEntry Reset(int uiType, string prefabPath, Type ui, EUIOption option = EUIOption.None, EUILayer layer = EUILayer.NormalStack) {
         this.uiType = uiType;
         this.prefabPath = prefabPath;
         this.ui = ui;
         this.layer = layer;
         this.option = option;
+        return this;
     }
 
     public virtual FUIBase CreateInstance() {
@@ -64,7 +63,7 @@ public class FUIEntry {
         nextLayer = layer;
         return false;
     }
-    
+
     public static bool TryGetPreLayer(EUILayer layer, out EUILayer preLayer) {
         if (layer > EUILayer.BasementStack) {
             preLayer = layer - 1;
