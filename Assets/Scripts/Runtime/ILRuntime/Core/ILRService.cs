@@ -64,6 +64,6 @@ public static class ILRService {
         // 再注册自动， 因为同种类型注册，后面注册的不会覆盖前面注册的
         ILRuntime.Runtime.Generated.CLRManualBindings.Initialize(appDomain);
         // 如果这里编译报错，则暂时注释，然后回到unity点击菜单栏的Tools，生成绑定文件
-        ILRuntime.Runtime.Generated.CLRBindings.Initialize(appDomain);
+        ILRuntime.Runtime.CLRBinding.CLRBindingUtils.Initialize(appDomain);
     }
 }

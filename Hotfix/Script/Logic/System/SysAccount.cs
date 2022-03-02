@@ -23,7 +23,7 @@
     // 登录回包
     public void OnResLogin() { }
 
-    protected virtual void OnSynced() {
+    public override void OnSynced() {
         ++syncCount;
     }
 
