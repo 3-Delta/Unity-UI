@@ -14,10 +14,10 @@ public class FUIBase /*: IListenReconnect*/ {
     public FUIEntry cfg;
 
     public int order;
-    
+
     private Transform transform;
     private CanvasAdapter adapter;
-    
+
 #if UNITY_EDITOR
     public bool showHide = true;
     public bool hasListenedEvent = false;
@@ -182,6 +182,14 @@ public class FUIBase /*: IListenReconnect*/ {
         get { return _request != null; }
     }
 
+    private void SetName() {
+#if UNITY_EDITOR
+        if (transform != null) {
+            transform.name = string.Format("{0} {1} {2} {3}", uiType.ToString(), order.ToString(), cfg.ui);
+        }
+#endif
+    }
+
     private void _Loaded(AsyncOperation op) {
         _request.completed -= _Loaded;
         hasLoaded = true;
@@ -197,9 +205,7 @@ public class FUIBase /*: IListenReconnect*/ {
         transform.localEulerAngles = Vector3.zero;
         transform.localScale = Vector3.one;
 
-#if UNITY_EDITOR
-        transform.name = string.Format("{0} {1} {2} {3}", uiType.ToString(), order.ToString(), cfg.ui, transform.name);
-#endif
+        SetName();
 
         if (!transform.TryGetComponent<UIInjector>(out var injector)) {
             injector = transform.gameObject.AddComponent<UIInjector>();
@@ -276,13 +282,5 @@ public class FUIBase /*: IListenReconnect*/ {
     protected virtual void ProcessEventForShowHide(bool toListen) {
         Debug.LogError(string.Format("ProcessEventForShowHide {0} {1} {2}", uiType.ToString(), toListen.ToString(), cfg.ui));
     }
-
-    // public virtual void OnBeginReconnect() {
-    //     // 断线重连UI打开之前
-    // }
-    //
-    // public virtual void OnEndReconnect() {
-    //     // 断线重连UI关闭之后
-    // }
     #endregion
 }
