@@ -185,7 +185,7 @@ public class FUIBase /*: IListenReconnect*/ {
     private void SetName() {
 #if UNITY_EDITOR
         if (transform != null) {
-            transform.name = string.Format("{0} {1} {2} {3}", uiType.ToString(), order.ToString(), cfg.ui);
+            transform.name = string.Format("{0} {1} {2}", uiType.ToString(), order.ToString(), cfg.ui);
         }
 #endif
     }
@@ -248,7 +248,7 @@ public class FUIBase /*: IListenReconnect*/ {
         // 资源组件解析
         Debug.LogError(string.Format("OnLoaded {0} {1}", uiType.ToString(), cfg.ui));
     }
-
+    
     protected virtual void OnTransfer(Tuple<ulong, ulong, ulong, object> arg) {
         // ui已经打开的时候调用OnTransfer
         Debug.LogError(string.Format("OnTransfer {0} {1}", uiType.ToString(), cfg.ui));

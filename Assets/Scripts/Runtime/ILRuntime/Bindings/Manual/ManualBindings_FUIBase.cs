@@ -26,7 +26,8 @@ namespace ILRuntime.Runtime.Generated {
         private static object[] args = new object[1];
 
         public static void Register(ILRuntime.Runtime.Enviorment.AppDomain app) {
-            BindingFlags flag = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly;
+            // 热更层子类会调用主工程基类的protected成员，所以这里需要加上BindingFlags.NonPublic
+            BindingFlags flag = BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.NonPublic;
             MethodBase method;
             FieldInfo field;
             Type[] args;
@@ -36,15 +37,15 @@ namespace ILRuntime.Runtime.Generated {
             method = type.GetConstructor(flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, Ctor_0);
 
-            args = new Type[] {typeof(System.Int32), typeof(global::FUIEntry)};
+            args = new Type[] { typeof(System.Int32), typeof(global::FUIEntry) };
             method = type.GetMethod("Init", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, Init_0);
 
-            args = new Type[] {typeof(System.Boolean)};
+            args = new Type[] { typeof(System.Boolean) };
             method = type.GetMethod("BlockRaycaster", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, BlockRaycaster_1);
 
-            args = new Type[] {typeof(System.Int32)};
+            args = new Type[] { typeof(System.Int32) };
             method = type.GetMethod("SetOrder", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, SetOrder_2);
 
@@ -62,15 +63,15 @@ namespace ILRuntime.Runtime.Generated {
             app.RegisterCLRFieldSetter(field, set_cfg_1);
             app.RegisterCLRFieldBinding(field, CopyToStack_cfg_1, AssignFromStack_cfg_1);
 
-            args = new Type[] {typeof(UnityEngine.Transform)};
+            args = new Type[] { typeof(UnityEngine.Transform) };
             method_OnLoaded = method = type.GetMethod("OnLoaded", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, _OnLoaded);
 
-            args = new Type[] {typeof(System.Object)};
+            args = new Type[] { typeof(System.Object) };
             method_OnTransfer = method = type.GetMethod("OnTransfer", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, _OnTransfer);
 
-            args = new Type[] {typeof(System.Object)};
+            args = new Type[] { typeof(System.Object) };
             method_OnOpen = method = type.GetMethod("OnTransfer", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, _OnOpen);
 
@@ -90,11 +91,11 @@ namespace ILRuntime.Runtime.Generated {
             method_OnHide = method = type.GetMethod("OnHide", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, _OnHide);
 
-            args = new Type[] {typeof(System.Boolean)};
+            args = new Type[] { typeof(System.Boolean) };
             method_ProcessEvent = method = type.GetMethod("ProcessEvent", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, _ProcessEvent);
 
-            args = new Type[] {typeof(System.Boolean)};
+            args = new Type[] { typeof(System.Boolean) };
             method_ProcessEventForShowHide = method = type.GetMethod("ProcessEventForShowHide", flag, null, args, null);
             app.RegisterCLRMethodRedirection(method, _ProcessEventForShowHide);
         }
@@ -105,14 +106,14 @@ namespace ILRuntime.Runtime.Generated {
             StackObject* __ret = ILIntepreter.Minus(__esp, 3);
 
             ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
-            global::FUIEntry @cfg = (global::FUIEntry) typeof(global::FUIEntry).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags) 0);
+            global::FUIEntry @cfg = (global::FUIEntry)typeof(global::FUIEntry).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
             __intp.Free(ptr_of_this_method);
 
             ptr_of_this_method = ILIntepreter.Minus(__esp, 2);
             System.Int32 @uiType = ptr_of_this_method->Value;
 
             ptr_of_this_method = ILIntepreter.Minus(__esp, 3);
-            global::FUIBase instance_of_this_method = (global::FUIBase) typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags) 0);
+            global::FUIBase instance_of_this_method = (global::FUIBase)typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
             __intp.Free(ptr_of_this_method);
 
             instance_of_this_method.Init(@uiType, @cfg);
@@ -129,7 +130,7 @@ namespace ILRuntime.Runtime.Generated {
             System.Boolean @toBlcok = ptr_of_this_method->Value == 1;
 
             ptr_of_this_method = ILIntepreter.Minus(__esp, 2);
-            global::FUIBase instance_of_this_method = (global::FUIBase) typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags) 0);
+            global::FUIBase instance_of_this_method = (global::FUIBase)typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
             __intp.Free(ptr_of_this_method);
 
             instance_of_this_method.BlockRaycaster(@toBlcok);
@@ -146,7 +147,7 @@ namespace ILRuntime.Runtime.Generated {
             System.Int32 @order = ptr_of_this_method->Value;
 
             ptr_of_this_method = ILIntepreter.Minus(__esp, 2);
-            global::FUIBase instance_of_this_method = (global::FUIBase) typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags) 0);
+            global::FUIBase instance_of_this_method = (global::FUIBase)typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
             __intp.Free(ptr_of_this_method);
 
             instance_of_this_method.SetOrder(@order);
@@ -160,7 +161,7 @@ namespace ILRuntime.Runtime.Generated {
             StackObject* __ret = ILIntepreter.Minus(__esp, 1);
 
             ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
-            global::FUIBase instance_of_this_method = (global::FUIBase) typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags) 0);
+            global::FUIBase instance_of_this_method = (global::FUIBase)typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
             __intp.Free(ptr_of_this_method);
 
             instance_of_this_method.CloseSelf();
@@ -169,49 +170,49 @@ namespace ILRuntime.Runtime.Generated {
         }
 
         static object get_uiType_0(ref object o) {
-            return ((global::FUIBase) o).uiType;
+            return ((global::FUIBase)o).uiType;
         }
 
         static StackObject* CopyToStack_uiType_0(ref object o, ILIntepreter __intp, StackObject* __ret, IList<object> __mStack) {
-            var result_of_this_method = ((global::FUIBase) o).uiType;
+            var result_of_this_method = ((global::FUIBase)o).uiType;
             __ret->ObjectType = ObjectTypes.Integer;
             __ret->Value = result_of_this_method;
             return __ret + 1;
         }
 
         static void set_uiType_0(ref object o, object v) {
-            ((global::FUIBase) o).uiType = (System.Int32) v;
+            ((global::FUIBase)o).uiType = (System.Int32)v;
         }
 
         static StackObject* AssignFromStack_uiType_0(ref object o, ILIntepreter __intp, StackObject* ptr_of_this_method, IList<object> __mStack) {
             ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
             System.Int32 @uiType = ptr_of_this_method->Value;
-            ((global::FUIBase) o).uiType = @uiType;
+            ((global::FUIBase)o).uiType = @uiType;
             return ptr_of_this_method;
         }
 
         static object get_cfg_1(ref object o) {
-            return ((global::FUIBase) o).cfg;
+            return ((global::FUIBase)o).cfg;
         }
 
         static StackObject* CopyToStack_cfg_1(ref object o, ILIntepreter __intp, StackObject* __ret, IList<object> __mStack) {
-            var result_of_this_method = ((global::FUIBase) o).cfg;
+            var result_of_this_method = ((global::FUIBase)o).cfg;
             object obj_result_of_this_method = result_of_this_method;
             if (obj_result_of_this_method is CrossBindingAdaptorType) {
-                return ILIntepreter.PushObject(__ret, __mStack, ((CrossBindingAdaptorType) obj_result_of_this_method).ILInstance);
+                return ILIntepreter.PushObject(__ret, __mStack, ((CrossBindingAdaptorType)obj_result_of_this_method).ILInstance);
             }
 
             return ILIntepreter.PushObject(__ret, __mStack, result_of_this_method);
         }
 
         static void set_cfg_1(ref object o, object v) {
-            ((global::FUIBase) o).cfg = (global::FUIEntry) v;
+            ((global::FUIBase)o).cfg = (global::FUIEntry)v;
         }
 
         static StackObject* AssignFromStack_cfg_1(ref object o, ILIntepreter __intp, StackObject* ptr_of_this_method, IList<object> __mStack) {
             ILRuntime.Runtime.Enviorment.AppDomain __domain = __intp.AppDomain;
-            global::FUIEntry @cfg = (global::FUIEntry) typeof(global::FUIEntry).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags) 0);
-            ((global::FUIBase) o).cfg = @cfg;
+            global::FUIEntry @cfg = (global::FUIEntry)typeof(global::FUIEntry).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
+            ((global::FUIBase)o).cfg = @cfg;
             return ptr_of_this_method;
         }
 
@@ -230,10 +231,10 @@ namespace ILRuntime.Runtime.Generated {
             StackObject* __ret = ILIntepreter.Minus(__esp, 2);
 
             ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
-            UnityEngine.Transform transform = (UnityEngine.Transform) typeof(UnityEngine.Transform).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags) 0);
+            UnityEngine.Transform transform = (UnityEngine.Transform)typeof(UnityEngine.Transform).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
 
             ptr_of_this_method = ILIntepreter.Minus(__esp, 2);
-            global::FUIBase instance_of_this_method = (global::FUIBase) typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags) 0);
+            global::FUIBase instance_of_this_method = (global::FUIBase)typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
             __intp.Free(ptr_of_this_method);
 
             // 反射调用protected成员
@@ -249,10 +250,10 @@ namespace ILRuntime.Runtime.Generated {
             StackObject* __ret = ILIntepreter.Minus(__esp, 2);
 
             ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
-            object @o = (object) typeof(object).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags) 0);
+            Tuple<ulong, ulong, ulong, object> @o = (Tuple<ulong, ulong, ulong, object>)typeof(Tuple<ulong, ulong, ulong, object>).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
 
             ptr_of_this_method = ILIntepreter.Minus(__esp, 2);
-            global::FUIBase instance_of_this_method = (global::FUIBase) typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags) 0);
+            global::FUIBase instance_of_this_method = (global::FUIBase)typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
             __intp.Free(ptr_of_this_method);
 
             // 反射调用protected成员
@@ -268,10 +269,10 @@ namespace ILRuntime.Runtime.Generated {
             StackObject* __ret = ILIntepreter.Minus(__esp, 2);
 
             ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
-            object @o = (object) typeof(object).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags) 0);
+            Tuple<ulong, ulong, ulong, object> @o = (Tuple<ulong, ulong, ulong, object>)typeof(Tuple<ulong, ulong, ulong, object>).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
 
             ptr_of_this_method = ILIntepreter.Minus(__esp, 2);
-            global::FUIBase instance_of_this_method = (global::FUIBase) typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags) 0);
+            global::FUIBase instance_of_this_method = (global::FUIBase)typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
             __intp.Free(ptr_of_this_method);
 
             // 反射调用protected成员
@@ -290,7 +291,7 @@ namespace ILRuntime.Runtime.Generated {
             bool toListen = ((ptr_of_this_method->Value) != 0);
 
             ptr_of_this_method = ILIntepreter.Minus(__esp, 2);
-            global::FUIBase instance_of_this_method = (global::FUIBase) typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags) 0);
+            global::FUIBase instance_of_this_method = (global::FUIBase)typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
             __intp.Free(ptr_of_this_method);
 
             // 反射调用protected成员
@@ -308,7 +309,7 @@ namespace ILRuntime.Runtime.Generated {
             bool toListen = ((ptr_of_this_method->Value) != 0);
 
             ptr_of_this_method = ILIntepreter.Minus(__esp, 2);
-            global::FUIBase instance_of_this_method = (global::FUIBase) typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags) 0);
+            global::FUIBase instance_of_this_method = (global::FUIBase)typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
             __intp.Free(ptr_of_this_method);
 
             // 反射调用protected成员
@@ -323,7 +324,7 @@ namespace ILRuntime.Runtime.Generated {
             StackObject* __ret = ILIntepreter.Minus(__esp, 1);
 
             ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
-            global::FUIBase instance_of_this_method = (global::FUIBase) typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags) 0);
+            global::FUIBase instance_of_this_method = (global::FUIBase)typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
             __intp.Free(ptr_of_this_method);
 
             // 反射调用protected成员
@@ -338,7 +339,7 @@ namespace ILRuntime.Runtime.Generated {
             StackObject* __ret = ILIntepreter.Minus(__esp, 1);
 
             ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
-            global::FUIBase instance_of_this_method = (global::FUIBase) typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags) 0);
+            global::FUIBase instance_of_this_method = (global::FUIBase)typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
             __intp.Free(ptr_of_this_method);
 
             // 反射调用protected成员
@@ -353,7 +354,7 @@ namespace ILRuntime.Runtime.Generated {
             StackObject* __ret = ILIntepreter.Minus(__esp, 1);
 
             ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
-            global::FUIBase instance_of_this_method = (global::FUIBase) typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags) 0);
+            global::FUIBase instance_of_this_method = (global::FUIBase)typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
             __intp.Free(ptr_of_this_method);
 
             // 反射调用protected成员
@@ -368,7 +369,7 @@ namespace ILRuntime.Runtime.Generated {
             StackObject* __ret = ILIntepreter.Minus(__esp, 1);
 
             ptr_of_this_method = ILIntepreter.Minus(__esp, 1);
-            global::FUIBase instance_of_this_method = (global::FUIBase) typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags) 0);
+            global::FUIBase instance_of_this_method = (global::FUIBase)typeof(global::FUIBase).CheckCLRTypes(StackObject.ToObject(ptr_of_this_method, __domain, __mStack), (CLR.Utils.Extensions.TypeFlags)0);
             __intp.Free(ptr_of_this_method);
 
             // 反射调用protected成员
