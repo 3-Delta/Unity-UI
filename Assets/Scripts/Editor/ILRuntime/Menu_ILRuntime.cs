@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using ILRuntime.Runtime.Intepreter;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEditor;
 
@@ -27,22 +25,20 @@ public static class Menu_ILRuntime {
         Application.OpenURL("https://learn.u3d.cn/tutorial/ilruntime");
     }
 
-    // Todo : 将来修改为自动获取所有继承自主工程的类，然后获取adapter
-    [MenuItem("ILRuntime/Generate CLR Adaptor Code by Analysis")]
-    private static void GenerateCLRAdaptorByAnalysis() {
-        var types = new List<Type>();
-        //types.Add((typeof(UnityEngine.ScriptableObject)));
-        //types.Add((typeof(System.Exception)));
-        //types.Add(typeof(System.Collections.IEnumerable));
-
-        AdapterGenerater.Generate(types);
-    }
-
-    // Todo
-    // 自动分析所有的可能使用到的类和接口以及方法， GenerateCLRBindingByAnalysis只能分析到代码中使用的，一些没有使用的会被漏掉
-    // 比如Debug.Log如果不调用，就不能被分析掉，这里主要是全量分析
-    [MenuItem("ILRuntime/Generate CLR Binding Code by Manual")]
-    private static void GenerateCLRBindingByManual() { }
+    // 參考ET
+    // [MenuItem("ILRuntime/Generate CLR Adaptor Code by Analysis")]
+    // private static void GenerateCLRAdaptorByAnalysis() {
+    //     //由于跨域继承特殊性太多，自动生成无法实现完全无副作用生成，所以这里提供的代码自动生成主要是给大家生成个初始模版，简化大家的工作
+    //     //大多数情况直接使用自动生成的模版即可，如果遇到问题可以手动去修改生成后的文件，因此这里需要大家自行处理是否覆盖的问题
+    //     using (StreamWriter sw = new StreamWriter("Assets/Mono/ILRuntime/ICriticalNotifyCompletionAdapter.cs")) {
+    //         sw.WriteLine(ILRuntime.Runtime.Enviorment.CrossBindingCodeGenerator.GenerateCrossBindingAdapterCode(
+    //             typeof(ICriticalNotifyCompletion), "Logic.Runtime"));
+    //     }
+    //
+    //     AssetDatabase.Refresh();
+    //
+    //     Debug.LogError("生成适配器完成");
+    // }
 
     [MenuItem("ILRuntime/Generate CLR Binding Code by Analysis")]
     public static void GenerateCLRBindingByAnalysis() {
@@ -55,12 +51,13 @@ public static class Menu_ILRuntime {
         using (FileStream fs = new FileStream(dllFilePath, FileMode.Open, FileAccess.Read)) {
             ILRuntime.Runtime.Enviorment.AppDomain appDomain = new ILRuntime.Runtime.Enviorment.AppDomain();
             appDomain.LoadAssembly(fs);
-            
+
             ILRService.Init(appDomain);
             // 生成所有绑定脚本
             ILRuntime.Runtime.CLRBinding.BindingCodeGenerator.GenerateBindingCode(appDomain, HotfixSettings.BindingAnalysisFolderPath);
         }
 
         AssetDatabase.Refresh();
+        Debug.LogError("生成CLR绑定文件完成");
     }
 }

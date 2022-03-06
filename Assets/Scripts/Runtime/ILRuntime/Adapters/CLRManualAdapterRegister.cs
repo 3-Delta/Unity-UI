@@ -1,5 +1,3 @@
-using System;
-
 namespace ILRuntime.Runtime.Generated {
     public static class CLRManualAdapterRegister {
         public static void Register(ILRuntime.Runtime.Enviorment.AppDomain appDomain) {
@@ -8,6 +6,7 @@ namespace ILRuntime.Runtime.Generated {
             appDomain.RegisterCrossBindingAdaptor(new ScriptableObjectAdapter());
             appDomain.RegisterCrossBindingAdaptor(new ExceptionAdapter());
             appDomain.RegisterCrossBindingAdaptor(new IAsyncStateMachineAdaptor());
+            appDomain.RegisterCrossBindingAdaptor(new IDisposableAdapter());
 
             appDomain.RegisterCrossBindingAdaptor(new IEnumerableAdapter());
             appDomain.RegisterCrossBindingAdaptor(new IComparableObjectAdapter());

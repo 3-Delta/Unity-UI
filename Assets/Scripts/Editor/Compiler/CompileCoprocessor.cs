@@ -20,21 +20,21 @@ public class BuildCoprocessor
 
     static BuildCoprocessor()
     {
-        ProjectFilesGenerator.ProjectFileGeneration += (string name, string content) =>
-        {
-            Debug.LogError(name + " ===============>>>  " + content);
+        //ProjectFilesGenerator.ProjectFileGeneration += (string name, string content) =>
+        //{
+        //    Debug.LogError(name + " ===============>>>  " + content);
 
-            var document = XDocument.Parse(content);
-            var str = new Utf8StringWriter();
-            document.Save(str);
+        //    var document = XDocument.Parse(content);
+        //    var str = new Utf8StringWriter();
+        //    document.Save(str);
 
-            return str.ToString();
-        };
+        //    return str.ToString();
+        //};
 
-        ProjectFilesGenerator.SolutionFileGeneration += (string fileName, string fileContent) =>
-        {
-            return fileContent;
-        };
+        //ProjectFilesGenerator.SolutionFileGeneration += (string fileName, string fileContent) =>
+        //{
+        //    return fileContent;
+        //};
     }
 }
 #endif

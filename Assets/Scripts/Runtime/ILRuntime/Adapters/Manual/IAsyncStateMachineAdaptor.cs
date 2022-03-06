@@ -3,88 +3,54 @@ using System.Runtime.CompilerServices;
 using ILRuntime.CLR.Method;
 using ILRuntime.Runtime.Enviorment;
 using ILRuntime.Runtime.Intepreter;
+using AppDomain = ILRuntime.Runtime.Enviorment.AppDomain;
 
 /// <summary>
 /// 用于async await适配
 /// </summary>
-public class IAsyncStateMachineAdaptor : CrossBindingAdaptor
-{
-	public override Type BaseCLRType
-	{
-		get
-		{
-			return typeof (IAsyncStateMachine);
-		}
-	}
+public class IAsyncStateMachineAdaptor : CrossBindingAdaptor {
+    public override Type BaseCLRType => typeof(IAsyncStateMachine);
 
-	public override Type AdaptorType
-	{
-		get
-		{
-			return typeof (Adaptor);
-		}
-	}
+    public override Type AdaptorType => typeof(Adapter);
 
-	public override object CreateCLRInstance(ILRuntime.Runtime.Enviorment.AppDomain appdomain, ILTypeInstance instance)
-	{
-		return new Adaptor(appdomain, instance);
-	}
-		
-	public class Adaptor: IAsyncStateMachine, CrossBindingAdaptorType
-	{
-		private ILTypeInstance instance;
-		private ILRuntime.Runtime.Enviorment.AppDomain appDomain;
+    public override object CreateCLRInstance(AppDomain appdomain, ILTypeInstance instance) {
+        return new Adapter(appdomain, instance);
+    }
 
-		private IMethod mMoveNext;
-		private IMethod mSetStateMachine;
-		private readonly object[] param1 = new object[1];
+    public class Adapter : IAsyncStateMachine, CrossBindingAdaptorType {
+        private readonly ILTypeInstance instance;
+        private readonly AppDomain appDomain;
 
-		public Adaptor()
-		{
-		}
+        private readonly IMethod mMoveNext;
+        private readonly IMethod mSetStateMachine;
 
-		public Adaptor(ILRuntime.Runtime.Enviorment.AppDomain appDomain, ILTypeInstance instance)
-		{
-			this.appDomain = appDomain;
-			this.instance = instance;
-		}
+        public Adapter() { }
 
-		public ILTypeInstance ILInstance
-		{
-			get
-			{
-				return instance;
-			}
-		}
+        public Adapter(AppDomain appDomain, ILTypeInstance instance) {
+            this.appDomain = appDomain;
+            this.instance = instance;
+            mMoveNext = instance.Type.GetMethod("MoveNext", 0);
+            mSetStateMachine = instance.Type.GetMethod("SetStateMachine");
+        }
 
-		public void MoveNext()
-		{
-			if (this.mMoveNext == null)
-			{
-				mMoveNext = instance.Type.GetMethod("MoveNext", 0);
-			}
-			this.appDomain.Invoke(mMoveNext, instance, null);
-		}
+        public ILTypeInstance ILInstance => instance;
 
-		public void SetStateMachine(IAsyncStateMachine stateMachine)
-		{
-			if (this.mSetStateMachine == null)
-			{
-				mSetStateMachine = instance.Type.GetMethod("SetStateMachine");
-			}
-			this.appDomain.Invoke(mSetStateMachine, instance, stateMachine);
-		}
+        public void MoveNext() {
+            this.appDomain.Invoke(mMoveNext, instance, null);
+        }
 
-		public override string ToString()
-		{
-			IMethod m = this.appDomain.ObjectType.GetMethod("ToString", 0);
-			m = instance.Type.GetVirtualMethod(m);
-			if (m == null || m is ILMethod)
-			{
-				return instance.ToString();
-			}
+        public void SetStateMachine(IAsyncStateMachine stateMachine) {
+            this.appDomain.Invoke(mSetStateMachine, instance, stateMachine);
+        }
 
-			return instance.Type.FullName;
-		}
-	}
+        public override string ToString() {
+            IMethod m = this.appDomain.ObjectType.GetMethod("ToString", 0);
+            m = instance.Type.GetVirtualMethod(m);
+            if (m == null || m is ILMethod) {
+                return instance.ToString();
+            }
+
+            return instance.Type.FullName;
+        }
+    }
 }
