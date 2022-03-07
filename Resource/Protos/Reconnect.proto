@@ -1,0 +1,19 @@
+syntax = "proto3";
+package Logic.pbf;
+
+message CSHeartBeat {
+	// uint32 time;
+}
+
+message SCHeartBeat {
+	uint64 time = 1;
+}
+
+message CSReconnect {
+	uint64 roleId = 1;
+	uint64 signature = 2;
+}
+
+message SCReconnect {
+	uint64 roleId = 1;
+}

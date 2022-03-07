@@ -1,36 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 
-[Serializable]
-public class UIEntry : FUIEntry
+namespace Logic.Hotfix
 {
-    public FUIEntry Reset(EUIType uiType, string prefabPath, Type ui, EUIOption option = EUIOption.None, EUILayer layer = EUILayer.NormalStack)
+    [Serializable]
+    public class UIEntry : FUIEntry
     {
-        return base.Reset((int)uiType, prefabPath, ui, option, layer) as FUIEntry;
-    }
-
-    public override FUIBase CreateInstance()
-    {
-        return Activator.CreateInstance(ui) as FUIBase;
-    }
-}
-
-public class UIEntryRegistry
-{
-    public static void Inject()
-    {
-        for (int i = 0, length = registry.Count; i < length; ++i)
+        public FUIEntry Reset(EUIType uiType, string prefabPath, Type ui, EUIOption option = EUIOption.None, EUILayer layer = EUILayer.NormalStack)
         {
-            FUIEntryRegistry.Register(registry[i]);
+            return base.Reset((int)uiType, prefabPath, ui, option, layer) as FUIEntry;
         }
 
-        registry.Clear();
-        registry = null;
+        public override FUIBase CreateInstance()
+        {
+            return Activator.CreateInstance(ui) as FUIBase;
+        }
     }
 
-    private static List<FUIEntry> registry = new List<FUIEntry>() {
-        new UIEntry().Reset(EUIType.UIMain, "UIMain", typeof(UIMain), EUIOption.None, EUILayer.BasementStack),
-        new UIEntry().Reset(EUIType.UILogin, "UILogin", typeof(UILogin), EUIOption.HideBefore | EUIOption.CheckGuide | EUIOption.CheckNetwork | EUIOption.CheckQuality | EUIOption.Disable3DCamera | EUIOption.DisableBeforeRaycaster | EUIOption.Mask),
-        new UIEntry().Reset(EUIType.UIWairForNetwork, "UIWairForNetwork", typeof(UIWairForNetwork), EUIOption.None),
-    };
+    public class UIEntryRegistry
+    {
+        public static void Inject()
+        {
+            for (int i = 0, length = registry.Count; i < length; ++i)
+            {
+                FUIEntryRegistry.Register(registry[i]);
+            }
+
+            registry.Clear();
+            registry = null;
+        }
+
+        private static List<FUIEntry> registry = new List<FUIEntry>() {
+            new UIEntry().Reset(EUIType.UIMain, "UIMain", typeof(UIMain), EUIOption.None, EUILayer.BasementStack),
+            new UIEntry().Reset(EUIType.UILogin, "UILogin", typeof(UILogin), EUIOption.HideBefore | EUIOption.CheckGuide | EUIOption.CheckNetwork | EUIOption.CheckQuality | EUIOption.Disable3DCamera | EUIOption.DisableBeforeRaycaster | EUIOption.Mask),
+            new UIEntry().Reset(EUIType.UIWairForNetwork, "UIWairForNetwork", typeof(UIWairForNetwork), EUIOption.None),
+        };
+    }
 }

@@ -1,0 +1,114 @@
+syntax = "proto3";
+package Logic.pbf;
+
+import "Common.proto";
+
+enum EEntityStatus {
+	Idle = 0;
+	Walk = 1;
+	Run = 2;
+	Colect = 3;
+}
+
+enum EKeyboardOp {
+	W = 0;
+	A = 1;
+	S = 2;
+	D = 3;
+}
+
+enum EOp {
+	OpA = 0;
+}
+
+enum EBattleOp {
+	BOpA = 0;
+}
+
+message TypeID
+{
+    uint32 id = 2; // id
+}
+
+message Entity
+{
+	EEntityStatus status = 1;
+
+	FloatVector3 position = 2;
+	FloatVector3 rotation = 3;
+	FloatVector3 scale = 4;
+	FloatVector3 speed = 5;
+	FloatVector3 accelerate = 6;
+}
+
+message OpCommand
+{
+	EOp op = 1;
+	int32 param = 2;
+}
+
+message CSAddEntity
+{
+	TypeID typeID = 1;
+}
+message SCAddEntity
+{
+	TypeID typeID = 1;
+	uint32 csvID = 2;
+}
+
+message CSRemoveEntity
+{
+	TypeID typeID = 1; //
+}
+message SCRemoveEntity
+{
+	TypeID typeID = 1;
+}
+
+message CSUpdateEntity
+{
+	TypeID typeID = 1;
+}
+message SCUpdateEntity
+{
+	TypeID typeID = 1;
+	Entity entity = 2;
+}
+
+message CSOpEntity
+{
+	TypeID typeID = 1;
+	OpCommand op = 2;
+
+	Entity entity = 3;
+}
+message SCOpEntity
+{
+	SCUpdateEntity op = 1;
+}
+
+message InitTime
+{
+	RefreshTime time = 1;
+	float timeZone = 2;
+}
+message RefreshTime
+{
+	uint64 time = 1;
+}
+
+////////////////////////////////////////////////   战斗同步协议   ////////////////////////////////////////////////
+
+/*客户端操作记录*/
+message BattleOpCommand
+{
+	EBattleOp op = 1;
+	int32 param = 2;
+}
+
+message BattleOp
+{
+    uint32 frame = 1;
+    repeated OpCommand ops = 2;
+}

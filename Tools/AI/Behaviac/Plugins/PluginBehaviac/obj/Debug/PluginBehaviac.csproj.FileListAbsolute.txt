@@ -1,0 +1,12 @@
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\out\PluginBehaviac.dll.config
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\out\PluginBehaviac.dll
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\out\PluginBehaviac.pdb
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\out\zh-CN\PluginBehaviac.resources.dll
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\Plugins\PluginBehaviac\obj\Debug\PluginBehaviac.csprojAssemblyReference.cache
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\Plugins\PluginBehaviac\obj\Debug\PluginBehaviac.Properties.Resources.resources
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\Plugins\PluginBehaviac\obj\Debug\PluginBehaviac.Properties.Resources.zh-CN.resources
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\Plugins\PluginBehaviac\obj\Debug\PluginBehaviac.csproj.GenerateResource.cache
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\Plugins\PluginBehaviac\obj\Debug\PluginBehaviac.csproj.CoreCompileInputs.cache
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\Plugins\PluginBehaviac\obj\Debug\zh-CN\PluginBehaviac.resources.dll
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\Plugins\PluginBehaviac\obj\Debug\PluginBehaviac.dll
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\Plugins\PluginBehaviac\obj\Debug\PluginBehaviac.pdb

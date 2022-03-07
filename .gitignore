@@ -78,3 +78,6 @@
 /Assets/Scripts/Runtime/ILRuntime/Bindings/Analysis.meta
 /Assets/Scripts/Runtime/ILRuntime/Bindings/Analysis
 /Assets/3rd/ShaderControl/Editor/Resources/BuiltShaders.asset
+/Server/.vs
+/Server/Server/obj
+/Server/Server/bin

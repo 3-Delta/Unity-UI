@@ -1,5 +1,6 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public static class TextSetter { }
+namespace Logic.Hotfix
+{
+    public static class TextSetter { }
+}

@@ -1,0 +1,7 @@
+syntax = "proto3";
+package Logic.pbf;
+
+message SCTimeNtf {
+	uint32 timeSeconds = 1;
+	int32 timeZoneSeconds = 2;
+}

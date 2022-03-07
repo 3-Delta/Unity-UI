@@ -1,0 +1,38 @@
+syntax = "proto3";
+package Logic.pbf;
+
+// 拓展proto，支持nullable
+// https://www.codercto.com/a/10882.html
+// https://github.com/criteo-forks/protobuf/commit/8298aff178ccffd0c7c99806e714d0f14f40faf8
+
+message Item
+{
+	uint32 id = 1;
+	int64 count = 2;
+}
+
+message IntVector2
+{
+	int32 x = 1;
+	int32 y = 2;
+}
+
+message IntVector3
+{
+	int32 x = 1;
+	int32 y = 2;
+	int32 z = 3;
+}
+
+message FloatVector2
+{
+	float x = 1;
+	float y = 2;
+}
+
+message FloatVector3
+{
+	float x = 1;
+	float y = 2;
+	float z = 3;
+}

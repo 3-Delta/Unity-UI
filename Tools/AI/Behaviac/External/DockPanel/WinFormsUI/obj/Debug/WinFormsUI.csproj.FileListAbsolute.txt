@@ -1,0 +1,9 @@
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\External\DockPanel\WinFormsUI\bin\Debug\WeifenLuo.WinFormsUI.Docking.dll
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\External\DockPanel\WinFormsUI\bin\Debug\WeifenLuo.WinFormsUI.Docking.pdb
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\External\DockPanel\WinFormsUI\obj\Debug\WinFormsUI.csprojAssemblyReference.cache
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\External\DockPanel\WinFormsUI\obj\Debug\WeifenLuo.WinFormsUI.Docking.Resources.resources
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\External\DockPanel\WinFormsUI\obj\Debug\WeifenLuo.WinFormsUI.Docking.Strings.resources
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\External\DockPanel\WinFormsUI\obj\Debug\WinFormsUI.csproj.GenerateResource.cache
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\External\DockPanel\WinFormsUI\obj\Debug\WinFormsUI.csproj.CoreCompileInputs.cache
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\External\DockPanel\WinFormsUI\obj\Debug\WeifenLuo.WinFormsUI.Docking.dll
+G:\Projects\Unity\NetSync\Tools\AI\Behaviac\External\DockPanel\WinFormsUI\obj\Debug\WeifenLuo.WinFormsUI.Docking.pdb

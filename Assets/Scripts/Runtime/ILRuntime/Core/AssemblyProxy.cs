@@ -3,6 +3,10 @@
 public enum EAssemblyLoadType {
     // 原生C#模式
     ByNative,
+    
+    // Editor下UI等热重载，真机上不支持
+    // 可以参考ET，或者C-Compiler的Roslyn设计
+    ByNativeReload, 
 
     // ILRuntime模式
     ByILRuntime,

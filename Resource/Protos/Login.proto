@@ -1,0 +1,25 @@
+syntax = "proto3";
+package Logic.pbf;
+
+
+message CSLogin
+{
+
+}
+message SCLogin
+{
+	uint64 signature = 1;
+}
+
+message CSLogout
+{
+
+}
+message SCLogout
+{
+
+}
+
+message SCKickOff
+{
+}

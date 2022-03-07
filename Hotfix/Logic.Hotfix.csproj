@@ -56,17 +56,23 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Script\Logic\UI\Core\Vd.cs" />
+    <Compile Include="Protos\Common.cs" />
+    <Compile Include="Protos\EntitySync.cs" />
+    <Compile Include="Protos\Login.cs" />
+    <Compile Include="Protos\Msgype.cs" />
+    <Compile Include="Protos\Reconnect.cs" />
+    <Compile Include="Protos\Time.cs" />
     <Compile Include="Script\HotfixBridge.cs" />
+    <Compile Include="Script\Logic\Core\EUIType.cs" />
+    <Compile Include="Script\Logic\Core\UIBase.cs" />
+    <Compile Include="Script\Logic\Core\UIEntryRegistry.cs" />
+    <Compile Include="Script\Logic\Core\UILayoutBase.cs" />
+    <Compile Include="Script\Logic\Core\UIMgr.cs" />
+    <Compile Include="Script\Logic\Core\Vd.cs" />
     <Compile Include="Script\Utility\UI\TextSetter.cs" />
     <Compile Include="Script\Logic\System\Core\SysBase.cs" />
     <Compile Include="Script\Logic\System\SysAccount.cs" />
     <Compile Include="Script\Logic\System\SysTeam.cs" />
-    <Compile Include="Script\Logic\UI\Core\UIBase.cs" />
-    <Compile Include="Script\Logic\UI\Core\EUIType.cs" />
-    <Compile Include="Script\Logic\UI\Core\UIEntryRegistry.cs" />
-    <Compile Include="Script\Logic\UI\Core\UILayoutBase.cs" />
-    <Compile Include="Script\Logic\UI\Core\UIMgr.cs" />
     <Compile Include="Script\Logic\UI\UILogin.cs" />
     <Compile Include="Script\Logic\UI\UIMain.cs" />
     <Compile Include="Script\Logic\UI\UIWairForNetwork.cs" />
@@ -76,6 +82,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Script\Logic\Scene\场景控制相关.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

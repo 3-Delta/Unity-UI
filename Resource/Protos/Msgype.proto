@@ -1,0 +1,37 @@
+syntax = "proto3";
+package Logic.pbf;
+
+// 框架层协议号，更换游戏项目依然可以使用
+// 最大支持65535
+enum MsgType {
+// ----------------------- 框架层协议 ----------------------------
+    CSLogin = 0;
+    SCLogin = 1;
+
+    CSLogout = 2;
+    SCLogout = 3;
+
+    CSHeartBeat = 4;
+    SCHeartBeat = 5;
+
+    CSReconnect = 6;
+    SCReconnect = 7;
+
+    CSTimeCorrect = 8;
+    SCTimeCorrect = 9;
+
+    SCTimeNtf = 10;
+
+    SCKickOff = 11;
+
+// ----------------------- 逻辑层协议 ----------------------------
+    // sync
+    CsAddEntity = 1100;
+    ScAddEntity = 1101;
+    CsRemoveEntity = 1102;
+    ScRemoveEntity = 1103;
+    CsUpdateEntity = 1104;
+    ScUpdateEntity = 1105;
+    CsOpEntity = 1106;
+    ScOpEntity = 1107;
+}
