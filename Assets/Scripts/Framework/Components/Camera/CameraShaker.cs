@@ -25,12 +25,6 @@ public class CameraShaker : MonoBehaviour {
     [SerializeField] private Vector3 posBeforeShake;
     // private Tweener shakeTwener;
 
-    private void OnEnable() {
-        if (camera != null) {
-            posBeforeShake = camera.transform.position;
-        }
-    }
-
     private void LateUpdate() {
         if (_shakeOffset != Vector3.zero) {
             var pos = posBeforeShake + _shakeOffset;
@@ -54,6 +48,10 @@ public class CameraShaker : MonoBehaviour {
     public void Begin(float duration, Vector3 strength, int vibrato = 10, float randomness = 90f, bool fadeout = true) {
         // if (shakeTwener != null) {
         //     shakeTwener.Kill(true);
+        // }
+        //
+        // if (camera != null) {
+        //     posBeforeShake = camera.transform.position;
         // }
         //
         // shakeTwener = DOTween.Shake(GetShakeOffset, SetShakeOffset, duration, strength, vibrato, randomness, fadeout);

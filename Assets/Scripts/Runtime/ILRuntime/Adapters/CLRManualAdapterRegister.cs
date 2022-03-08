@@ -16,7 +16,9 @@ namespace ILRuntime.Runtime.Generated {
 
             appDomain.RegisterCrossBindingAdaptor(new IEqualityComparerIntAdapter());
             appDomain.RegisterCrossBindingAdaptor(new IEqualityComparerObjectAdapter());
-
+            
+            appDomain.RegisterCrossBindingAdaptor(new IMessageAdapter());
+            
             appDomain.RegisterCrossBindingAdaptor(new FUIBaseAdapter());
             appDomain.RegisterCrossBindingAdaptor(new FUIEntryAdapter());
             appDomain.RegisterCrossBindingAdaptor(new FUIMgrAdapter());

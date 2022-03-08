@@ -2,7 +2,8 @@
     "name": "Logic.Runtime",
     "references": [
         "GUID:7a1fa966b0ea23f40a6a4dc4dab1e297",
-        "GUID:0ff47c9bfea9f594cb40bd1d59a9d9f1"
+        "GUID:0ff47c9bfea9f594cb40bd1d59a9d9f1",
+        "GUID:6f995f1c916b71b4e829c3366861b8a6"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
