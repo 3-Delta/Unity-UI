@@ -1,25 +1,29 @@
 syntax = "proto3";
+
+import "Time.proto";
 package Logic.pbf;
 
-
-message CSLogin
-{
-
+message CSLogin {
+		uint32 sdkType = 1;
+		uint64 roleId =  2;
+		string accountName = 3;
+		uint64 signature = 4; // 从serverList获取
 }
-message SCLogin
-{
-	uint64 signature = 1;
-}
-
-message CSLogout
-{
-
-}
-message SCLogout
-{
-
+message SCLogin {
+		uint64 roleId =  1; // 0表示没有角色，需要创角
+		TimeSync time = 2; // 时间同步
+		uint64 reconnectSignature = 3;
 }
 
-message SCKickOff
-{
+message SCEnterAppNtf {
+		//  协议全部发送完毕
+}
+
+message CSLogout {
+}
+message SCLogout {
+}
+
+message SCKickOff {
+	
 }

@@ -2,18 +2,20 @@ syntax = "proto3";
 package Logic.pbf;
 
 message CSHeartBeat {
-	// uint32 time;
+  // uint32 time = 1;
+  uint32 sequence = 2;
 }
 
 message SCHeartBeat {
-	uint64 time = 1;
+  //  uint64 time = 1;
+  uint32 sequence = 2;
 }
 
 message CSReconnect {
-	uint64 roleId = 1;
-	uint64 signature = 2;
+  uint64 roleId = 1;
+  uint64 signature = 2; // 从loginRes获取
 }
 
 message SCReconnect {
-	uint64 roleId = 1;
+  uint64 roleId = 1;
 }

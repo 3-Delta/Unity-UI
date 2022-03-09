@@ -36,7 +36,7 @@ public class FBridge : MonoBehaviour {
         }
 
         if (assemblyLoadType == EAssemblyLoadType.ByNative) {
-            HotfixBridge.Init();
+            Logic.Hotfix.HotfixBridge.Init();
         }
         else {
             _hotfixInit?.Exec();

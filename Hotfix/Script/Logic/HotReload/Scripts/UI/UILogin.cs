@@ -1,20 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using Logic.Hotfix;
+
 using UnityEngine.UI;
 
-namespace Logic.Hotfix
+namespace Logic.Hotfix.HotReload
 {
     public class UILogin : UIBaseWithLayout<UILogin.Layout>
     {
         public class Layout : UILayoutBase
         {
             // [0] Path: "Text"
-            public UnityEngine.UI.Text x { get; private set; } = null;
+            public Text x { get; private set; } = null;
 
             protected override void FindByIndex(UIBindComponents binder)
             {
-                this.x = binder.Find<UnityEngine.UI.Text>(0);
+                x = binder.Find<Text>(0);
             }
 
 

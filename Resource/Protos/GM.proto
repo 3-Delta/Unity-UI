@@ -1,0 +1,17 @@
+syntax = "proto3";
+package Logic.pbf;
+
+message CSGM {
+	uint64 targetRoleId = 1;
+	string gmCmd = 2;
+}
+
+message SCGM {
+    bool result = 1;
+	string reason = 2;
+}
+
+message CSGMs {
+	uint64 targetRoleId = 1;
+	repeated string gmCmds = 2;
+}

@@ -81,3 +81,5 @@
 /Server/.vs
 /Server/Server/obj
 /Server/Server/bin
+/Hotfix/Script/Logic/HotReload/bin
+/Hotfix/Script/Logic/HotReload/obj

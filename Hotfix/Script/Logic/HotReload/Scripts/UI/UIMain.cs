@@ -1,7 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using Logic.Hotfix;
+
 using UnityEngine;
-namespace Logic.Hotfix
+
+namespace Logic.Hotfix.HotReload
 {
     public class UIMain : UIBaseWithLayout<UIMain.Layout>, UIMain.Layout.IListener, IReload
     {
@@ -12,7 +13,7 @@ namespace Logic.Hotfix
 
             protected override void FindByIndex(UIBindComponents binder)
             {
-                this.btnOpenUI = binder.Find<UnityEngine.UI.Button>(0);
+                btnOpenUI = binder.Find<UnityEngine.UI.Button>(0);
             }
 
             // 后续想不热更prefab,只热更脚本的形式获取组件,再次函数内部添加查找逻辑即可
@@ -28,7 +29,7 @@ namespace Logic.Hotfix
 
             public void Listen(IListener listener, bool toListen = true)
             {
-                this.btnOpenUI.onClick.AddListener(listener.OnBtnClickedbtnOpenUI);
+                btnOpenUI.onClick.AddListener(listener.OnBtnClickedbtnOpenUI);
             }
         }
 

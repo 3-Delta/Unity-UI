@@ -38,6 +38,14 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Framework.3rd">
+      <HintPath>..\Library\ScriptAssemblies\Framework.3rd.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Logic.SDK">
+      <HintPath>..\Library\ScriptAssemblies\Logic.SDK.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
@@ -64,18 +72,17 @@
     <Compile Include="Protos\Time.cs" />
     <Compile Include="Script\HotfixBridge.cs" />
     <Compile Include="Script\Logic\Core\EUIType.cs" />
+    <Compile Include="Script\Logic\Core\SysBase.cs" />
     <Compile Include="Script\Logic\Core\UIBase.cs" />
-    <Compile Include="Script\Logic\Core\UIEntryRegistry.cs" />
+    <Compile Include="Script\Logic\Core\UIEntry.cs" />
     <Compile Include="Script\Logic\Core\UILayoutBase.cs" />
     <Compile Include="Script\Logic\Core\UIMgr.cs" />
     <Compile Include="Script\Logic\Core\Vd.cs" />
+    <Compile Include="Script\Logic\System\Service\ReconnectService.cs" />
+    <Compile Include="Script\Logic\System\Service\ServerTimeService.cs" />
     <Compile Include="Script\Utility\UI\TextSetter.cs" />
-    <Compile Include="Script\Logic\System\Core\SysBase.cs" />
     <Compile Include="Script\Logic\System\SysAccount.cs" />
     <Compile Include="Script\Logic\System\SysTeam.cs" />
-    <Compile Include="Script\Logic\UI\UILogin.cs" />
-    <Compile Include="Script\Logic\UI\UIMain.cs" />
-    <Compile Include="Script\Logic\UI\UIWairForNetwork.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -1,4 +1,4 @@
-﻿namespace Logic.Hotfix
+﻿namespace Logic.Hotfix.HotReload
 {
     public class UIWairForNetwork : UIBaseWithLayout<UIWairForNetwork.Layout>
     {

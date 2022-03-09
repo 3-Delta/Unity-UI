@@ -23,6 +23,10 @@ enum MsgType {
     SCTimeNtf = 10;
 
     SCKickOff = 11;
+    
+    CSGM = 12;
+    CSGMs = 13;
+    SCGMNtf = 14;
 
 // ----------------------- 逻辑层协议 ----------------------------
     // sync

@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-public static class StringUtility {
+public class StringBridge {
     public static bool IsChineseLetter(char ch) {
         Regex reg = new Regex(@"[\u4e00-\u9fa5]");
         return reg.IsMatch(ch.ToString());

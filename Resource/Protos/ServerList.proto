@@ -1,0 +1,66 @@
+syntax = "proto3";
+package Logic.pbf;
+
+enum EServerState {
+		Normal = 0; // 正常 
+		Busy = 1; // 繁忙
+		Protected = 2; // 维护
+}
+
+enum EStateColor {
+	  Green = 0;
+	  Red = 1;
+	  Gray = 2;
+	  Auto = 3; // 按照EServerState处理	  
+}
+
+// 可以 | 
+enum EStateTag {
+		Hot = 0;	// 热
+		New = 1;	// 新
+		Recommend = 2; // 推荐
+}
+
+message ServerInfo {
+		uint32 serverId = 1;
+		string name = 2;
+		
+		uint32 createTime = 3;
+		uint32 lastLoginTime = 4;
+		uint32 openTime = 5;
+		
+		string ip = 6;
+		uint32 port = 7;
+		
+		EServerState state = 8;
+		EStateColor color = 9;
+		EStateTag tags = 10;
+		
+		uint32 onlineCOunt = 11; // 在线人数
+}
+
+message ServerGroup {
+	  string groupName = 1;
+	  uint32 groupId = 2;
+	  int32 groupSortWeight = 3;
+	  repeated uint32 serverIdList = 4;
+}
+
+message ServerRole {
+		uint64 roleId = 1;
+		string name = 2;
+	  uint32 lv = 3;
+	  uint32 heroId = 4;
+	  uint32 careerId = 5;
+		 
+		uint32 serverId = 6;
+}
+
+message ServerListNtf {
+		repeated ServerInfo serverList = 1;
+		repeated ServerGroup serverGroup = 2;
+		repeated ServerInfo whiteList = 3; // 白名单
+	
+		string signature = 4; // 签名
+	  string extras = 5; // 额外信息
+}
