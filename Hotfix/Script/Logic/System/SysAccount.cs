@@ -35,7 +35,7 @@
             ++syncCount;
         }
 
-        public void OnReload()
+        public override void OnReload()
         {
             // 表格热更新
         }

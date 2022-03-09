@@ -80,9 +80,9 @@ public struct NWPackage
     public NWPackageHead head;
     public NWPackageBody body;
 
-    public NWPackage(ushort protoType, byte[] bytes)
+    public NWPackage(ushort protoType, byte[] bytes, ushort playerId)
     {
-        head = new NWPackageHead(protoType, (ushort)bytes.Length, 1);
+        head = new NWPackageHead(protoType, (ushort)bytes.Length, playerId);
         body = new NWPackageBody(bytes, 0, bytes.Length - 1);
         body.Decode(bytes, 0, bytes.Length - 1);
     }

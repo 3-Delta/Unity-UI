@@ -66,18 +66,26 @@
   <ItemGroup>
     <Compile Include="Protos\Common.cs" />
     <Compile Include="Protos\EntitySync.cs" />
+    <Compile Include="Protos\GM.cs" />
     <Compile Include="Protos\Login.cs" />
     <Compile Include="Protos\Msgype.cs" />
     <Compile Include="Protos\Reconnect.cs" />
+    <Compile Include="Protos\ServerList.cs" />
+    <Compile Include="Protos\Team.cs" />
     <Compile Include="Protos\Time.cs" />
     <Compile Include="Script\HotfixBridge.cs" />
     <Compile Include="Script\Logic\Core\EUIType.cs" />
     <Compile Include="Script\Logic\Core\SysBase.cs" />
+    <Compile Include="Script\Logic\Core\SystemList.cs" />
+    <Compile Include="Script\Logic\Core\SystemMgr.cs" />
     <Compile Include="Script\Logic\Core\UIBase.cs" />
     <Compile Include="Script\Logic\Core\UIEntry.cs" />
     <Compile Include="Script\Logic\Core\UILayoutBase.cs" />
     <Compile Include="Script\Logic\Core\UIMgr.cs" />
     <Compile Include="Script\Logic\Core\Vd.cs" />
+    <Compile Include="Script\Logic\HotReload\UI\UILogin.cs" />
+    <Compile Include="Script\Logic\HotReload\UI\UIMain.cs" />
+    <Compile Include="Script\Logic\HotReload\UI\UIWairForNetwork.cs" />
     <Compile Include="Script\Logic\System\Service\ReconnectService.cs" />
     <Compile Include="Script\Logic\System\Service\ServerTimeService.cs" />
     <Compile Include="Script\Utility\UI\TextSetter.cs" />

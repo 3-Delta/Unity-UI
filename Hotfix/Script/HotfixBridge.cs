@@ -10,7 +10,8 @@ namespace Logic.Hotfix
         public static void Init()
         {
             // 填充UIEntry结构
-            UIMgr.Init();
+            //UIMgr.Init();
+            SystemMgr.Instance.Enter();
         }
     }
 }

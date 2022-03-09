@@ -21,6 +21,7 @@ namespace Logic.Hotfix
         void OnLogout();
 
         void OnSynced();
+        void OnReload();
     }
 
     public abstract class SysBase<T> : ISysModule where T : ISysModule, new()
@@ -53,5 +54,8 @@ namespace Logic.Hotfix
         public virtual void OnLogout() { }
 
         public virtual void OnSynced() { }
+
+        // 表格配置等重载
+        public virtual void OnReload() { }
     }
 }

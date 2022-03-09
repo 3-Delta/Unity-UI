@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using Logic.Hotfix.HotReload;
+
 namespace Logic.Hotfix
 {
     [Serializable]
