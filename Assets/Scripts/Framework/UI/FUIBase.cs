@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Object = System.Object;
 
 public interface IListenReconnect {
     void OnBeginReconnect();
@@ -17,6 +16,8 @@ public class FUIBase /*: IListenReconnect*/ {
 
     private Transform transform;
     private CanvasAdapter adapter;
+    private UIAnimController animPlayer;
+    private UIAudioPlayer audioPlayer;
 
 #if UNITY_EDITOR
     public bool showHide = true;
@@ -224,6 +225,9 @@ public class FUIBase /*: IListenReconnect*/ {
         adapter = ad;
         adapter.SetMode();
 
+        transform.TryGetComponent<UIAudioPlayer>(out audioPlayer);
+        transform.TryGetComponent<UIAnimController>(out animPlayer);
+
         _request = null;
 
         OnLoaded(transform);
@@ -248,7 +252,7 @@ public class FUIBase /*: IListenReconnect*/ {
         // 资源组件解析
         Debug.LogError(string.Format("OnLoaded {0} {1}", uiType.ToString(), cfg.ui));
     }
-    
+
     protected virtual void OnTransfer(Tuple<ulong, ulong, ulong, object> arg) {
         // ui已经打开的时候调用OnTransfer
         Debug.LogError(string.Format("OnTransfer {0} {1}", uiType.ToString(), cfg.ui));
