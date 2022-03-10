@@ -18,20 +18,17 @@ namespace Logic.Hotfix
         {
             if (toRegister)
             {
-                NWDelegateService.Add(0, (ushort)MsgType.SctimeNtf, OnSctimeNtf, (pkg) =>
-                {
-                    // 参考项目如何处理协议的解析 ？？
-                    return null;
-                });
+                NWDelegateService.Add<SCTimeNtf>(0, (ushort)MsgType.SctimeNtf, OnSctimeNtf, SCTimeNtf.Parser);
             }
             else
             {
-                NWDelegateService.Remove((ushort)MsgType.SctimeNtf, OnSctimeNtf);
+                NWDelegateService.Remove<SCTimeNtf>((ushort)MsgType.SctimeNtf, OnSctimeNtf);
             }
         }
 
-        private void OnSctimeNtf(IMessage msg)
+        private void OnSctimeNtf(SCTimeNtf msg)
         {
+            UnityEngine.Debug.LogError("res.Time: " + msg.Time);
         }
     }
 }
