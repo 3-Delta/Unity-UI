@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEditor;
 using System.IO;
 
@@ -13,18 +10,18 @@ public class BuildSetting {
         get {
             var platform = EditorUserBuildSettings.activeBuildTarget;
             string appVersion = GlobalSetting.AppVersion.ToString();
-            return $"{ABOutputPath}/{platform}/AppVersion_{appVersion}";
+            return $"{ABOutputPath}/{platform.ToString()}/AppVersion_{appVersion}";
         }
     }
 
     public static string GetABOutputPath(uint abVersion) {
         string appVersion = AppVersionOutputPath;
-        return $"{appVersion}/ABVersion_{abVersion}";
+        return $"{appVersion}/ABVersion_{abVersion.ToString()}";
     }
 
     public static string GetABOutputVersionPath(uint abVersion) {
         string appVersion = AppVersionOutputPath;
-        return $"{appVersion}/ABVersion_{abVersion}/ab.version.json";
+        return $"{appVersion}/ABVersion_{abVersion.ToString()}/ab.version.json";
     }
 
     // 基础ab, 也就是当前appVersion下打的第一个ab记录
@@ -37,7 +34,7 @@ public class BuildSetting {
     public static string CurrentAppVersionPath {
         get {
             var platform = EditorUserBuildSettings.activeBuildTarget;
-            return $"{ABOutputPath}/{platform}/app.version.json";
+            return $"{ABOutputPath}/{platform.ToString()}/app.version.json";
         }
     }
 

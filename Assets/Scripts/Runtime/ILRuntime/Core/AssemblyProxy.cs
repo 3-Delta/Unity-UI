@@ -3,10 +3,10 @@
 public enum EAssemblyLoadType {
     // 原生C#模式
     ByNative,
-    
+
     // Editor下UI等热重载，真机上不支持
     // 可以参考ET，或者C-Compiler的Roslyn设计
-    ByNativeReload, 
+    ByReflectionReload,
 
     // ILRuntime模式
     ByILRuntime,
@@ -29,6 +29,9 @@ public static class AssemblyProxy {
 
         if (assemblyLoadType == EAssemblyLoadType.ByNative) {
             assembly = null;
+        }
+        else if (assemblyLoadType == EAssemblyLoadType.ByReflectionReload) {
+            assembly = new AssemblyReload();
         }
         else if (assemblyLoadType == EAssemblyLoadType.ByILRuntime) {
             assembly = new AssemblyILRuntime();
