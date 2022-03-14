@@ -21,11 +21,23 @@ public class AssemBuilder {
         return scripts;
     }
 
-    public static void Build(string assemblyName, string[] codeDirectorys, string[] additionalReferences) {
-        List<string> scripts = GetFiles(codeDirectorys, "*.cs");
+    public static Assembly GetAssembly(string targetAssemblyNameWithExtension) {
+        Assembly rlt = null;
+        foreach (var ass in CompilationPipeline.GetAssemblies()) {
+            bool isEqual = string.Equals(ass.name, Path.GetFileNameWithoutExtension(targetAssemblyNameWithExtension), StringComparison.Ordinal);
+            if (isEqual) {
+                rlt = ass;
+                break;
+            }
+        }
 
-        string dllPath = Path.Combine(HotfixSettings.HotfixHotReloadRelativePath, $"{assemblyName}.dll");
-        string pdbPath = Path.Combine(HotfixSettings.HotfixHotReloadRelativePath, $"{assemblyName}.pdb");
+        return rlt;
+    }
+
+    public static void Build(string absolutePath, string assemblyName, Assembly targetAssembly, string[] codeDirectorys) {
+        List<string> scripts = GetFiles(codeDirectorys, "*.cs");
+        string dllPath = Path.Combine(absolutePath, $"{assemblyName}.dll");
+        string pdbPath = Path.Combine(absolutePath, $"{assemblyName}.pdb");
         if (File.Exists(dllPath)) {
             File.Delete(dllPath);
         }
@@ -34,7 +46,7 @@ public class AssemBuilder {
             File.Delete(pdbPath);
         }
 
-        Directory.CreateDirectory(HotfixSettings.HotfixHotReloadRelativePath);
+        Directory.CreateDirectory(absolutePath);
 
         AssemblyBuilder assemblyBuilder = new AssemblyBuilder(dllPath, scripts.ToArray());
 
@@ -42,27 +54,85 @@ public class AssemBuilder {
         //assemblyBuilder.compilerOptions.AllowUnsafeCode = true;
 
         BuildTargetGroup buildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
-
+        assemblyBuilder.buildTargetGroup = buildTargetGroup;
+        assemblyBuilder.buildTarget = EditorUserBuildSettings.activeBuildTarget;
+        assemblyBuilder.compilerOptions = targetAssembly.compilerOptions;
         assemblyBuilder.compilerOptions.ApiCompatibilityLevel = PlayerSettings.GetApiCompatibilityLevel(buildTargetGroup);
         // assemblyBuilder.compilerOptions.ApiCompatibilityLevel = ApiCompatibilityLevel.NET_4_6;
 
-        assemblyBuilder.additionalReferences = additionalReferences;
+        // 带后缀的绝对路径
+        assemblyBuilder.excludeReferences = null;
 
-        assemblyBuilder.flags = AssemblyBuilderFlags.DevelopmentBuild;
+        assemblyBuilder.additionalReferences = targetAssembly.compiledAssemblyReferences;
+
+        assemblyBuilder.flags = AssemblyBuilderFlags.EditorAssembly;
         //AssemblyBuilderFlags.None                 正常发布
         //AssemblyBuilderFlags.DevelopmentBuild     开发模式打包
         //AssemblyBuilderFlags.EditorAssembly       编辑器状态
         assemblyBuilder.referencesOptions = ReferencesOptions.UseEngineModules;
-        assemblyBuilder.buildTarget = EditorUserBuildSettings.activeBuildTarget;
+    }
+
+    public static void Build(string absolutePath, string assemblyName, string[] codeDirectorys, string[] additionalReferences, string[] excludeReferences, Action<string> onBuildStart = null, Action<string, CompilerMessage[]> onBuildEnd = null) {
+        List<string> scripts = GetFiles(codeDirectorys, "*.cs");
+
+        string dllPath = Path.Combine(absolutePath, $"{assemblyName}.dll");
+        string pdbPath = Path.Combine(absolutePath, $"{assemblyName}.pdb");
+        if (File.Exists(dllPath)) {
+            File.Delete(dllPath);
+        }
+
+        if (File.Exists(pdbPath)) {
+            File.Delete(pdbPath);
+        }
+
+        Directory.CreateDirectory(absolutePath);
+
+        AssemblyBuilder assemblyBuilder = new AssemblyBuilder(dllPath, scripts.ToArray());
+
+        //启用UnSafe
+        //assemblyBuilder.compilerOptions.AllowUnsafeCode = true;
+
+        BuildTargetGroup buildTargetGroup = BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget);
         assemblyBuilder.buildTargetGroup = buildTargetGroup;
+        assemblyBuilder.buildTarget = EditorUserBuildSettings.activeBuildTarget;
+        assemblyBuilder.compilerOptions.ApiCompatibilityLevel = PlayerSettings.GetApiCompatibilityLevel(buildTargetGroup);
+        // assemblyBuilder.compilerOptions.ApiCompatibilityLevel = ApiCompatibilityLevel.NET_4_6;
 
-        assemblyBuilder.buildStarted += OnBuildStarted;
-        assemblyBuilder.buildFinished += OnBuildFinished;
+        // 带后缀的绝对路径
+        assemblyBuilder.excludeReferences = excludeReferences;
 
+        assemblyBuilder.additionalReferences = additionalReferences;
+
+        assemblyBuilder.flags = AssemblyBuilderFlags.EditorAssembly;
+        //AssemblyBuilderFlags.None                 正常发布
+        //AssemblyBuilderFlags.DevelopmentBuild     开发模式打包
+        //AssemblyBuilderFlags.EditorAssembly       编辑器状态
+        assemblyBuilder.referencesOptions = ReferencesOptions.UseEngineModules;
+
+
+        assemblyBuilder.buildStarted += (assemblyPath) => {
+            onBuildStart?.Invoke(assemblyPath);
+            OnBuildStarted(assemblyPath);
+        };
+        assemblyBuilder.buildFinished += (assemblyPath, compilerMessages) => {
+            onBuildEnd?.Invoke(assemblyPath, compilerMessages);
+            OnBuildFinished(assemblyPath, compilerMessages);
+        };
+
+        float progress = 0f;
+        EditorUtility.DisplayCancelableProgressBar("AssemblyBuilder.Build", "...", progress);
         //开始构建
         if (!assemblyBuilder.Build()) {
             Debug.LogErrorFormat("Build Assembly Fail：" + assemblyBuilder.assemblyPath);
         }
+        else {
+            while (assemblyBuilder.status != AssemblyBuilderStatus.Finished) {
+                progress += 0.1f;
+                EditorUtility.DisplayCancelableProgressBar("AssemblyBuilder.Build", "...", progress);
+            }
+        }
+
+        EditorUtility.ClearProgressBar();
     }
 
     private static void OnBuildStarted(string assemblyPath) {
@@ -90,11 +160,19 @@ public class AssemBuilder {
 }
 
 public class HotReloadBuilder {
+    [MenuItem("Assets/Build/Assembly/Hotfix(Fixed + HotReload)")]
+    public static void BuildHotfix() {
+        AssemBuilder.Build(HotfixSettings.HotfixHotReloadRelativePath, "Logic.Hotfix", new[] {
+            "Hotfix/Fixed/",
+            "Hotfix/HotReload/",
+        }, Array.Empty<string>(), null);
+    }
+
     [MenuItem("Assets/Build/Assembly/Fixed")]
     public static void BuildFixed() {
-        AssemBuilder.Build("Logic.Hotfix.Fixed", new[] {
+        AssemBuilder.Build(HotfixSettings.HotfixHotReloadRelativePath, "Logic.Hotfix.Fixed", new[] {
             "Hotfix/Fixed/",
-        }, Array.Empty<string>());
+        }, Array.Empty<string>(), null);
     }
 
     [MenuItem("Assets/Build/Assembly/HotReload")]
@@ -108,10 +186,12 @@ public class HotReloadBuilder {
         int random = Random.Range(1, int.MaxValue);
         string fileName = $"Logic.Hotfix.HotReload_{random.ToString()}";
 
-        AssemBuilder.Build(fileName, new[] {
-            "Hotfix/Hotfix/HotReload/",
+        AssemBuilder.Build(HotfixSettings.HotfixHotReloadRelativePath, fileName, new[] {
+            "Hotfix/HotReload/",
         }, new[] {
             Path.Combine(HotfixSettings.HotfixHotReloadRelativePath, HotfixSettings.HotfixFixedDLLName + ".dll"),
+        }, new string[] {
+            Path.Combine(Application.dataPath, "ABSource/DLL/Logic.Hotfix.dll"),
         });
     }
 }
