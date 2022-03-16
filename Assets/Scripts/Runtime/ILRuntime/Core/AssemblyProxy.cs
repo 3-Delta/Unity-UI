@@ -1,23 +1,6 @@
 ﻿using System;
 
-public enum EAssemblyLoadType {
-    // 原生C#模式
-    ByNative,
-
-    // Editor下UI等热重载，真机上不支持
-    // 可以参考ET，或者C-Compiler的Roslyn设计
-    ByReflectionReload,
-
-    // ILRuntime模式
-    ByILRuntime,
-
-    // 反射模式
-    ByReflection,
-}
-
 public static class AssemblyProxy {
-    public static EAssemblyLoadType assemblyLoadType { get; set; } = EAssemblyLoadType.ByILRuntime;
-
     private static IAssembly assembly = null;
 
     private static bool hasInited = false;
@@ -27,18 +10,15 @@ public static class AssemblyProxy {
             return false;
         }
 
-        if (assemblyLoadType == EAssemblyLoadType.ByNative) {
-            assembly = null;
-        }
-        else if (assemblyLoadType == EAssemblyLoadType.ByReflectionReload) {
-            assembly = new AssemblyReload();
-        }
-        else if (assemblyLoadType == EAssemblyLoadType.ByILRuntime) {
-            assembly = new AssemblyILRuntime();
-        }
-        else if (assemblyLoadType == EAssemblyLoadType.ByReflection) {
-            assembly = new AssemblyReflection();
-        }
+#if __NATIVE__
+    assembly = null;
+#elif __REFL_RELOAD__ && UNITY_EDITOR
+    assembly = new AssemblyReload();
+#elif __REFL__
+    assembly = new AssemblyReflection();
+#elif __ILR__
+    assembly = new AssemblyILRuntime();
+#endif
 
         assembly?.Load();
         hasInited = true;

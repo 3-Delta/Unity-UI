@@ -9,12 +9,9 @@ public class App : MonoBehaviour {
     public static App instance { get; private set; } = null;
 
 #if UNITY_EDITOR
-    public EAssemblyLoadType assemblyLoadType = EAssemblyLoadType.ByNative;
     public EAssetLoadType assetLoadType = EAssetLoadType.FromResources;
 
     private void OnValidate() {
-        AssemblyProxy.assemblyLoadType = assemblyLoadType;
-        FBridge.assemblyLoadType = assemblyLoadType;
         AssetService.loadType = assetLoadType;
     }
 #endif

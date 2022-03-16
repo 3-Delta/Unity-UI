@@ -1,5 +1,4 @@
 ﻿using UnityEditor;
-
 using UnityEngine;
 
 public static class BuildMenuItem {
@@ -54,18 +53,22 @@ public static class BuildMenuItem {
     public static void ApplicationPersistentPath() {
         EditorUtility.RevealInFinder(Application.persistentDataPath);
     }
+
     [MenuItem("Assets/Path/DataPath")]
     public static void ApplicationDataPath() {
         EditorUtility.RevealInFinder(Application.dataPath);
     }
+
     [MenuItem("Assets/Path/StreamingAssetsPath")]
     public static void ApplicationStreamingAssetsPath() {
         EditorUtility.RevealInFinder(Application.streamingAssetsPath);
     }
+
     [MenuItem("Assets/Path/CachePath")]
     public static void ApplicationTemporaryCachePath() {
         EditorUtility.RevealInFinder(Application.temporaryCachePath);
     }
+
     [MenuItem("Assets/Path/CrashPath")]
     public static void ApplicationCrashPath() {
         string rootFolderPath = System.Environment.ExpandEnvironmentVariables("%localappdata%");

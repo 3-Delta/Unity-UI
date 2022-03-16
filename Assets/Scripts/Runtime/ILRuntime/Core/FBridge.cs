@@ -3,8 +3,6 @@ using UnityEngine;
 
 [DisallowMultipleComponent]
 public class FBridge : MonoBehaviour {
-    public static EAssemblyLoadType assemblyLoadType = EAssemblyLoadType.ByNative;
-
     private static StaticMethod _hotfixInit;
 
     private static StaticMethod _playAudio;
@@ -35,12 +33,15 @@ public class FBridge : MonoBehaviour {
             return;
         }
 
-        if (assemblyLoadType == EAssemblyLoadType.ByNative) {
-            Logic.Hotfix.HotfixBridge.Init();
-        }
-        else {
-            _hotfixInit?.Exec();
-        }
+#if __NATIVE__
+    Logic.Hotfix.HotfixBridge.Init();
+#elif __REFL_RELOAD__ && UNITY_EDITOR
+    _hotfixInit?.Exec();
+#elif __REFL__
+    _hotfixInit?.Exec();
+#elif __ILR__
+    _hotfixInit?.Exec();
+#endif
     }
 
     public static void Dispose() {

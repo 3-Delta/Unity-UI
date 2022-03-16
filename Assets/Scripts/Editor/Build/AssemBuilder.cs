@@ -85,7 +85,9 @@ public class AssemBuilder {
             File.Delete(pdbPath);
         }
 
-        Directory.CreateDirectory(absolutePath);
+        if (!Directory.Exists(absolutePath)) {
+            Directory.CreateDirectory(absolutePath);
+        }
 
         AssemblyBuilder assemblyBuilder = new AssemblyBuilder(dllPath, scripts.ToArray());
 
@@ -109,7 +111,6 @@ public class AssemBuilder {
         //AssemblyBuilderFlags.EditorAssembly       编辑器状态
         assemblyBuilder.referencesOptions = ReferencesOptions.UseEngineModules;
 
-
         assemblyBuilder.buildStarted += (assemblyPath) => {
             onBuildStart?.Invoke(assemblyPath);
             OnBuildStarted(assemblyPath);
@@ -119,20 +120,24 @@ public class AssemBuilder {
             OnBuildFinished(assemblyPath, compilerMessages);
         };
 
-        float progress = 0f;
-        EditorUtility.DisplayCancelableProgressBar("AssemblyBuilder.Build", "...", progress);
-        //开始构建
-        if (!assemblyBuilder.Build()) {
-            Debug.LogErrorFormat("Build Assembly Fail：" + assemblyBuilder.assemblyPath);
-        }
-        else {
-            while (assemblyBuilder.status != AssemblyBuilderStatus.Finished) {
-                progress += 0.1f;
-                EditorUtility.DisplayCancelableProgressBar("AssemblyBuilder.Build", "...", progress);
+        try {
+            float progress = 0f;
+            EditorUtility.DisplayCancelableProgressBar("AssemblyBuilder.Build", "...", progress);
+            //开始构建
+            if (!assemblyBuilder.Build()) {
+                Debug.LogErrorFormat("Build Assembly Fail：" + assemblyBuilder.assemblyPath);
+            }
+            else {
+                while (assemblyBuilder.status != AssemblyBuilderStatus.Finished) {
+                    progress += 0.1f;
+                    EditorUtility.DisplayCancelableProgressBar("AssemblyBuilder.Build", "...", progress);
+                }
             }
         }
-
-        EditorUtility.ClearProgressBar();
+        finally {
+            Debug.LogErrorFormat("Build Assembly Exception");
+            EditorUtility.ClearProgressBar();
+        }
     }
 
     private static void OnBuildStarted(string assemblyPath) {
