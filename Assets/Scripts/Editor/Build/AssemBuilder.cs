@@ -165,7 +165,7 @@ public class AssemBuilder {
 }
 
 public class HotReloadBuilder {
-    [MenuItem("Assets/Build/Assembly/Hotfix(Fixed + HotReload)")]
+    [MenuItem("Assembly/Build/Hotfix(Fixed + HotReload)")]
     public static void BuildHotfix() {
         AssemBuilder.Build(HotfixSettings.HotfixHotReloadRelativePath, "Logic.Hotfix", new[] {
             "Hotfix/Fixed/",
@@ -173,14 +173,14 @@ public class HotReloadBuilder {
         }, Array.Empty<string>(), null);
     }
 
-    [MenuItem("Assets/Build/Assembly/Fixed")]
+    [MenuItem("Assembly/Build/Fixed")]
     public static void BuildFixed() {
         AssemBuilder.Build(HotfixSettings.HotfixHotReloadRelativePath, "Logic.Hotfix.Fixed", new[] {
             "Hotfix/Fixed/",
         }, Array.Empty<string>(), null);
     }
 
-    [MenuItem("Assets/Build/Assembly/HotReload")]
+    [MenuItem("Assembly/Build/HotReload")]
     // https://github.com/egametang/ET/blob/33a7d0dd8425eda22334b325ca5cf6d40711ab05/Unity/Assets/Editor/BuildEditor/BuildAssemblieEditor.cs#L56
     public static void BuildHotReload() {
         string[] files = Directory.GetFiles(HotfixSettings.HotfixHotReloadRelativePath, HotfixSettings.HotReloadDLLName);

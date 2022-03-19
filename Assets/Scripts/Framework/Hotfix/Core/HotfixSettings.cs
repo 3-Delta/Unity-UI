@@ -23,13 +23,7 @@ public static class HotfixSettings {
 
     // 参考ET，因为Unity如果不进行Refresh,就会始终返回缓存，所以命名后缀添加随机数
     public const string HotReloadDLLName = "Logic.Hotfix.HotReload_*";
-
-    /// 设定的手动生成的绑定脚本文件夹路径
-    public const string BindingManualFolderPath = "Assets/Scripts/Runtime/ILRuntime/ILRBindings/Manual";
-
-    /// 设定的自动生成的适配脚本文件夹路径
-    public const string AdaptorAnalysisFilePath = "Assets/Scripts/Runtime/ILRuntime/Adapters";
-
+    
     public const string HotfixDLLRelativePath = "ABSource/DLL/" + HotfixDLLFileName;
     public const string HotfixPdbRelativePath = "ABSource/DLL/" + HotfixPDBFileName;
 
@@ -56,11 +50,11 @@ public static class HotfixSettings {
     public const string HotfixHotReloadRelativePath = "Temp/bin";
 
     /// 设定的自动生成的绑定脚本文件夹路径
-    public const string BindingAnalysisFolderPath = "Assets/Scripts/Runtime/ILRuntime/Bindings/Analysis";
+    public const string BindingAnalysisFolderPath = "Assets/Scripts/Framework/Hotfix/ILRuntime/Bindings/Analysis";
 
     /// 设定的自动生成的delegate脚本文件夹路径
-    public const string DelegateAnalysisFolderPath = "Assets/Scripts/Runtime/ILRuntime/Delegates/Analysis";
+    public const string DelegateAnalysisFolderPath = "Assets/Scripts/Framework/Hotfix/ILRuntime/Delegates/Analysis";
 
     /// 设定的自动生成的适配脚本文件夹路径
-    public const string AdaptorAnalysisFolderPath = "Assets/Scripts/Runtime/ILRuntime/Adapters/Analysis";
+    public const string AdaptorAnalysisFolderPath = "Assets/Scripts/Framework/Hotfix/ILRuntime/Adapters/Analysis";
 }

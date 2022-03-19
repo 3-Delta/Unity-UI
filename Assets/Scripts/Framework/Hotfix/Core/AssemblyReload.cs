@@ -64,7 +64,7 @@ public class AssemblyReload : IAssembly {
         hotReloadAssembly = null;
         allTypes = null;
     }
-
+    
     public void Load() {
         LoadHotfixFixed();
         LoadHotReload();
@@ -86,10 +86,10 @@ public class AssemblyReload : IAssembly {
             }
         }
         catch {
-            Debug.LogError("请先编译生成 fixed dll");
+            Debug.LogError("请先编译生成 Fixed dll");
         }
     }
-
+    
     public void LoadHotReload() {
         string[] files = Directory.GetFiles(HotfixSettings.HotfixHotReloadRelativePath, HotfixSettings.HotReloadDLLName);
         if (files.Length != 2) {

@@ -1,5 +1,9 @@
 ﻿using System;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 public static class AssemblyProxy {
     private static IAssembly assembly = null;
 
@@ -47,4 +51,12 @@ public static class AssemblyProxy {
     public static InstanceMethod CreateInstanceMethod(string typeNameIncludeNamespace, string methodName, ref object refInstance, int argCount) {
         return assembly?.CreateInstanceMethod(typeNameIncludeNamespace, methodName, ref refInstance, argCount);
     }
+
+#if __REFL_RELOAD__ && UNITY_EDITOR
+    [MenuItem("Assembly/HotReload")]
+    private static void Reload() {
+        (assembly as AssemblyReload)?.LoadHotReload();
+        UnityEngine.Debug.LogError("HotReload Success");
+    }
+#endif
 }
