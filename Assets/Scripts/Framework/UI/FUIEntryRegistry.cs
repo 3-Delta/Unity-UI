@@ -23,7 +23,7 @@ public enum EUILayer {
 
 [Serializable]
 public class FUIEntry {
-#if UNITY_EDITOR && __DEV_MODE__
+#if UNITY_EDITOR
     public int uiType;
     public string prefabPath;
     public Type ui;

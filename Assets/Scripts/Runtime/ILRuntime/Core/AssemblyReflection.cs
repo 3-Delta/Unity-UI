@@ -37,7 +37,7 @@ public class AssemblyReflection : IAssembly {
             byte[] pdbBytes = PathService.GetFileBytes(pdbFullPath);
             assembly = Assembly.Load(dllBytes, pdbBytes);
 #else
-        assembly = Assembly.Load(dllBytes);
+            assembly = Assembly.Load(dllBytes);
 #endif
         }
         catch {

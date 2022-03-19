@@ -34,11 +34,25 @@ public class AssemblyReload : IAssembly {
     }
 
     public InstanceMethod CreateInstanceMethod(string typeNameIncludeNamespace, string methodName, ref object refInstance, int argCount) {
-        return new MonoInstanceMethod(fixedAssembly, typeNameIncludeNamespace, methodName, ref refInstance);
+        if (fixedTypes.ContainsKey(typeNameIncludeNamespace)) {
+            return new MonoInstanceMethod(fixedAssembly, typeNameIncludeNamespace, methodName, ref refInstance);
+        }
+        else if (hotReloadTypes.ContainsKey(typeNameIncludeNamespace)) {
+            return new MonoInstanceMethod(hotReloadAssembly, typeNameIncludeNamespace, methodName, ref refInstance);
+        }
+
+        return null;
     }
 
     public StaticMethod CreateStaticMethod(string typeNameIncludeNamespace, string methodName, int argCount) {
-        return new MonoStaticMethod(fixedAssembly, typeNameIncludeNamespace, methodName);
+        if (fixedTypes.ContainsKey(typeNameIncludeNamespace)) {
+            return new MonoStaticMethod(fixedAssembly, typeNameIncludeNamespace, methodName);
+        }
+        else if (hotReloadTypes.ContainsKey(typeNameIncludeNamespace)) {
+            return new MonoStaticMethod(hotReloadAssembly, typeNameIncludeNamespace, methodName);
+        }
+
+        return null;
     }
 
     public Type[] GetTypes() {
@@ -61,14 +75,11 @@ public class AssemblyReload : IAssembly {
         byte[] dllBytes = PathService.GetFileBytes(dllFullPath);
 
         try {
-#if UNITY_EDITOR
             // editor模式下，加载pdb for debug
             string pdbFullPath = Path.Combine(HotfixSettings.HotfixHotReloadRelativePath, HotfixSettings.HotfixFixedPdbNameWithExt);
             byte[] pdbBytes = PathService.GetFileBytes(pdbFullPath);
             fixedAssembly = Assembly.Load(dllBytes, pdbBytes);
-#else
-            fixedAssembly = Assembly.Load(dllBytes);
-#endif
+
             fixedTypes.Clear();
             foreach (var one in fixedAssembly.GetTypes()) {
                 fixedTypes.Add(one.FullName, one);
@@ -81,23 +92,19 @@ public class AssemblyReload : IAssembly {
 
     public void LoadHotReload() {
         string[] files = Directory.GetFiles(HotfixSettings.HotfixHotReloadRelativePath, HotfixSettings.HotReloadDLLName);
-        if (files.Length != 1) {
-            throw new Exception("HotReload dll count != 1");
+        if (files.Length != 2) {
+            throw new Exception("HotReload dll count != 2, but is: " + files.Length.ToString());
         }
 
         string nameWithoutExtension = Path.GetFileNameWithoutExtension(files[0]);
-        string dllPath = Path.Combine(Application.dataPath, HotfixSettings.HotfixHotReloadRelativePath, nameWithoutExtension + ".dll");
+        string dllPath = Path.Combine(HotfixSettings.HotfixHotReloadRelativePath, nameWithoutExtension + ".dll");
         byte[] dllBytes = PathService.GetFileBytes(dllPath);
 
         try {
-#if UNITY_EDITOR
-            // editor模式下，加载pdb for debug
-            string pdbPath = Path.Combine(Application.dataPath, HotfixSettings.HotfixHotReloadRelativePath, nameWithoutExtension + ".pdb");
+            string pdbPath = Path.Combine(HotfixSettings.HotfixHotReloadRelativePath, nameWithoutExtension + ".pdb");
             byte[] pdbBytes = PathService.GetFileBytes(pdbPath);
             hotReloadAssembly = Assembly.Load(dllBytes, pdbBytes);
-#else
-            hotReloadAssembly = Assembly.Load(dllBytes);
-#endif
+
             hotReloadTypes.Clear();
             foreach (var one in hotReloadAssembly.GetTypes()) {
                 hotReloadTypes.Add(one.FullName, one);
@@ -115,7 +122,7 @@ public class AssemblyReload : IAssembly {
             allTypes = listType.ToArray();
         }
         catch {
-            Debug.LogError("请先编译生成 hotreload dll");
+            Debug.LogError("请先编译生成 HotReload.dll");
         }
     }
 }

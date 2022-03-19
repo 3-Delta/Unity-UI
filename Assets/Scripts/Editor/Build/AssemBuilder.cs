@@ -132,10 +132,10 @@ public class AssemBuilder {
                     progress += 0.1f;
                     EditorUtility.DisplayCancelableProgressBar("AssemblyBuilder.Build", "...", progress);
                 }
+                Debug.LogErrorFormat("Build Assembly Success：" + assemblyBuilder.assemblyPath);
             }
         }
         finally {
-            Debug.LogErrorFormat("Build Assembly Exception");
             EditorUtility.ClearProgressBar();
         }
     }

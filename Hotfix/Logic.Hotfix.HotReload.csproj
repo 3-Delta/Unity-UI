@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9AA23530-C9A6-478D-90A4-C897C7147769}</ProjectGuid>
+    <ProjectGuid>{8DD85DB2-E9C6-4A0B-8E8D-B70915A2B46D}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Logic.Hotfix</RootNamespace>
-    <AssemblyName>Logic.Hotfix</AssemblyName>
+    <RootNamespace>Logic.Hotfix.HotReload</RootNamespace>
+    <AssemblyName>Logic.Hotfix.HotReload</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -64,27 +64,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Fixed\Core\EUIType.cs" />
-    <Compile Include="Fixed\Core\SysBase.cs" />
-    <Compile Include="Fixed\Core\SystemList.cs" />
-    <Compile Include="Fixed\Core\SystemMgr.cs" />
-    <Compile Include="Fixed\Core\UIBase.cs" />
-    <Compile Include="Fixed\Core\UILayoutBase.cs" />
-    <Compile Include="Fixed\Core\Vd.cs" />
-    <Compile Include="Fixed\Protos\Common.cs" />
-    <Compile Include="Fixed\Protos\EntitySync.cs" />
-    <Compile Include="Fixed\Protos\GM.cs" />
-    <Compile Include="Fixed\Protos\Login.cs" />
-    <Compile Include="Fixed\Protos\Msgype.cs" />
-    <Compile Include="Fixed\Protos\Reconnect.cs" />
-    <Compile Include="Fixed\Protos\ServerList.cs" />
-    <Compile Include="Fixed\Protos\Team.cs" />
-    <Compile Include="Fixed\Protos\Time.cs" />
-    <Compile Include="Fixed\System\Service\ReconnectService.cs" />
-    <Compile Include="Fixed\System\Service\ServerTimeService.cs" />
-    <Compile Include="Fixed\System\SysAccount.cs" />
-    <Compile Include="Fixed\System\SysTeam.cs" />
-    <Compile Include="Fixed\Utility\UI\TextSetter.cs" />
     <Compile Include="HotReload\HotfixBridge.cs" />
     <Compile Include="HotReload\UIEntry.cs" />
     <Compile Include="HotReload\UIMgr.cs" />
@@ -96,20 +75,17 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Fixed\Scene\场景控制相关.txt" />
+    <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Properties\" />
+    <ProjectReference Include="Logic.Hotfix.Fixed.csproj">
+      <Project>{9aa23530-c9a6-478d-90a4-c897c7147768}</Project>
+      <Name>Logic.Hotfix.Fixed</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy $(TargetDir).\$(TargetName).dll $(ProjectDir)..\Assets\ABSource\DLL\$(TargetName).dll
-copy $(TargetDir).\$(TargetName).pdb $(ProjectDir)..\Assets\ABSource\DLL\$(TargetName).pdb
-copy $(TargetDir).\$(TargetName).dll $(ProjectDir)..\Assets\ABSource\DLL\$(TargetName).dll.bytes
-copy $(TargetDir).\$(TargetName).pdb $(ProjectDir)..\Assets\ABSource\DLL\$(TargetName).pdb.bytes
-copy $(TargetDir).\$(TargetName).dll $(ProjectDir)..\Temp\bin\$(TargetName).dll
-copy $(TargetDir).\$(TargetName).pdb $(ProjectDir)..\Temp\bin\$(TargetName).pdb
-copy $(TargetDir).\$(TargetName).dll $(ProjectDir)..\Temp\bin\$(TargetName).dll.bytes
-copy $(TargetDir).\$(TargetName).pdb $(ProjectDir)..\Temp\bin\$(TargetName).pdb.bytes</PostBuildEvent>
+    <PostBuildEvent>copy $(TargetDir).\$(TargetName).dll $(ProjectDir)..\Temp\bin\$(TargetName).dll
+copy $(TargetDir).\$(TargetName).pdb $(ProjectDir)..\Temp\bin\$(TargetName).pdb</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -6,21 +6,35 @@ public static class UnityMarco {
     [MenuItem("Marco/Native")]
     private static void MarcoNative() {
         UnityMarcoDef.SetMarco(EMarcoType.Native);
+        EditorPrefs.SetInt("__AssemblyMarco__", (int)EMarcoType.Native);
     }
 
     [MenuItem("Marco/ReflReload")]
     private static void MarcoReflReload() {
         UnityMarcoDef.SetMarco(EMarcoType.ReflReload);
+        EditorPrefs.SetInt("__AssemblyMarco__", (int)EMarcoType.ReflReload);
     }
 
     [MenuItem("Marco/Refl")]
     private static void MarcoRefl() {
         UnityMarcoDef.SetMarco(EMarcoType.Refl);
+        EditorPrefs.SetInt("__AssemblyMarco__", (int)EMarcoType.Refl);
     }
 
     [MenuItem("Marco/Ilr")]
     private static void MarcoIlr() {
         UnityMarcoDef.SetMarco(EMarcoType.Ilr);
+        EditorPrefs.SetInt("__AssemblyMarco__", (int)EMarcoType.Ilr);
+    }
+
+    [MenuItem("Marco/ReflReload",true)]
+    private static bool _MarcoCheck() {
+        EMarcoType mr = (EMarcoType)EditorPrefs.GetInt("__AssemblyMarco__");
+        Menu.SetChecked("Marco/Native", mr == EMarcoType.Native);
+        Menu.SetChecked("Marco/ReflReload", mr == EMarcoType.ReflReload);
+        Menu.SetChecked("Marco/Refl", mr == EMarcoType.Refl);
+        Menu.SetChecked("Marco/Ilr", mr == EMarcoType.Ilr);
+        return true;
     }
 
     public static List<string> GetMarcos() {

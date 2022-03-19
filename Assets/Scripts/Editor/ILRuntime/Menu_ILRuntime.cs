@@ -47,7 +47,7 @@ public static class Menu_ILRuntime {
         Directory.CreateDirectory(HotfixSettings.BindingAnalysisFolderPath);
 
         // 分析热更DLL来生成绑定代码
-        string dllFilePath = $"{HotfixSettings.AssemblyFolderPath}/{HotfixSettings.HotfixDLLFileName}.bytes";
+        string dllFilePath = $"{HotfixSettings.HotfixHotReloadRelativePath}/{HotfixSettings.HotfixDLLFileName}.bytes";
         using (FileStream fs = new FileStream(dllFilePath, FileMode.Open, FileAccess.Read)) {
             ILRuntime.Runtime.Enviorment.AppDomain appDomain = new ILRuntime.Runtime.Enviorment.AppDomain();
             appDomain.LoadAssembly(fs);
