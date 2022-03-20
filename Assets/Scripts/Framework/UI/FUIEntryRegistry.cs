@@ -89,6 +89,10 @@ public class FUIEntryRegistry {
         return registry.TryGetValue(uiType, out entry);
     }
 
+    public static void Clear() {
+        registry.Clear();
+    }
+
     public static void Register(FUIEntry entry) {
         if (entry != null && !registry.TryGetValue(entry.uiType, out _)) {
             registry.Add(entry.uiType, entry);

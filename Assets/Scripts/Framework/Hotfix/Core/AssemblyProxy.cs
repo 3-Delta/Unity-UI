@@ -54,9 +54,15 @@ public static class AssemblyProxy {
 
 #if __REFL_RELOAD__ && UNITY_EDITOR
     [MenuItem("Assembly/HotReload")]
-    private static void Reload() {
-        (assembly as AssemblyReload)?.LoadHotReload();
-        UnityEngine.Debug.LogError("HotReload Success");
+    private static void HotReload() {
+        AssemblyReload ass = assembly as AssemblyReload;
+        ass?.LoadHotReload();
+        
+        // 重新执行UI配置
+        StaticMethod method = ass?.CreateStaticMethod("Logic.Hotfix.HotfixBridge", "UIInject", 0);
+        method?.Exec();
+        
+        UnityEngine.Debug.LogError("HotReload Inject Success");
     }
 #endif
 }

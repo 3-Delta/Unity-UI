@@ -23,13 +23,11 @@ namespace Logic.Hotfix
     {
         public static void Inject()
         {
+            FUIEntryRegistry.Clear();
             for (int i = 0, length = registry.Count; i < length; ++i)
             {
                 FUIEntryRegistry.Register(registry[i]);
             }
-
-            registry.Clear();
-            registry = null;
         }
 
         private static List<FUIEntry> registry = new List<FUIEntry>() {

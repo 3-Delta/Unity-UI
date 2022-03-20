@@ -9,7 +9,13 @@
             SystemMgr.Instance.Enter();
 
             // 填充UIEntry结构
-            UIMgr.Init();
+            UIInject();
+            FUIMgr.Init();
+        }
+
+        public static void UIInject()
+        {
+            UIEntryRegistry.Inject();
         }
     }
 }

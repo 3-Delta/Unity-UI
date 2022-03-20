@@ -4,7 +4,7 @@ namespace Logic.Hotfix
 {
     public interface IReload
     {
-#if DEVELOPMENT_MODE
+#if DEBUG
         // 只在开发模式下使用
         void OnReload();
 #else

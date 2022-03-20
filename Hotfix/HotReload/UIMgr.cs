@@ -4,12 +4,6 @@ namespace Logic.Hotfix
 {
     public class UIMgr : FUIMgr
     {
-        public new static void Init()
-        {
-            UIEntryRegistry.Inject();
-            FUIMgr.Init();
-        }
-
         public static void Open(EUIType uiType, Tuple<ulong, ulong, ulong, object> arg = null)
         {
             Open((int)(uiType), arg);

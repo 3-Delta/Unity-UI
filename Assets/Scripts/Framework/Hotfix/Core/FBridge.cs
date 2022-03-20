@@ -43,7 +43,7 @@ public class FBridge : MonoBehaviour {
     _hotfixInit?.Exec();
 #endif
     }
-
+    
     public static void Dispose() {
         _hotfixInit = null;
         _playAudio = null;
