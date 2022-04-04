@@ -14,3 +14,7 @@ UGUI框架
     有时候为了简单，比如editor下需要跳过sdk，热更阶段，直达serverlist获取阶段               
     有时候为了调试，比如editor下需要直接登录某个特定的ip地址从而登录游戏，需要跳过sdk, 热更，选服，直达登录阶段，然后直接在某个mono上输入ip地址点击登录即可           
     比如游戏阶段：loading，主城，战斗，对话，cutscene    
+    
+    
+参考：
+1. https://github.com/SuperCLine/ui-framework.git
