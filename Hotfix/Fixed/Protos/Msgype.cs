@@ -13,7 +13,7 @@ namespace Logic.Pbf {
   /// 框架层协议号，更换游戏项目依然可以使用
   /// 最大支持65535
   /// </summary>
-  public enum MsgType {
+  public enum EMsgType {
     /// <summary>
     /// ----------------------- 框架层协议 ----------------------------
     /// </summary>

@@ -11,18 +11,16 @@ namespace Logic.Hotfix
         {
             OnTimeSync,
         }
-
-        public readonly DelegateService<EEvents> emiter = new DelegateService<EEvents>();
-
+        
         protected override void ProcessEvent(bool toRegister)
         {
             if (toRegister)
             {
-                NWDelegateService.Add<SCTimeNtf>(0, (ushort)MsgType.SctimeNtf, OnSctimeNtf, SCTimeNtf.Parser);
+                NWDelegateService.Add<SCTimeNtf>(0, (ushort)EMsgType.SctimeNtf, OnSctimeNtf, SCTimeNtf.Parser);
             }
             else
             {
-                NWDelegateService.Remove<SCTimeNtf>((ushort)MsgType.SctimeNtf, OnSctimeNtf);
+                NWDelegateService.Remove<SCTimeNtf>((ushort)EMsgType.SctimeNtf, OnSctimeNtf);
             }
         }
 

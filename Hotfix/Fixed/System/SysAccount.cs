@@ -1,7 +1,12 @@
-﻿namespace Logic.Hotfix
+﻿using Logic.Pbf;
+
+namespace Logic.Hotfix
 {
-    public class SysAccount : SysBase<SysAccount>, IReload
+    public partial class SysAccount : SysBase<SysAccount>
     {
+        // 游戏是否进行过重连操作
+        private int syncCount = 0;
+
         // 数据同步
         public bool hasSynced
         {
@@ -18,8 +23,20 @@
             }
         }
 
-        // 游戏是否进行过重连操作
-        private int syncCount = 0;
+        public ushort id;
+        public string name;
+        public uint level;
+
+        public uint serverId;
+    }
+
+    public partial class SysAccount : SysBase<SysAccount>
+    {
+        protected override void ProcessEvent(bool toRegister)
+        {
+            NWDelegateService.emiter.Handle((ushort)EMsgType.Cslogin, OnResLogin, toRegister);
+            NWDelegateService.emiter.Handle((ushort)EMsgType.Cslogout, OnResLogout, toRegister);
+        }
 
         // 正式登陆调用，重连不调用
         public void ReqLogin()
@@ -28,16 +45,25 @@
         }
 
         // 登录回包
-        public void OnResLogin() { }
+        public void OnResLogin()
+        {
+            SystemMgr.Instance.OnLogin();
+        }
+
+        public void ReqLogout()
+        {
+
+        }
+
+        public void OnResLogout()
+        {
+            SystemMgr.Instance.OnLogout();
+        }
 
         public override void OnSynced()
         {
             ++syncCount;
-        }
-
-        public override void OnReload()
-        {
-            // 表格热更新
+            SystemMgr.Instance.OnSynced();
         }
     }
 }

@@ -8,7 +8,7 @@ echo curPath = %curPath%s
 set sourcePath=%curPath%..\Resource\Protos
 echo sourcePath = %sourcePath%
 
-set destPath=%curPath%..\Hotfix\Protos
+set destPath=%curPath%..\Hotfix\Fixed\Protos
 echo destPath = %destPath%
 
 for %%i in (%sourcePath%\*.proto) do (

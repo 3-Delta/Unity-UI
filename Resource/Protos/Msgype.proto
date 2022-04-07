@@ -3,7 +3,7 @@ package Logic.pbf;
 
 // 框架层协议号，更换游戏项目依然可以使用
 // 最大支持65535
-enum MsgType {
+enum EMsgType {
 // ----------------------- 框架层协议 ----------------------------
     CSLogin = 0;
     SCLogin = 1;

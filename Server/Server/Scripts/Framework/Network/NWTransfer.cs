@@ -24,7 +24,7 @@ public class NWTransfer
             NWPackage package = new NWPackage();
             if (receivedQueue.Dequeue(ref package))
             {
-                DelegateMgr<MsgType>.Fire<ulong, NWPackageBody>((MsgType)package.head.msgType, package.head.playerID, package.body);
+                DelegateMgr<EMsgType>.Fire<ulong, NWPackageBody>((EMsgType)package.head.msgType, package.head.playerID, package.body);
             }
         }
     }
@@ -184,12 +184,12 @@ public class NWTransfer
             // to do: 账号互顶的问题[playerID换设备登录]
             lastInteractTime = TimeMgr.Instance.time; // 记录交互时间
 
-            if ((MsgType)buffer.package.head.msgType == MsgType.Cslogin)
+            if ((EMsgType)buffer.package.head.msgType == EMsgType.Cslogin)
             {
                 NWMgr.Instance.clients.Add(buffer.package.head.playerID, this);
                 NWMgr.Instance.transfers.Add(this, buffer.package.head.playerID);
             }
-            else if ((MsgType)buffer.package.head.msgType == MsgType.Cslogout)
+            else if ((EMsgType)buffer.package.head.msgType == EMsgType.Cslogout)
             {
                 NWMgr.Instance.clients.Remove(buffer.package.head.playerID);
                 NWMgr.Instance.transfers.Remove(this);
@@ -214,7 +214,7 @@ public class NWTransfer
             try
             {
                 // https://blog.csdn.net/kucoffee12/article/details/86482332
-                LogMgr.Log("Server Send Message To Client... " + (MsgType)protoType + " " + playerID.ToString());
+                LogMgr.Log("Server Send Message To Client... " + (EMsgType)protoType + " " + playerID.ToString());
                 socket.BeginSend(packageBytes, 0, packageBytes.Length, SocketFlags.None, new AsyncCallback(OnSend), null);
             }
             catch (Exception e)

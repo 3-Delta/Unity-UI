@@ -9,6 +9,8 @@ public interface IListenReconnect {
 
 [Serializable]
 public class FUIBase /*: IListenReconnect*/ {
+    public Action<int, int> onSortOrderChanged;
+
     public int uiType;
     public FUIEntry cfg;
 
@@ -59,10 +61,15 @@ public class FUIBase /*: IListenReconnect*/ {
 
     public void SetOrder(int order) {
         Debug.LogError(string.Format("SetOrder {0} {1} {2}", uiType.ToString(), cfg.ui, order.ToString()));
+        int oldOrder = this.order;
         this.order = order;
 
         if (adapter != null) {
             adapter.SetOrder(order);
+        }
+
+        if (oldOrder != order) {
+            onSortOrderChanged?.Invoke(oldOrder, order);
         }
     }
 

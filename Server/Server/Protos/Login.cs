@@ -14,38 +14,45 @@ namespace Logic.Pbf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<CSLogin> Parser { get { return _parser; } }
 
+    /// <summary>Field number for the "sdkType" field.</summary>
+    public const int SdkTypeFieldNumber = 1;
+    private uint sdkType_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void WriteTo(pb::CodedOutputStream output) {
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public int CalculateSize() {
-      int size = 0;
-      return size;
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(pb::CodedInputStream input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            input.SkipLastField();
-            break;
-        }
+    public uint SdkType {
+      get { return sdkType_; }
+      set {
+        sdkType_ = value;
       }
     }
 
-  }
-
-  public sealed class SCLogin : pb::IMessage {
-    private static readonly pb::MessageParser<SCLogin> _parser = new pb::MessageParser<SCLogin>(() => new SCLogin());
+    /// <summary>Field number for the "roleId" field.</summary>
+    public const int RoleIdFieldNumber = 2;
+    private ulong roleId_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<SCLogin> Parser { get { return _parser; } }
+    public ulong RoleId {
+      get { return roleId_; }
+      set {
+        roleId_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "accountName" field.</summary>
+    public const int AccountNameFieldNumber = 3;
+    private string accountName_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string AccountName {
+      get { return accountName_; }
+      set {
+        accountName_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
 
     /// <summary>Field number for the "signature" field.</summary>
-    public const int SignatureFieldNumber = 1;
+    public const int SignatureFieldNumber = 4;
     private ulong signature_;
+    /// <summary>
+    /// 从serverList获取
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ulong Signature {
       get { return signature_; }
@@ -56,8 +63,20 @@ namespace Logic.Pbf {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Signature != 0UL) {
+      if (SdkType != 0) {
         output.WriteRawTag(8);
+        output.WriteUInt32(SdkType);
+      }
+      if (RoleId != 0UL) {
+        output.WriteRawTag(16);
+        output.WriteUInt64(RoleId);
+      }
+      if (AccountName.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteString(AccountName);
+      }
+      if (Signature != 0UL) {
+        output.WriteRawTag(32);
         output.WriteUInt64(Signature);
       }
     }
@@ -65,6 +84,15 @@ namespace Logic.Pbf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
+      if (SdkType != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(SdkType);
+      }
+      if (RoleId != 0UL) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(RoleId);
+      }
+      if (AccountName.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(AccountName);
+      }
       if (Signature != 0UL) {
         size += 1 + pb::CodedOutputStream.ComputeUInt64Size(Signature);
       }
@@ -80,9 +108,157 @@ namespace Logic.Pbf {
             input.SkipLastField();
             break;
           case 8: {
+            SdkType = input.ReadUInt32();
+            break;
+          }
+          case 16: {
+            RoleId = input.ReadUInt64();
+            break;
+          }
+          case 26: {
+            AccountName = input.ReadString();
+            break;
+          }
+          case 32: {
             Signature = input.ReadUInt64();
             break;
           }
+        }
+      }
+    }
+
+  }
+
+  public sealed class SCLogin : pb::IMessage {
+    private static readonly pb::MessageParser<SCLogin> _parser = new pb::MessageParser<SCLogin>(() => new SCLogin());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<SCLogin> Parser { get { return _parser; } }
+
+    /// <summary>Field number for the "roleId" field.</summary>
+    public const int RoleIdFieldNumber = 1;
+    private ulong roleId_;
+    /// <summary>
+    /// 0表示没有角色，需要创角
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ulong RoleId {
+      get { return roleId_; }
+      set {
+        roleId_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "time" field.</summary>
+    public const int TimeFieldNumber = 2;
+    private global::Logic.Pbf.TimeSync time_;
+    /// <summary>
+    /// 时间同步
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Logic.Pbf.TimeSync Time {
+      get { return time_; }
+      set {
+        time_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "reconnectSignature" field.</summary>
+    public const int ReconnectSignatureFieldNumber = 3;
+    private ulong reconnectSignature_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public ulong ReconnectSignature {
+      get { return reconnectSignature_; }
+      set {
+        reconnectSignature_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (RoleId != 0UL) {
+        output.WriteRawTag(8);
+        output.WriteUInt64(RoleId);
+      }
+      if (time_ != null) {
+        output.WriteRawTag(18);
+        output.WriteMessage(Time);
+      }
+      if (ReconnectSignature != 0UL) {
+        output.WriteRawTag(24);
+        output.WriteUInt64(ReconnectSignature);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (RoleId != 0UL) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(RoleId);
+      }
+      if (time_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Time);
+      }
+      if (ReconnectSignature != 0UL) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(ReconnectSignature);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 8: {
+            RoleId = input.ReadUInt64();
+            break;
+          }
+          case 18: {
+            if (time_ == null) {
+              time_ = new global::Logic.Pbf.TimeSync();
+            }
+            input.ReadMessage(time_);
+            break;
+          }
+          case 24: {
+            ReconnectSignature = input.ReadUInt64();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  /// <summary>
+  ///  协议全部发送完毕
+  /// </summary>
+  public sealed class SCEnterAppNtf : pb::IMessage {
+    private static readonly pb::MessageParser<SCEnterAppNtf> _parser = new pb::MessageParser<SCEnterAppNtf>(() => new SCEnterAppNtf());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<SCEnterAppNtf> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
         }
       }
     }

@@ -9,10 +9,10 @@ using scg = global::System.Collections.Generic;
 namespace Logic.Pbf {
 
   #region Messages
-  public sealed class SCTimeNtf : pb::IMessage {
-    private static readonly pb::MessageParser<SCTimeNtf> _parser = new pb::MessageParser<SCTimeNtf>(() => new SCTimeNtf());
+  public sealed class TimeSync : pb::IMessage {
+    private static readonly pb::MessageParser<TimeSync> _parser = new pb::MessageParser<TimeSync>(() => new TimeSync());
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<SCTimeNtf> Parser { get { return _parser; } }
+    public static pb::MessageParser<TimeSync> Parser { get { return _parser; } }
 
     /// <summary>Field number for the "timeSeconds" field.</summary>
     public const int TimeSecondsFieldNumber = 1;
@@ -74,6 +74,60 @@ namespace Logic.Pbf {
           }
           case 16: {
             TimeZoneSeconds = input.ReadInt32();
+            break;
+          }
+        }
+      }
+    }
+
+  }
+
+  public sealed class SCTimeNtf : pb::IMessage {
+    private static readonly pb::MessageParser<SCTimeNtf> _parser = new pb::MessageParser<SCTimeNtf>(() => new SCTimeNtf());
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<SCTimeNtf> Parser { get { return _parser; } }
+
+    /// <summary>Field number for the "time" field.</summary>
+    public const int TimeFieldNumber = 1;
+    private global::Logic.Pbf.TimeSync time_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::Logic.Pbf.TimeSync Time {
+      get { return time_; }
+      set {
+        time_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (time_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Time);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (time_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Time);
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            input.SkipLastField();
+            break;
+          case 10: {
+            if (time_ == null) {
+              time_ = new global::Logic.Pbf.TimeSync();
+            }
+            input.ReadMessage(time_);
             break;
           }
         }

@@ -9,21 +9,39 @@ using scg = global::System.Collections.Generic;
 namespace Logic.Pbf {
 
   #region Messages
-  /// <summary>
-  /// uint32 time;
-  /// </summary>
   public sealed class CSHeartBeat : pb::IMessage {
     private static readonly pb::MessageParser<CSHeartBeat> _parser = new pb::MessageParser<CSHeartBeat>(() => new CSHeartBeat());
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<CSHeartBeat> Parser { get { return _parser; } }
 
+    /// <summary>Field number for the "sequence" field.</summary>
+    public const int SequenceFieldNumber = 2;
+    private uint sequence_;
+    /// <summary>
+    /// uint32 time = 1;
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public uint Sequence {
+      get { return sequence_; }
+      set {
+        sequence_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+      if (Sequence != 0) {
+        output.WriteRawTag(16);
+        output.WriteUInt32(Sequence);
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
+      if (Sequence != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Sequence);
+      }
       return size;
     }
 
@@ -35,6 +53,10 @@ namespace Logic.Pbf {
           default:
             input.SkipLastField();
             break;
+          case 16: {
+            Sequence = input.ReadUInt32();
+            break;
+          }
         }
       }
     }
@@ -46,30 +68,33 @@ namespace Logic.Pbf {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pb::MessageParser<SCHeartBeat> Parser { get { return _parser; } }
 
-    /// <summary>Field number for the "time" field.</summary>
-    public const int TimeFieldNumber = 1;
-    private ulong time_;
+    /// <summary>Field number for the "sequence" field.</summary>
+    public const int SequenceFieldNumber = 2;
+    private uint sequence_;
+    /// <summary>
+    ///  uint64 time = 1;
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public ulong Time {
-      get { return time_; }
+    public uint Sequence {
+      get { return sequence_; }
       set {
-        time_ = value;
+        sequence_ = value;
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Time != 0UL) {
-        output.WriteRawTag(8);
-        output.WriteUInt64(Time);
+      if (Sequence != 0) {
+        output.WriteRawTag(16);
+        output.WriteUInt32(Sequence);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Time != 0UL) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt64Size(Time);
+      if (Sequence != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Sequence);
       }
       return size;
     }
@@ -82,8 +107,8 @@ namespace Logic.Pbf {
           default:
             input.SkipLastField();
             break;
-          case 8: {
-            Time = input.ReadUInt64();
+          case 16: {
+            Sequence = input.ReadUInt32();
             break;
           }
         }
@@ -111,6 +136,9 @@ namespace Logic.Pbf {
     /// <summary>Field number for the "signature" field.</summary>
     public const int SignatureFieldNumber = 2;
     private ulong signature_;
+    /// <summary>
+    /// 从loginRes获取
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ulong Signature {
       get { return signature_; }

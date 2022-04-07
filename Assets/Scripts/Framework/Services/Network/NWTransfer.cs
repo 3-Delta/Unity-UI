@@ -243,8 +243,7 @@ public class NWTransfer {
         if (receivedQueue.Count > 0) {
             package = new NWPackage();
             if (receivedQueue.Dequeue(ref package)) {
-                ushort protoType = (ushort)package.head.msgType;
-                //DelegateMgr<ushort>.Fire<NW_Package>(protoType, package);
+                ushort protoType = package.head.msgType;
                 NWDelegateService.Fire(protoType, package);
             }
         }
