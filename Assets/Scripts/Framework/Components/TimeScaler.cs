@@ -1,31 +1,76 @@
 ﻿using UnityEngine;
 
-[DisallowMultipleComponent]
-public class TimeScaler : MonoBehaviour {
-    private void Start() {
-        hideFlags = HideFlags.DontSaveInBuild;
+#if UNITY_EDITOR
+using UnityEditor;
+
+[CustomEditor(typeof(TimeScaler))]
+public class TimeScalerInspector : BaseInspector {
+    public static readonly float[] scale = new[] { 0f, 0.01f, 0.1f, 0.25f, 0.5f, 1f, 1.5f, 2f, 4f, 8f };
+    public static readonly string[] scaleDisplay = new[] { "0x", "0.01x", "0.1x", "0.25x", "0.5x", "1x", "1.5x", "2x", "4x", "8x" };
+
+    private TimeScaler component;
+    private SerializedProperty timeScaleProp = null;
+
+    private void OnEnable() {
+        component = (TimeScaler)target;
+
+        timeScaleProp = serializedObject.FindProperty("_timeScale");
     }
 
-#if UNITY_EDITOR
-    private void Update() {
-        if (Input.anyKeyDown) {
-            if (Input.GetKeyDown(KeyCode.UpArrow)) {
-                Time.timeScale = 4f;
+    public override void OnInspectorGUI() {
+        base.OnInspectorGUI();
+        serializedObject.Update();
+
+        EditorGUILayout.BeginVertical("box");
+        {
+            float gameSpeed = EditorGUILayout.Slider("TimeScale", timeScaleProp.floatValue, 0f, 8f);
+            int selectedGameSpeed = GUILayout.SelectionGrid(GetSelectedGameSpeed(gameSpeed), scaleDisplay, 5);
+            if (selectedGameSpeed >= 0) {
+                gameSpeed = GetGameSpeed(selectedGameSpeed);
             }
-            else if (Input.GetKeyDown(KeyCode.DownArrow)) {
-                Time.timeScale = 1f;
+
+            if (EditorApplication.isPlaying) {
+                component.TimeScale = gameSpeed;
             }
-            else if (Input.GetKeyDown(KeyCode.LeftArrow)) {
-                Time.timeScale = 0.1f;
-            }
-            else if (Input.GetKeyDown(KeyCode.RightArrow)) {
-                Time.timeScale = 10f;
+            else {
+                timeScaleProp.floatValue = gameSpeed;
             }
         }
+        EditorGUILayout.EndVertical();
+
+        serializedObject.ApplyModifiedProperties();
     }
+
+    private float GetGameSpeed(int selectedGameSpeed) {
+        if (selectedGameSpeed < 0) {
+            return scale[0];
+        }
+
+        if (selectedGameSpeed >= scale.Length) {
+            return scale[scale.Length - 1];
+        }
+
+        return scale[selectedGameSpeed];
+    }
+
+    private int GetSelectedGameSpeed(float gameSpeed) {
+        for (int i = 0; i < scale.Length; i++) {
+            if (gameSpeed.CompareTo(scale[i]) == 0) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+}
 #endif
 
-    public void Set(float target) {
-        Time.timeScale = target;
+[DisallowMultipleComponent]
+public class TimeScaler : MonoBehaviour {
+    [SerializeField] private float _timeScale = 1f;
+
+    public float TimeScale {
+        get { return _timeScale; }
+        set { Time.timeScale = _timeScale = value >= 0f ? value : 0f; }
     }
 }
