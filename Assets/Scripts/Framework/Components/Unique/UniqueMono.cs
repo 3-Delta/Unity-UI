@@ -66,7 +66,7 @@ public class UniqueDefaultMono<T> : MonoBehaviour where T : Behaviour {
     }
 
     protected void Awake() {
-        if (_defaultComponent != null) {
+        if (_defaultComponent == null) {
             if (!TryGetComponent(out _defaultComponent)) {
                 _defaultComponent = gameObject.AddComponent<T>();
             }
@@ -94,9 +94,4 @@ public class UniqueDefaultMono<T> : MonoBehaviour where T : Behaviour {
             }
         }
     }
-}
-
-// 因为auolistener全局只能保持一个，所以需要保证这一点
-public class UniqueAudioListener : UniqueDefaultMono<AudioListener> {
-    
 }

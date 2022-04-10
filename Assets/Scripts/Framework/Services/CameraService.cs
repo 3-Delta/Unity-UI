@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class CameraService {
     public static Camera Camera2d { get; set; }
+    public static Camera Camera2dTop { get; set; }
     // 场景默认的相机
     public static Camera SceneCamera3d { get; private set; }
 

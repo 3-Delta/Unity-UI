@@ -4,7 +4,12 @@
 // 但是c#在处理datetime.now和datetime.utcnow的时候，居然通过+-时区秒数的方式去实现。
 public static class TimeService {
     public static readonly DateTime UTC_START_TIME = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-    
+    public static readonly DateTime LOCAL_START_TIME = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Local);
+
+    public static double LocalNow {
+        get { return DateTime.Now.Subtract(LOCAL_START_TIME).TotalSeconds; }
+    }
+
     public static bool IsSameDay(ref DateTime x, ref DateTime y) {
         return x.Year == y.Year && x.DayOfYear == y.DayOfYear;
     }
@@ -18,7 +23,7 @@ public static class TimeService {
         DateTime r = ToDateTime(ySeconds - secondsOffset, timeZoneSeconds);
         return IsSameDay(ref l, ref r);
     }
-    
+
     public static bool IsSameWeek(ref DateTime x, ref DateTime y) {
         var l = x.AddDays(-(int)x.DayOfWeek).Date;
         var r = y.AddDays(-(int)y.DayOfWeek).Date;
@@ -34,6 +39,7 @@ public static class TimeService {
         DateTime r = ToDateTime(ySeconds - secondsOffset, timeZoneSeconds);
         return l.Year == r.Year && l.Month == r.Month;
     }
+
     public static bool IsSameWeek(long xSeconds, long ySeconds, long secondsOffset = 0, long timeZoneSeconds = 0) {
         if (xSeconds == ySeconds) {
             return true;
@@ -51,9 +57,9 @@ public static class TimeService {
     public static DateTime ToDateTime(long utcSeconds, long timeZoneSeconds) {
         DateTime startTime = UTC_START_TIME;
         DateTime targetTime = startTime.AddSeconds(utcSeconds + timeZoneSeconds);
-        return targetTime; 
+        return targetTime;
     }
-    
+
     // DateTime utcBegin = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
     // DateTime localBegin = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Local);
     //     

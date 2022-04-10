@@ -6,6 +6,7 @@ using UnityEngine;
 public enum ECameraType {
     Camera2d,
     Camera3d,
+    Camera2dTop,
 }
 
 [DisallowMultipleComponent]

@@ -3,7 +3,7 @@ using UnityEngine;
 
 // 框架层提供给热更层的快捷口
 [DisallowMultipleComponent]
-public class MonoLefetime : MonoBehaviour {
+public class MonoLifetime : MonoBehaviour {
     public Action onAwake;
     public Action onDestroy;
     public Action onEnable;
