@@ -12,8 +12,8 @@ GameObject:
   - component: {fileID: 4217198513150075211}
   - component: {fileID: 20555104847036588}
   - component: {fileID: 5479260403338639199}
-  m_Layer: 5
-  m_Name: Camera2d
+  m_Layer: 8
+  m_Name: Camera2dTop
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -76,7 +76,7 @@ Camera:
   m_Depth: 2
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 32
+    m_Bits: 256
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -100,5 +100,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e94d931ef8baaea41a0f84d04ed718b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cameraType: 0
+  cameraType: 2
   targetCamera: {fileID: 20555104847036588}
