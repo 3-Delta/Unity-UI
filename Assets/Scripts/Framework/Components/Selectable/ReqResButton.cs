@@ -31,7 +31,7 @@ public class ReqResButton : MonoBehaviour {
         _hasReq = false;
     }
 
-    public void OnReceRes(ushort res) {
+    private void OnReceRes(ushort res) {
         if (_hasReq && res == this.res) {
             End();
         }
