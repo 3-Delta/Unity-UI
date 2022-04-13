@@ -9,7 +9,7 @@ public interface IPriority {
 }
 
 public class PriorityQueue<T> where T : IPriority {
-    private Heap<T> heap = new Heap<T>(true);
+    public Heap<T> heap { get; private set; } = new Heap<T>(true);
 
     public PriorityQueue() {
         Reset();

@@ -11,7 +11,7 @@ namespace Logic.Hotfix
         {
             OnTimeSync,
         }
-        
+
         protected override void ProcessEvent(bool toRegister)
         {
             if (toRegister)

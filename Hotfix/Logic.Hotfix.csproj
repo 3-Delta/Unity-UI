@@ -52,6 +52,7 @@
     <Reference Include="Logic.Framework">
       <HintPath>..\Library\ScriptAssemblies\Logic.Framework.dll</HintPath>
       <Private>False</Private>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>Deps\UnityEngine.CoreModule.dll</HintPath>

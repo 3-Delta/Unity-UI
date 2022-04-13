@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 // 下沉： 对于最大堆来说，最大元素位于根节点，那么删除操作就是交换根节点与堆的最后一个节点，然后将交换后的最后一个节点(交换前为根节点，value为最大值)移除并返回元素。此时新根节点需要下沉到适合的位置；
 // 上浮： 当插入新元素的时候，将新元素添加至二叉堆的最后一个节点后，此时新节点需要根据value进行上浮操作，直到找到适合的位置。
 public class Heap<T> where T : IPriority {
-    private IList<T> list = new List<T>();
+    public readonly IList<T> list = new List<T>();
 
     private StringBuilder sb = new StringBuilder();
     private bool max = true;

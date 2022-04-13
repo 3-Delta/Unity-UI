@@ -69,6 +69,9 @@ public static class NWDelegateService {
     public static void Fire(ushort protoType, NWPackage package) {
         if (dict.TryGetValue(protoType, out var handler)) {
             handler.Fire(package);
+
+            // 通知外部接收到协议,本来直接emiter.Fire(protoType);也可以，但是考虑到事件冲突
+            emiter.Fire<ushort>(protoType, protoType);
         }
     }
 

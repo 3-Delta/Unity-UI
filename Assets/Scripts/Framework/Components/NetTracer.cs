@@ -14,7 +14,7 @@ public class NetTracer : MonoBehaviour {
     }
 
     [SerializeField] private ENetSpeed speedType = ENetSpeed.Mid;
-    [Range(0.3f, 99f)] public float CycleTime = 3f;
+    [Range(0.3f, 99f)] public float CycleTime = 2f;
 
     [Range(0.1f, 99f)] public long minSpeed = 10;
     [Range(0.1f, 99f)] public long maxSpeed = 20;
@@ -24,8 +24,10 @@ public class NetTracer : MonoBehaviour {
 #if UNITY_EDITOR
     // 单位：kb/s
     [SerializeField] private double currentSpeed;
+    [SerializeField] private bool isTimeOut;
 #else
     public double current { get; private set; }
+    public bool isTimeOut { get; private set; }
 #endif
 
     // 内外网url应该不一样
@@ -64,10 +66,14 @@ public class NetTracer : MonoBehaviour {
     }
 
     private async void _Send() {
+        isTimeOut = false;
         try {
             DateTime begin = DateTime.Now;
             byte[] data = await _net.GetByteArrayAsync(_url);
-            double totalSec = (DateTime.Now - begin).TotalSeconds;
+            DateTime end = DateTime.Now;
+            double totalSec = (end - begin).TotalSeconds;
+
+            isTimeOut = totalSec >= CycleTime;
 
             currentSpeed = Math.Round((double)data.Length / 1024 / totalSec, 2);
         }
