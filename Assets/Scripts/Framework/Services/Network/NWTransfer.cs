@@ -3,17 +3,84 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Serialization;
+
+public enum EConnectStatus {
+    UnConnected,
+    Connecting, // 连接中
+    Connected, // 连接成功
+}
 
 // 单个transfer, 将来可能多个transfer协作
 // 需要做一些状态的控制，比如处于连接状态，不能再次连接
+[Serializable]
 public class NWTransfer {
-    private Socket socket = null;
-
-    public bool IsConnected {
-        get { return socket?.Connected ?? false; }
+    public class Packer<T> {
+        public T value;
     }
 
-    public bool IsConnecting { get; private set; } = false;
+    private Socket socket = null;
+    private Packer<NWPackage> packagePacker = new Packer<NWPackage>();
+
+    [SerializeField] private EConnectStatus _connectStatus = EConnectStatus.UnConnected;
+
+    public EConnectStatus ConnectStatus {
+        get { return _connectStatus; }
+        private set { _connectStatus = value; }
+    }
+
+    [SerializeField] private ushort _sendSequence = 0;
+
+    public ushort SendSequence {
+        get { return _sendSequence; }
+        private set { _sendSequence = value; }
+    }
+
+    [SerializeField] private ushort _receiveSequence = 0;
+
+    public ushort ReceiveSequence {
+        get { return _receiveSequence; }
+        private set { _receiveSequence = value; }
+    }
+
+    private ushort _lastSuccessedProtoType;
+
+    public ushort LastSuccessedProtoType {
+        get { return _lastSuccessedProtoType; }
+        private set { _lastSuccessedProtoType = value; }
+    }
+
+    public Action<EConnectStatus> OnConnect;
+
+    // 只有连接成功才有数值
+    public IPEndPoint LocalEndPoint {
+        get {
+            if (IsConnected) {
+                return socket.LocalEndPoint as IPEndPoint;
+            }
+
+            return null;
+        }
+    }
+
+    // 只有连接成功才有数值
+    public IPEndPoint RemoteEndPoint {
+        get {
+            if (IsConnected) {
+                return socket.RemoteEndPoint as IPEndPoint;
+            }
+
+            return null;
+        }
+    }
+
+    public bool IsConnected {
+        get { return ConnectStatus == EConnectStatus.Connected; }
+    }
+
+    public bool IsConnecting {
+        get { return ConnectStatus == EConnectStatus.Connecting; }
+    }
 
     public NWQueue receivedQueue { get; private set; } = new NWQueue();
     public NWQueue sendQueue { get; private set; } = new NWQueue();
@@ -22,76 +89,118 @@ public class NWTransfer {
     private ManualResetEvent sendFlag = new ManualResetEvent(false);
 
     public void OnExit() {
-        socket?.Shutdown(SocketShutdown.Both);
-        socket?.Close();
+        DisConnect(true);
     }
 
-    #region // Connect
-    public void Connect(string ip, int port, System.Action callback = null) {
-        Connect(IPAddress.Parse(ip), port, callback);
+    #region Connect
+    public void Connect(string ip, int port, Action<EConnectStatus> callback = null) {
+        if (IPAddress.TryParse(ip, out IPAddress address)) {
+            Connect(address, port, callback);
+        }
+        else {
+            Debug.LogError("Ip格式不合法");
+        }
     }
 
-    public void Connect(IPAddress ip, int port, System.Action callback = null) {
+    public void Connect(IPAddress ip, int port, Action<EConnectStatus> callback = null) {
         Connect(new IPEndPoint(ip, port), callback);
     }
 
-    public void Connect(IPEndPoint ipe, System.Action callback = null) {
-        socket = new Socket(ipe.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-        socket.NoDelay = true;
-        if (!IsConnected) {
+    public void Connect(IPEndPoint ipe, Action<EConnectStatus> callback = null) {
+        if (ConnectStatus == EConnectStatus.UnConnected) {
+            socket = new Socket(ipe.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            socket.NoDelay = true;
+
+            // 超时针对同步方法，异步方法不生效
+            // socket.ReceiveTimeout = 0;
+            // socket.SendTimeout = 600;
+
+            OnConnect = callback;
+
             try {
-                socket.BeginConnect(ipe, new AsyncCallback(OnConnected), null);
+                ConnectStatus = EConnectStatus.Connecting;
+                socket.BeginConnect(ipe, OnConnected, socket);
+                OnConnect?.Invoke(ConnectStatus);
             }
             catch (Exception e) {
-                DisConnect();
-                UnityEngine.Debug.Log("Connect Failed : " + e.Message);
+                DisConnect(false);
+                Debug.Log("Connect Failed : " + e.Message);
             }
+        }
+        else {
+            Debug.LogError("已连接 或者 正在连接");
         }
     }
 
-    public void DisConnect() {
-        socket?.Close();
-        socket = null;
+    public void DisConnect(bool manual) {
+        if (ConnectStatus == EConnectStatus.UnConnected) {
+            return;
+        }
+
+        try {
+            // https://docs.microsoft.com/zh-cn/dotnet/api/system.net.sockets.socket.close?view=net-6.0
+            socket?.Shutdown(SocketShutdown.Both);
+        }
+        finally {
+            socket?.Close();
+            socket = null;
+
+            Debug.LogError("DisConnect -> " + manual.ToString());
+
+            _connectStatus = EConnectStatus.UnConnected;
+            _sendSequence = 0;
+            OnConnect?.Invoke(ConnectStatus);
+        }
+    }
+
+    private void OnConnected(IAsyncResult ar) {
+        try {
+            if (socket.Connected) {
+                ConnectStatus = EConnectStatus.Connected;
+
+                // 建立连接
+                socket.EndConnect(ar);
+
+                OnConnect?.Invoke(ConnectStatus);
+
+                // 收发数据
+                buffer.Clear();
+                //socket.BeginReceive(buffer.buffer, 0, NW_Def.PACKAGE_HEAD_SIZE, SocketFlags.None, new AsyncCallback(OnReceivedHead), buffer);
+                // or
+                socket.BeginReceive(buffer.buffer, 0, NWDef.PACKAGE_HEAD_SIZE, SocketFlags.None, OnReceivedPackage, buffer);
+            }
+            else {
+                DisConnect(false);
+                Debug.Log("OnConnected Failed : 超时");
+            }
+        }
+        catch (Exception e) {
+            DisConnect(false);
+            Debug.Log("OnConnected Failed : " + e.Message);
+        }
     }
     #endregion
 
-    #region // OnTransfer
-    private void OnConnected(IAsyncResult ar) {
-        try {
-            // 建立连接
-            socket.EndConnect(ar);
-            // 收发数据
-            buffer.Clear();
-            //socket.BeginReceive(buffer.buffer, 0, NW_Def.PACKAGE_HEAD_SIZE, SocketFlags.None, new AsyncCallback(OnReceivedHead), buffer);
-            // or
-            socket.BeginReceive(buffer.buffer, 0, NWDef.PACKAGE_HEAD_SIZE, SocketFlags.None, new AsyncCallback(OnReceivedPackage), buffer);
-        }
-        catch (Exception e) {
-            DisConnect();
-            UnityEngine.Debug.Log("OnConnected Failed : " + e.Message);
-        }
-    }
-
+    #region Package
     private void OnReceivedPackage(IAsyncResult ar) {
         NWBuffer buffer = (NWBuffer)ar.AsyncState;
         try {
-            SocketError errCode = SocketError.Success;
-            int read = socket.EndReceive(ar, out errCode);
+            int size = socket.EndReceive(ar, out SocketError errCode);
             // 丢失连接
-            if (read < 0) {
-                DisConnect();
+            if (size < 0 || errCode != SocketError.Success) {
+                DisConnect(false);
                 Console.WriteLine("OnReceivedPackage");
                 return;
             }
 
-            buffer.realLength += read;
+            buffer.realLength += size;
             if (buffer.realLength < NWDef.PACKAGE_HEAD_SIZE) {
-                socket.BeginReceive(buffer.buffer, buffer.realLength, NWDef.PACKAGE_HEAD_SIZE - buffer.realLength, SocketFlags.None, new AsyncCallback(OnReceivedPackage), buffer);
+                socket.BeginReceive(buffer.buffer, buffer.realLength, NWDef.PACKAGE_HEAD_SIZE - buffer.realLength, SocketFlags.None, OnReceivedPackage, buffer);
             }
             else {
                 buffer.package.head.Decode(buffer.buffer, 0, NWDef.PACKAGE_HEAD_SIZE - 1);
                 if (buffer.realLength < buffer.package.head.msgSize + NWDef.PACKAGE_HEAD_SIZE) {
-                    socket.BeginReceive(buffer.buffer, buffer.realLength, buffer.package.head.msgSize - (buffer.realLength - NWDef.PACKAGE_HEAD_SIZE), SocketFlags.None, new AsyncCallback(OnReceivedBody), buffer);
+                    socket.BeginReceive(buffer.buffer, buffer.realLength, buffer.package.head.msgSize - (buffer.realLength - NWDef.PACKAGE_HEAD_SIZE), SocketFlags.None, OnReceivedBody, buffer);
                 }
                 else {
                     buffer.package.body.Decode(buffer.buffer, NWDef.PACKAGE_HEAD_SIZE, NWDef.PACKAGE_HEAD_SIZE + buffer.package.head.msgSize - 1);
@@ -101,62 +210,62 @@ public class NWTransfer {
                     int remainLength = buffer.realLength - buffer.package.head.msgSize - NWDef.PACKAGE_HEAD_SIZE;
                     Buffer.BlockCopy(buffer.buffer, buffer.package.head.msgSize, buffer.buffer, 0, remainLength);
                     buffer.realLength = remainLength;
-                    socket.BeginReceive(buffer.buffer, buffer.realLength, NWDef.PACKAGE_HEAD_SIZE - buffer.realLength, SocketFlags.None, new AsyncCallback(OnReceivedPackage), buffer);
+                    socket.BeginReceive(buffer.buffer, buffer.realLength, NWDef.PACKAGE_HEAD_SIZE - buffer.realLength, SocketFlags.None, OnReceivedPackage, buffer);
                 }
             }
         }
         catch (Exception e) {
-            DisConnect();
+            DisConnect(false);
             Console.WriteLine("OnReceivedPackage Failed : " + e.ToString());
         }
     }
+    #endregion
 
+    #region Head & Body
     private void OnReceivedHead(IAsyncResult ar) {
         NWBuffer buffer = (NWBuffer)ar.AsyncState;
         try {
-            SocketError errCode = SocketError.Success;
-            int read = socket.EndReceive(ar, out errCode);
+            int size = socket.EndReceive(ar, out SocketError errCode);
             // 丢失连接
-            if (read < 0) {
-                DisConnect();
-                UnityEngine.Debug.Log("OnReceivedHead");
+            if (size < 0 || errCode != SocketError.Success) {
+                DisConnect(false);
+                Debug.Log("OnReceivedHead");
                 return;
             }
 
             // 暂时将包头存储到buffer中，开始接受body的时候正式转移到head中
-            buffer.realLength += read;
+            buffer.realLength += size;
             // 包头必须读满
             if (buffer.realLength < NWDef.PACKAGE_HEAD_SIZE) {
-                socket.BeginReceive(buffer.buffer, buffer.realLength, NWDef.PACKAGE_HEAD_SIZE - buffer.realLength, SocketFlags.None, new AsyncCallback(OnReceivedHead), buffer);
+                socket.BeginReceive(buffer.buffer, buffer.realLength, NWDef.PACKAGE_HEAD_SIZE - buffer.realLength, SocketFlags.None, OnReceivedHead, buffer);
             }
             else {
                 // 处理包头
                 buffer.package.head.Decode(buffer.buffer, 0, NWDef.PACKAGE_HEAD_SIZE - 1);
-                socket.BeginReceive(buffer.buffer, buffer.realLength, buffer.package.head.msgSize - (buffer.realLength - NWDef.PACKAGE_HEAD_SIZE), SocketFlags.None, new AsyncCallback(OnReceivedBody), buffer);
+                socket.BeginReceive(buffer.buffer, buffer.realLength, buffer.package.head.msgSize - (buffer.realLength - NWDef.PACKAGE_HEAD_SIZE), SocketFlags.None, OnReceivedBody, buffer);
             }
         }
         catch (Exception e) {
-            DisConnect();
-            UnityEngine.Debug.Log("OnReceivedHead Failed : " + e.ToString());
+            DisConnect(false);
+            Debug.Log("OnReceivedHead Failed : " + e.ToString());
         }
     }
 
     private void OnReceivedBody(IAsyncResult ar) {
         NWBuffer buffer = (NWBuffer)ar.AsyncState;
         try {
-            SocketError errCode = SocketError.Success;
-            int read = socket.EndReceive(ar, out errCode);
+            int size = socket.EndReceive(ar, out SocketError errCode);
             // 断开连接
-            if (read < 0) {
-                DisConnect();
-                UnityEngine.Debug.Log("OnReceivedBody");
+            if (size < 0 || errCode != SocketError.Success) {
+                DisConnect(false);
+                Debug.Log("OnReceivedBody");
                 return;
             }
 
-            buffer.realLength += read;
+            buffer.realLength += size;
             // 消息体不满足长度
             if (buffer.realLength < buffer.package.head.msgSize + NWDef.PACKAGE_HEAD_SIZE) {
-                socket.BeginReceive(buffer.buffer, buffer.realLength, buffer.package.head.msgSize - (buffer.realLength - NWDef.PACKAGE_HEAD_SIZE), SocketFlags.None, new AsyncCallback(OnReceivedBody), buffer);
+                socket.BeginReceive(buffer.buffer, buffer.realLength, buffer.package.head.msgSize - (buffer.realLength - NWDef.PACKAGE_HEAD_SIZE), SocketFlags.None, OnReceivedBody, buffer);
             }
             else {
                 // 入队
@@ -167,18 +276,18 @@ public class NWTransfer {
                 int remainLength = buffer.realLength - buffer.package.head.msgSize - NWDef.PACKAGE_HEAD_SIZE;
                 Buffer.BlockCopy(buffer.buffer, buffer.package.head.msgSize, buffer.buffer, 0, remainLength);
                 buffer.realLength = remainLength;
-                socket.BeginReceive(buffer.buffer, buffer.realLength, NWDef.PACKAGE_HEAD_SIZE - buffer.realLength, SocketFlags.None, new AsyncCallback(OnReceivedHead), buffer);
+                socket.BeginReceive(buffer.buffer, buffer.realLength, NWDef.PACKAGE_HEAD_SIZE - buffer.realLength, SocketFlags.None, OnReceivedHead, buffer);
             }
         }
         catch (Exception e) {
-            DisConnect();
-            UnityEngine.Debug.Log("OnReceivedBody Failed : " + e.ToString());
+            DisConnect(false);
+            Debug.Log("OnReceivedBody Failed : " + e.ToString());
         }
     }
     #endregion
 
-    #region // 收发数据
-    public void Send(ushort protoType, byte[] bytes, ushort playerID, bool immediate) {
+    #region 收发数据
+    public void Send(ushort protoType, byte[] bytes, bool immediate) {
         // 必须要保证bytes的length要<=head中size的最大值，因为如果大于的话，将来在接收方 分包 的时候就会出现分包错误的问题
         if (IsConnected && bytes != null) {
             if (bytes.Length > NWDef.PACKAGE_BODY_MAX_SIZE) {
@@ -186,7 +295,7 @@ public class NWTransfer {
                 return;
             }
 
-            NWPackage package = new NWPackage(protoType, bytes, playerID);
+            NWPackage package = new NWPackage(protoType, bytes, ++SendSequence);
             if (immediate) {
                 Send(ref package);
             }
@@ -196,15 +305,18 @@ public class NWTransfer {
         }
     }
 
-    private ushort lastSuccessedProtoType;
-
     private void Send(ref NWPackage package) {
+        if (!IsConnected) {
+            return;
+        }
+
         byte[] packageBytes = package.Encode();
         try {
             // 因为回调可能先于加锁语句执行，所以需要保证发送的原子性
             lock (this) {
                 // 注意这里package装箱拆箱的风险
-                socket.BeginSend(packageBytes, 0, packageBytes.Length, SocketFlags.None, new AsyncCallback(OnSend), package);
+                packagePacker.value = package;
+                socket.BeginSend(packageBytes, 0, packageBytes.Length, SocketFlags.None, OnSend, packagePacker);
                 // 阻塞，直到在发送成功之后Set，目的是为了控制网络底层的线程同步，因为这里会把主线程阻塞，也就是
                 // 后面调用Send的时候是不会受理的。
                 sendFlag.Reset();
@@ -212,23 +324,29 @@ public class NWTransfer {
             }
         }
         catch (Exception e) {
-            DisConnect();
+            DisConnect(false);
             Debug.LogError("Send Failed : " + package.head.msgType.ToString() + " " + e.ToString());
         }
     }
 
     private void OnSend(IAsyncResult ar) {
-        NWPackage package = (NWPackage)ar.AsyncState;
+        Packer<NWPackage> packagePacker = ar.AsyncState as Packer<NWPackage>;
+        NWPackage package = packagePacker.value;
         try {
-            lastSuccessedProtoType = package.head.msgType;
-            socket.EndSend(ar);
+            int size = socket.EndSend(ar, out SocketError errCode);
+            LastSuccessedProtoType = package.head.msgType;
+            if (size < 0 || errCode != SocketError.Success) {
+                DisConnect(false);
+                Debug.LogError(string.Format("EndSend Failed CurrentProtoType:{0}, LastSuccessedProtoType:{1}", LastSuccessedProtoType.ToString(), package.head.msgType.ToString()));
+            }
         }
         catch (Exception e) {
-            DisConnect();
-            Debug.LogError(string.Format("EndSend Failed CurrentProtoType:{0}, lastSuccessedProtoType:{1}, ErrorMessage:{2}", lastSuccessedProtoType.ToString(), package.head.msgType.ToString(), e.ToString()));
+            DisConnect(false);
+            Debug.LogError(string.Format("EndSend Failed CurrentProtoType:{0}, LastSuccessedProtoType:{1}, ErrorMessage:{2}", LastSuccessedProtoType.ToString(), package.head.msgType.ToString(), e.ToString()));
         }
-
-        sendFlag.Set();
+        finally {
+            sendFlag.Set();
+        }
     }
 
     public void Update() {
@@ -243,8 +361,11 @@ public class NWTransfer {
         if (receivedQueue.Count > 0) {
             package = new NWPackage();
             if (receivedQueue.Dequeue(ref package)) {
-                ushort protoType = package.head.msgType;
-                NWDelegateService.Fire(protoType, package);
+                // 防止来自server的数据包被截获，导致给客户端频繁发包
+                if (package.head.sequence != ReceiveSequence) {
+                    ushort protoType = package.head.msgType;
+                    NWDelegateService.Fire(protoType, package);
+                }
             }
         }
     }

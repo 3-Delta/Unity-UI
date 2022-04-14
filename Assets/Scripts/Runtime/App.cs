@@ -8,7 +8,7 @@ public class App : MonoBehaviour {
     public static App instance { get; private set; } = null;
 
     #region 组件
-    public NetTracer netTracer;
+    public NWSpeedTracer nwSpeedTracer;
     public TimeScaler timeScaler;
     public FrameScaler frameScaler;
     #endregion

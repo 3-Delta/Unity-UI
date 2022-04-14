@@ -396,9 +396,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c336ba15110b844eab4e778bbbc270b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  speedType: 1
+  CycleTime: 2
   minSpeed: 10
   maxSpeed: 100
-  current: 0
+  currentSpeed: 0
+  isTimeOut: 0
+  _url: https://www.baidu.com
   _ip: 127.0.0.1
   _port: 0
 --- !u!1 &705507993
@@ -595,6 +599,7 @@ GameObject:
   - component: {fileID: 1745564632}
   - component: {fileID: 1745564635}
   - component: {fileID: 1745564634}
+  - component: {fileID: 1745564636}
   - component: {fileID: 1745564630}
   m_Layer: 0
   m_Name: App
@@ -639,9 +644,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61e7b124deac13b44a5d231ba74a2819, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  netTracer: {fileID: 0}
-  timeScaler: {fileID: 0}
-  frameScaler: {fileID: 0}
+  nwSpeedTracer: {fileID: 1745564636}
+  timeScaler: {fileID: 1745564635}
+  frameScaler: {fileID: 1745564634}
   assetLoadType: 2
 --- !u!4 &1745564633
 Transform:
@@ -683,6 +688,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _timeScale: 1
+--- !u!114 &1745564636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1745564629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c336ba15110b844eab4e778bbbc270b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  speedType: 1
+  CycleTime: 2
+  minSpeed: 10
+  maxSpeed: 20
+  currentSpeed: 0
+  isTimeOut: 0
+  _url: https://www.baidu.com
+  _ip: 127.0.0.1
+  _port: 20086
 --- !u!1001 &1784917063
 PrefabInstance:
   m_ObjectHideFlags: 0

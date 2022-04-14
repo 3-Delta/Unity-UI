@@ -181,7 +181,7 @@ public class NetAdapter {
 }
 
 [DisallowMultipleComponent]
-public class NetTracerForWin : MonoBehaviour {
+public class NWSpeedTracerForWin : MonoBehaviour {
     public static void GetNetworks(in List<NetAdapter> NetAdapters) {
         NetAdapters.Clear();
         var netArray = NetworkInterface.GetAllNetworkInterfaces();

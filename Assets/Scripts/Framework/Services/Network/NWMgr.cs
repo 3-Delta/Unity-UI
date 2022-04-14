@@ -37,11 +37,11 @@ public class NWMgr : Singleton<NWMgr> {
     //     }
     // }
 
-    public void Connect(string ip, int port, Action callback = null) {
+    public void Connect(string ip, int port, Action<EConnectStatus> callback = null) {
         transfer?.Connect(ip, port, callback);
     }
 
-    public void Send(ushort protoType, byte[] bytes, ushort playerID, bool immediate) {
-        transfer?.Send(protoType, bytes, playerID, immediate);
+    public void Send(ushort protoType, byte[] bytes, bool immediate) {
+        transfer?.Send(protoType, bytes, immediate);
     }
 }

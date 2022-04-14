@@ -10,15 +10,15 @@ public struct NWPackageHead
     // 2字节,控制单个包体大小[不包括包头], 最大32768*2字节,
     public ushort msgSize;
     public ushort msgType;
-    public ushort playerID; // serverID * 10000 + playerID
+    public ushort sequence; // serverID * 10000 + playerID
 
     //public bool GM; // gm消息
 
-    public NWPackageHead(ushort protoType, ushort size, ushort playerID)
+    public NWPackageHead(ushort protoType, ushort size, ushort sequence)
     {
         this.msgType = protoType;
         this.msgSize = size;
-        this.playerID = playerID;
+        this.sequence = sequence;
     }
     public byte[] Encode()
     {
@@ -27,15 +27,15 @@ public struct NWPackageHead
         byte[] sizeBytes = BitConverter.GetBytes((ushort)t);
         t = IPAddress.HostToNetworkOrder((short)msgType);
         byte[] typeBytes = BitConverter.GetBytes((ushort)t);
-        t = IPAddress.HostToNetworkOrder((short)playerID);
-        byte[] playerBytes = BitConverter.GetBytes((ushort)t);
+        t = IPAddress.HostToNetworkOrder((short)sequence);
+        byte[] sequenceBytes = BitConverter.GetBytes((ushort)t);
 
         int byteCount = NWDef.PACKAGE_HEAD_SIZE;
         byte[] headBytes = new byte[byteCount];
 
         Buffer.BlockCopy(sizeBytes, 0, headBytes, 0, sizeBytes.Length);
         Buffer.BlockCopy(typeBytes, 0, headBytes, sizeof(ushort), typeBytes.Length);
-        Buffer.BlockCopy(playerBytes, 0, headBytes, sizeof(ushort) + sizeof(ushort), playerBytes.Length);
+        Buffer.BlockCopy(sequenceBytes, 0, headBytes, sizeof(ushort) + sizeof(ushort), sequenceBytes.Length);
 
         return headBytes;
     }
@@ -47,8 +47,8 @@ public struct NWPackageHead
             msgSize = (ushort)IPAddress.NetworkToHostOrder((short)msgSize);
             msgType = BitConverter.ToUInt16(bytes, startIndex + sizeof(short));
             msgType = (ushort)IPAddress.NetworkToHostOrder((short)msgType);
-            playerID = BitConverter.ToUInt16(bytes, startIndex + sizeof(ushort) + sizeof(ushort));
-            playerID = (ushort)IPAddress.NetworkToHostOrder((short)playerID);
+            sequence = BitConverter.ToUInt16(bytes, startIndex + sizeof(ushort) + sizeof(ushort));
+            sequence = (ushort)IPAddress.NetworkToHostOrder((short)sequence);
         }
     }
 }
@@ -80,9 +80,9 @@ public struct NWPackage
     public NWPackageHead head;
     public NWPackageBody body;
 
-    public NWPackage(ushort protoType, byte[] bytes, ushort playerId)
+    public NWPackage(ushort protoType, byte[] bytes, ushort sequence)
     {
-        head = new NWPackageHead(protoType, (ushort)bytes.Length, playerId);
+        head = new NWPackageHead(protoType, (ushort)bytes.Length, sequence);
         body = new NWPackageBody(bytes, 0, bytes.Length - 1);
         body.Decode(bytes, 0, bytes.Length - 1);
     }
