@@ -16,7 +16,7 @@ public class NWConnecter : MonoBehaviour {
 
     [ContextMenu(nameof(DisConnect))]
     private void DisConnect() {
-        transfer.DisConnect(true);
+        transfer.DisConnect(EDisconnectType.Manual);
     }
 
     private void Connect(string ip, int port) {

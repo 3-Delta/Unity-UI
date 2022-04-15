@@ -3,16 +3,14 @@
 #if UNITY_EDITOR
 [DisallowMultipleComponent]
 public class NWGuarder : MonoBehaviour {
-    [SerializeField] private bool isConnecting;
-    [SerializeField] private bool isConnected;
+    [SerializeField] private NWTransfer transfer;
 
     private void Awake() {
         hideFlags = HideFlags.DontSaveInBuild;
     }
 
     private void Update() {
-        isConnected = NWMgr.Instance.transfer.IsConnected;
-        isConnecting = NWMgr.Instance.transfer.IsConnecting;
+        transfer = NWMgr.Instance.transfer;
     }
 }
 #endif

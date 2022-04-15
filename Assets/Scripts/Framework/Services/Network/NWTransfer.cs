@@ -11,6 +11,13 @@ public enum EConnectStatus {
     Connected, // 连接成功
 }
 
+public enum EDisconnectType {
+    Manual,
+    ConnectException,
+    SendException,
+    ReceiveException,
+}
+
 // 单个transfer, 将来可能多个transfer协作
 // 需要做一些状态的控制，比如处于连接状态，不能再次连接
 [Serializable]
@@ -21,6 +28,13 @@ public class NWTransfer {
 
     private Socket socket = null;
     private Packer<NWPackage> packagePacker = new Packer<NWPackage>();
+
+    [SerializeField] private EDisconnectType _disconnectType = EDisconnectType.Manual;
+
+    public EDisconnectType DisconnectType {
+        get { return _disconnectType; }
+        private set { _disconnectType = value; }
+    }
 
     [SerializeField] private EConnectStatus _connectStatus = EConnectStatus.UnConnected;
 
@@ -89,7 +103,7 @@ public class NWTransfer {
     private ManualResetEvent sendFlag = new ManualResetEvent(false);
 
     public void OnExit() {
-        DisConnect(true);
+        DisConnect(EDisconnectType.Manual);
     }
 
     #region Connect
@@ -123,7 +137,7 @@ public class NWTransfer {
                 OnConnect?.Invoke(ConnectStatus);
             }
             catch (Exception e) {
-                DisConnect(false);
+                DisConnect(EDisconnectType.ConnectException);
                 Debug.Log("Connect Failed : " + e.Message);
             }
         }
@@ -132,7 +146,7 @@ public class NWTransfer {
         }
     }
 
-    public void DisConnect(bool manual) {
+    public void DisConnect(EDisconnectType disconnectType) {
         if (ConnectStatus == EConnectStatus.UnConnected) {
             return;
         }
@@ -145,7 +159,8 @@ public class NWTransfer {
             socket?.Close();
             socket = null;
 
-            Debug.LogError("DisConnect -> " + manual.ToString());
+            DisconnectType = disconnectType;
+            Debug.LogError("DisConnectType -> " + disconnectType.ToString());
 
             _connectStatus = EConnectStatus.UnConnected;
             _sendSequence = 0;
@@ -170,12 +185,12 @@ public class NWTransfer {
                 socket.BeginReceive(buffer.buffer, 0, NWDef.PACKAGE_HEAD_SIZE, SocketFlags.None, OnReceivedPackage, buffer);
             }
             else {
-                DisConnect(false);
+                DisConnect(EDisconnectType.ConnectException);
                 Debug.Log("OnConnected Failed : 超时");
             }
         }
         catch (Exception e) {
-            DisConnect(false);
+            DisConnect(EDisconnectType.ConnectException);
             Debug.Log("OnConnected Failed : " + e.Message);
         }
     }
@@ -188,7 +203,7 @@ public class NWTransfer {
             int size = socket.EndReceive(ar, out SocketError errCode);
             // 丢失连接
             if (size < 0 || errCode != SocketError.Success) {
-                DisConnect(false);
+                DisConnect(EDisconnectType.ReceiveException);
                 Console.WriteLine("OnReceivedPackage");
                 return;
             }
@@ -215,7 +230,7 @@ public class NWTransfer {
             }
         }
         catch (Exception e) {
-            DisConnect(false);
+            DisConnect(EDisconnectType.ReceiveException);
             Console.WriteLine("OnReceivedPackage Failed : " + e.ToString());
         }
     }
@@ -228,7 +243,7 @@ public class NWTransfer {
             int size = socket.EndReceive(ar, out SocketError errCode);
             // 丢失连接
             if (size < 0 || errCode != SocketError.Success) {
-                DisConnect(false);
+                DisConnect(EDisconnectType.ReceiveException);
                 Debug.Log("OnReceivedHead");
                 return;
             }
@@ -246,7 +261,7 @@ public class NWTransfer {
             }
         }
         catch (Exception e) {
-            DisConnect(false);
+            DisConnect(EDisconnectType.ReceiveException);
             Debug.Log("OnReceivedHead Failed : " + e.ToString());
         }
     }
@@ -257,7 +272,7 @@ public class NWTransfer {
             int size = socket.EndReceive(ar, out SocketError errCode);
             // 断开连接
             if (size < 0 || errCode != SocketError.Success) {
-                DisConnect(false);
+                DisConnect(EDisconnectType.ReceiveException);
                 Debug.Log("OnReceivedBody");
                 return;
             }
@@ -280,7 +295,7 @@ public class NWTransfer {
             }
         }
         catch (Exception e) {
-            DisConnect(false);
+            DisConnect(EDisconnectType.ReceiveException);
             Debug.Log("OnReceivedBody Failed : " + e.ToString());
         }
     }
@@ -324,7 +339,7 @@ public class NWTransfer {
             }
         }
         catch (Exception e) {
-            DisConnect(false);
+            DisConnect(EDisconnectType.SendException);
             Debug.LogError("Send Failed : " + package.head.msgType.ToString() + " " + e.ToString());
         }
     }
@@ -336,12 +351,12 @@ public class NWTransfer {
             int size = socket.EndSend(ar, out SocketError errCode);
             LastSuccessedProtoType = package.head.msgType;
             if (size < 0 || errCode != SocketError.Success) {
-                DisConnect(false);
+                DisConnect(EDisconnectType.SendException);
                 Debug.LogError(string.Format("EndSend Failed CurrentProtoType:{0}, LastSuccessedProtoType:{1}", LastSuccessedProtoType.ToString(), package.head.msgType.ToString()));
             }
         }
         catch (Exception e) {
-            DisConnect(false);
+            DisConnect(EDisconnectType.SendException);
             Debug.LogError(string.Format("EndSend Failed CurrentProtoType:{0}, LastSuccessedProtoType:{1}, ErrorMessage:{2}", LastSuccessedProtoType.ToString(), package.head.msgType.ToString(), e.ToString()));
         }
         finally {
@@ -363,8 +378,14 @@ public class NWTransfer {
             if (receivedQueue.Dequeue(ref package)) {
                 // 防止来自server的数据包被截获，导致给客户端频繁发包
                 if (package.head.sequence != ReceiveSequence) {
+                    ReceiveSequence = package.head.sequence;
                     ushort protoType = package.head.msgType;
-                    NWDelegateService.Fire(protoType, package);
+                    try {
+                        NWDelegateService.Fire(protoType, package);
+                    }
+                    catch (Exception e) {
+                        Debug.LogErrorFormat("There are errors {0} in msgType {1}", e, protoType.ToString());
+                    }
                 }
             }
         }

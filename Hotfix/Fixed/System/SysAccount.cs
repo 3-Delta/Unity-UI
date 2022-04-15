@@ -5,15 +5,16 @@ namespace Logic.Hotfix
     public partial class SysAccount : SysBase<SysAccount>
     {
         // 游戏是否进行过重连操作
-        private int syncCount = 0;
+        private int _syncCount = 0;
 
         // 数据同步
         public bool hasSynced
         {
-            get { return syncCount > 0; }
+            get { return _syncCount > 0; }
         }
 
         public bool hasLogin { get; private set; } = false;
+        public bool msgFromReconnect { get; private set; } = false;
 
         // 主要是为了区分本次server数据下发是 重连下发/登陆下发
         public bool hasReconnectSync
@@ -21,12 +22,12 @@ namespace Logic.Hotfix
             get
             {
                 // 同步两次，则表示必然进行了 断线重连
-                return syncCount > 1;
+                return _syncCount > 1;
             }
         }
 
         public ushort playerId;
-        public string name;
+        public string accountName;
 
         public uint serverId;
     }
@@ -43,6 +44,7 @@ namespace Logic.Hotfix
         public override void OnSynced()
         {
             ++syncCount;
+            msgFromReconnect = false;
             SystemMgr.Instance.OnSynced();
         }
 
@@ -51,6 +53,7 @@ namespace Logic.Hotfix
         }
 
         private void _JudgeConnect(EConnectStatus connectStatus) {
+            msgFromReconnect = false;
             if (connectStatus == EConnectStatus.Connected) {
                 if (hasLogin) {
                     ReqReconnect();
@@ -65,12 +68,13 @@ namespace Logic.Hotfix
         // 正式登陆调用，重连不调用
         public void ReqLogin()
         {
-            syncCount = 0;
         }
 
         // 登录回包
         public void OnResLogin() {
+            _syncCount = 0;
             hasLogin = true;
+            msgFromReconnect = false;
             SystemMgr.Instance.OnLogin();
         }
         #endregion
@@ -81,17 +85,19 @@ namespace Logic.Hotfix
         }
 
         private void OnResReconnect() {
-            
+            msgFromReconnect = true;
         }
         #endregion
 
         #region 注销
         public void ReqLogout() {
-            hasLogin = false;
         }
 
         public void OnResLogout()
         {
+            _syncCount = 0;
+            hasLogin = false;
+            msgFromReconnect = false;
             SystemMgr.Instance.OnLogout();
         }
         #endregion
