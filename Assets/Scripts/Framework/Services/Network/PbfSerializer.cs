@@ -19,6 +19,7 @@ public class PbfSerializer {
 
     public static T Deserialize<T>(IMessage msg, MessageParser parser) where T : class, IMessage {
         // todo 热更层类型  为什么 可以 as 成 框架层？？
+        // 因为IMessage有对应的适配器
         T rlt = msg as T;
         return rlt;
     }
