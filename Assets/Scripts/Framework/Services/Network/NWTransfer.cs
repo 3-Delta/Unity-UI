@@ -302,7 +302,7 @@ public class NWTransfer {
     #endregion
 
     #region 收发数据
-    public void Send(ushort protoType, byte[] bytes, bool immediate) {
+    public void Send(ushort protoType, byte[] bytes) {
         // 必须要保证bytes的length要<=head中size的最大值，因为如果大于的话，将来在接收方 分包 的时候就会出现分包错误的问题
         if (IsConnected && bytes != null) {
             if (bytes.Length > NWDef.PACKAGE_BODY_MAX_SIZE) {
@@ -311,12 +311,7 @@ public class NWTransfer {
             }
 
             NWPackage package = new NWPackage(protoType, bytes, ++SendSequence);
-            if (immediate) {
-                Send(ref package);
-            }
-            else {
-                sendQueue.Enqueue(package);
-            }
+            sendQueue.Enqueue(package);
         }
     }
 

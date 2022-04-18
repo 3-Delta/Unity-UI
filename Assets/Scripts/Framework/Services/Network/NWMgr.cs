@@ -41,7 +41,7 @@ public class NWMgr : Singleton<NWMgr> {
         transfer?.Connect(ip, port, callback);
     }
 
-    public void Send(ushort protoType, byte[] bytes, bool immediate) {
-        transfer?.Send(protoType, bytes, immediate);
+    public void Send(ushort protoType, byte[] bytes) {
+        transfer?.Send(protoType, bytes);
     }
 }
