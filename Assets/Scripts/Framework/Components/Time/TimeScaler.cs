@@ -10,11 +10,13 @@ public class TimeScalerInspector : BaseInspector {
 
     private TimeScaler component;
     private SerializedProperty timeScaleProp = null;
+    private SerializedProperty fixedTimeStep = null;
 
     private void OnEnable() {
         component = (TimeScaler)target;
 
         timeScaleProp = serializedObject.FindProperty("_timeScale");
+        fixedTimeStep = serializedObject.FindProperty("_fixedTimeStep");
     }
 
     public override void OnInspectorGUI() {
@@ -23,6 +25,14 @@ public class TimeScalerInspector : BaseInspector {
 
         EditorGUILayout.BeginVertical("box");
         {
+            float v = EditorGUILayout.Slider("FixedTimeStep", fixedTimeStep.floatValue, 0.001f, 1f);
+            if (EditorApplication.isPlaying) {
+                component.FixedTimeStep = v;
+            }
+            else {
+                fixedTimeStep.floatValue = v;
+            }
+
             float gameSpeed = EditorGUILayout.Slider("TimeScale", timeScaleProp.floatValue, 0f, 8f);
             int selectedGameSpeed = GUILayout.SelectionGrid(GetSelectedGameSpeed(gameSpeed), scaleDisplay, 5);
             if (selectedGameSpeed >= 0) {
@@ -72,5 +82,12 @@ public class TimeScaler : MonoBehaviour {
     public float TimeScale {
         get { return _timeScale; }
         set { Time.timeScale = _timeScale = value >= 0f ? value : 0f; }
+    }
+
+    [SerializeField] private float _fixedTimeStep = 0.02f;
+
+    public float FixedTimeStep {
+        get { return _fixedTimeStep; }
+        set { Time.fixedDeltaTime = _fixedTimeStep = value > 0.02f ? value : 0.02f; }
     }
 }

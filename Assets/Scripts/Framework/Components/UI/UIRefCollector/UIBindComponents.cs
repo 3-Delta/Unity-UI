@@ -46,7 +46,7 @@ public class UIBindComponentsInspector : Editor {
 
     private SerializedProperty csharpFieldStyle;
     private SerializedProperty codeStyle;
-    private ReorderableList reorderableList;
+    private ReorderableList recorderableList;
 
     private void OnEnable() {
         owner = target as UIBindComponents;
@@ -55,9 +55,9 @@ public class UIBindComponentsInspector : Editor {
         csharpFieldStyle = serializedObject.FindProperty("csharpFieldStyle");
 
         var prop = serializedObject.FindProperty("bindComponents");
-        reorderableList = new ReorderableList(serializedObject, prop);
-        reorderableList.elementHeight = 20;
-        reorderableList.drawElementCallback = (rect, index, active, focused) => {
+        recorderableList = new ReorderableList(serializedObject, prop);
+        recorderableList.elementHeight = 20;
+        recorderableList.drawElementCallback = (rect, index, active, focused) => {
             var element = prop.GetArrayElementAtIndex(index);
 
             Rect itemRect = new Rect(rect) {
@@ -71,9 +71,9 @@ public class UIBindComponentsInspector : Editor {
             EditorGUI.PropertyField(rect, element);
         };
 
-        reorderableList.onSelectCallback += rlist => { GUI.backgroundColor = Color.blue; };
+        recorderableList.onSelectCallback += rlist => { GUI.backgroundColor = Color.blue; };
 
-        reorderableList.drawHeaderCallback = rect => {
+        recorderableList.drawHeaderCallback = rect => {
             var oldColor = GUI.color;
             GUI.color = Color.green;
             EditorGUI.LabelField(rect, string.Format("[--> Index | {0} | {1} | {2} <--]", /*prop.displayName, */"Component", "Listen", "Name"));
@@ -89,7 +89,7 @@ public class UIBindComponentsInspector : Editor {
             EditorGUILayout.PropertyField(csharpFieldStyle);
         }
 
-        reorderableList.DoLayoutList();
+        recorderableList.DoLayoutList();
 
         if (GUILayout.Button("CHECK")) {
             owner.Check();
@@ -278,7 +278,7 @@ public class UIBindComponents : MonoBehaviour {
 
         sb.Append(AppendTab(1));
         sb.AppendLine("}");
-        
+
         sb.AppendLine("}");
         return sb.ToString();
     }
