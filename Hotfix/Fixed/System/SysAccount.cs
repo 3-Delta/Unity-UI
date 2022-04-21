@@ -43,7 +43,7 @@ namespace Logic.Hotfix
         
         public override void OnSynced()
         {
-            ++syncCount;
+            ++_syncCount;
             msgFromReconnect = false;
             SystemMgr.Instance.OnSynced();
         }

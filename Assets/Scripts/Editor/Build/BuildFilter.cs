@@ -1,9 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-using UnityEngine;
-
-// 打包的时候Filter某些dll
+﻿// 打包的时候Filter某些dll
 public class BuildFilter : UnityEditor.Build.IFilterBuildAssemblies {
     public int callbackOrder => 1;
 

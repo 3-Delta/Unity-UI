@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+
 #region Editor内容
 #if UNITY_EDITOR
 using System.Text;
@@ -157,14 +158,11 @@ public class UIBindComponents : MonoBehaviour {
     // tuple形式，方便后续动态的add，进行拓展
     public static readonly Dictionary<Type, ValueTuple<string, string>> csharpListenDescs = new Dictionary<Type, ValueTuple<string, string>>() {
         {
-            typeof(Button), new ValueTuple<string, string>("void OnBtnClicked{0}();",
-                "this.{0}.onClick.AddListener(listener.OnBtnClicked{1});")
+            typeof(Button), new ValueTuple<string, string>("void OnBtnClicked{0}();", "this.{0}.onClick.AddListener(listener.OnBtnClicked{1});")
         }, {
-            typeof(Toggle), new ValueTuple<string, string>("void OnValueChanged{0}(bool flag);",
-                "this.{0}.onValueChanged.AddListener(listener.OnValueChanged{1});")
+            typeof(Toggle), new ValueTuple<string, string>("void OnValueChanged{0}(bool flag);", "this.{0}.onValueChanged.AddListener(listener.OnValueChanged{1});")
         }, {
-            typeof(Slider), new ValueTuple<string, string>("void OnValueChanged{0}(float currentValue);",
-                "this.{0}.onValueChanged.AddListener(listener.OnValueChanged{1});")
+            typeof(Slider), new ValueTuple<string, string>("void OnValueChanged{0}(float currentValue);", "this.{0}.onValueChanged.AddListener(listener.OnValueChanged{1});")
         },
     };
 

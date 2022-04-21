@@ -21,16 +21,16 @@ public class App : MonoBehaviour {
     }
 #endif
 
+    private void OnDestroy() {
+        instance = null;
+    }
+
     private void Awake() {
         instance = this;
 
         // 未捕获异常
         System.AppDomain.CurrentDomain.UnhandledException += (sender, e) => { Debug.LogError(e.ExceptionObject.ToString()); };
         SynchronizationContext.SetSynchronizationContext(UnitySynchronizationContext.UnitySyncContext);
-    }
-
-    private void OnDestroy() {
-        instance = null;
     }
 
     private void Start() {
