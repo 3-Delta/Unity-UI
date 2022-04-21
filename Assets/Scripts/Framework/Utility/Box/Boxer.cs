@@ -1,6 +1,5 @@
 ﻿using System;
 using Unity.Collections.LowLevel.Unsafe;
-using UnityEngine;
 
 // https://zhuanlan.zhihu.com/p/476725200
 // 以及clr via c# page.111
@@ -19,9 +18,8 @@ public static class Boxer<T> where T : struct {
 
     public unsafe static object Box(ref T target) {
         byte* ptr = (byte*)UnsafeUtility.PinGCObjectAndGetAddress(_BOXER, out ulong gcHandler);
-        byte* valuePtr = ptr + ClassHeader.HeaderSize;
-        // 高C#版本可以直接：ref T t = UnsafeUtility.AsRef<T>((void*)ptr);
-        UnsafeUtility.CopyStructureToPtr(ref target, valuePtr);
+        byte* dataPtr = ptr + ClassHeader.HeaderSize;
+        UnsafeUtility.CopyStructureToPtr(ref target, dataPtr);
         UnsafeUtility.ReleaseGCObject(gcHandler);
         return _BOXER;
     }
