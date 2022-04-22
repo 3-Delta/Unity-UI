@@ -10,35 +10,39 @@ using System;
 using UnityEditor.UnityLinker;
 using System.Reflection;
 using UnityEditor.Il2Cpp;
+using UnityEditorInternal;
 #if UNITY_ANDROID
 using UnityEditor.Android;
 #endif
 
 // https://github.com/focus-creative-games/huatuo_trial
-public class BuildStep_2020_1_OR_NEWER : IPreprocessBuildWithReport, IPostprocessBuildWithReport, IProcessSceneWithReport, IFilterBuildAssemblies, IPostBuildPlayerScriptDLLs, IUnityLinkerProcessor, IIl2CppProcessor {
+[CreateAssetMenu(fileName = "BuildStep", menuName = "SO/BuildStep")]
+public class BuildStep_2020_1_OR_NEWER : ScriptableObject, IPreprocessBuildWithReport, IPostprocessBuildWithReport, IProcessSceneWithReport, IFilterBuildAssemblies, IPostBuildPlayerScriptDLLs, IUnityLinkerProcessor, IIl2CppProcessor
 #if UNITY_ANDROID
         , IPostGenerateGradleAndroidProject
 #endif
+{
     /// <summary>
     /// 需要在Prefab上挂脚本的热更dll名称列表，不需要挂到Prefab上的脚本可以不放在这里
     /// 但放在这里的dll即使勾选了 AnyPlatform 也会在打包过程中被排除
     /// 
     /// 另外请务必注意！： 需要挂脚本的dll的名字最好别改，因为这个列表无法热更（上线后删除或添加某些非挂脚本dll没问题）
     /// </summary>
-    static List<string> monoDllNames = new List<string>() { "HotFix.dll" };
+    public List<string> hotfixDllNames = new List<string>() { "Logic.Hotfix.dll" };
+    // public List<DefaultAsset> hotfixDlls = new List<DefaultAsset>();
+    // public List<AssemblyDefinitionAsset> hotfixDefs = new List<AssemblyDefinitionAsset>();
 
-    static MethodInfo s_BuildReport_AddMessage;
+    private static MethodInfo reflBuildReport_AddMessage;
 
     int IOrderedCallback.callbackOrder => 0;
 
     static BuildStep_2020_1_OR_NEWER() {
-        s_BuildReport_AddMessage = typeof(BuildReport).GetMethod("AddMessage", BindingFlags.Instance | BindingFlags.NonPublic);
+        reflBuildReport_AddMessage = typeof(BuildReport).GetMethod("AddMessage", BindingFlags.Instance | BindingFlags.NonPublic);
     }
 
     void IPreprocessBuildWithReport.OnPreprocessBuild(BuildReport report) {
         if (!Application.isBatchMode && !EditorUtility.DisplayDialog("确认", "建议 Build 之前先打包 AssetBundle\r\n是否继续?", "继续", "取消")) {
-            s_BuildReport_AddMessage.Invoke(report, new object[] { LogType.Exception, "用户取消", "BuildFailedException" });
-            return;
+            reflBuildReport_AddMessage.Invoke(report, new object[] { LogType.Exception, "用户取消", "BuildFailedException" });
         }
     }
 
@@ -48,7 +52,7 @@ public class BuildStep_2020_1_OR_NEWER : IPreprocessBuildWithReport, IPostproces
 
         foreach (string assembly in assemblies) {
             bool found = false;
-            foreach (string removeName in monoDllNames) {
+            foreach (string removeName in this.hotfixDllNames) {
                 if (assembly.EndsWith(removeName, StringComparison.OrdinalIgnoreCase)) {
                     found = true;
                     break;
@@ -87,7 +91,8 @@ public class BuildStep_2020_1_OR_NEWER : IPreprocessBuildWithReport, IPostproces
          * 因此 OnFilterAssemblies 中移除的条目需要再加回来
          */
 #if UNITY_ANDROID
-            string[] jsonFiles = new string[] { "Temp/gradleOut/unityLibrary/src/main/assets/bin/Data/ScriptingAssemblies.json" }; // report.files 不包含 Temp/gradleOut 等目录
+        // report.files 不包含 Temp/gradleOut 等目录
+        string[] jsonFiles = new string[] { "Temp/gradleOut/unityLibrary/src/main/assets/bin/Data/ScriptingAssemblies.json" };
 #else
         // 直接出包和输出vs工程时路径不同，report.summary.outputPath 记录的是前者路径
         string[] jsonFiles = Directory.GetFiles(Path.GetDirectoryName(report.summary.outputPath), "ScriptingAssemblies.json", SearchOption.AllDirectories);
@@ -101,7 +106,7 @@ public class BuildStep_2020_1_OR_NEWER : IPreprocessBuildWithReport, IPostproces
         foreach (string file in jsonFiles) {
             string content = File.ReadAllText(file);
             ScriptingAssemblies scriptingAssemblies = JsonUtility.FromJson<ScriptingAssemblies>(content);
-            foreach (string name in monoDllNames) {
+            foreach (string name in this.hotfixDllNames) {
                 if (!scriptingAssemblies.names.Contains(name)) {
                     scriptingAssemblies.names.Add(name);
                     scriptingAssemblies.types.Add(16); // user dll type

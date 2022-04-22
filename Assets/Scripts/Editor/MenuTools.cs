@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-public class MenuTools : MonoBehaviour {
+public class MenuTools {
     [MenuItem("Tools/Path/PersistentPath", false, 1003)]
     public static void ApplicationPersistentPath() {
         EditorUtility.RevealInFinder(Application.persistentDataPath);
@@ -37,5 +37,11 @@ public class MenuTools : MonoBehaviour {
     [MenuItem("Tools/Path/LogPath", false, 1003)]
     public static void ApplicationLogPath() {
         EditorUtility.RevealInFinder(Application.consoleLogPath);
+    }
+    
+    [MenuItem("Assets/Get/GetSelectedType", false, 1003)]
+    public static void GetSelectedType() {
+        var selcct = Selection.activeObject;
+        Debug.LogError("选中物体类型:" + selcct.GetType());
     }
 }

@@ -9,7 +9,7 @@ using UnityEngine;
 
 // https://github.com/XINCGer/UnityToolchainsTrick/tree/main/Assets/Editor/Examples/Example_20_TitleModifier
 #if UNITY_EDITOR
-public class TitleModifier {
+public class EditorTitleModifier {
     private const int Delay = 2000;
 
     [InitializeOnLoadMethod]
