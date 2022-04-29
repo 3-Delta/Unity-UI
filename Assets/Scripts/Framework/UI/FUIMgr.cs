@@ -212,6 +212,8 @@ public class FUIMgr {
         }
     }
 
+    // 主界面可能关联很多subUI，此时需要保留这些subUI。
+    // 其实也就是说，设计的时候，需要考虑到group的关系
     public static void CloseUtil(int uiType, bool onlyJudgeOwnerStack) { }
 
     public static bool IsTop(int uiType, bool onlyJudgeOwnerStack /*在自己所属栈中isTop*/) {

@@ -16,6 +16,9 @@ public class FUIBase /*: IListenReconnect*/ {
 
     public int order;
 
+    // 从哪个UI点击，打开的本UI,如果没有，则-1
+    public int sourceUIType = -1;
+
     private Transform transform;
     private CanvasAdapter adapter;
     private UIAnimController animPlayer;
@@ -73,7 +76,7 @@ public class FUIBase /*: IListenReconnect*/ {
         }
     }
 
-    #region Open/Close
+#region Open/Close
     public void Open(Tuple<ulong, ulong, ulong, object> arg) {
         OnOpen(arg);
         FUIMgr.OnOpen?.Invoke(uiType, cfg);
@@ -123,9 +126,16 @@ public class FUIBase /*: IListenReconnect*/ {
     public void CloseSelf() {
         FUIMgr.Close(uiType);
     }
-    #endregion
 
-    #region Show/Hide
+    // 关闭UI来源
+    public void CloseSource() {
+        if (this.sourceUIType != -1) {
+            FUIMgr.Close(this.sourceUIType);
+        }
+    }
+#endregion
+
+#region Show/Hide
     public void Show() {
         showHide = true;
 
@@ -170,9 +180,9 @@ public class FUIBase /*: IListenReconnect*/ {
             hasExecutedShow = false;
         }
     }
-    #endregion
+#endregion
 
-    #region 加载Prefab
+#region 加载Prefab
     private bool TryLoad() {
         if (!hasLoaded && !isLoading) {
             _request = Resources.LoadAsync<GameObject>(cfg.prefabPath);
@@ -252,9 +262,9 @@ public class FUIBase /*: IListenReconnect*/ {
             Hide();
         }
     }
-    #endregion
+#endregion
 
-    #region 生命周期
+#region 生命周期
     protected virtual void OnLoaded(Transform transform) {
         // 资源组件解析
         Debug.LogError(string.Format("OnLoaded {0} {1}", uiType.ToString(), cfg.ui));
@@ -293,5 +303,6 @@ public class FUIBase /*: IListenReconnect*/ {
     protected virtual void ProcessEventForShowHide(bool toListen) {
         Debug.LogError(string.Format("ProcessEventForShowHide {0} {1} {2}", uiType.ToString(), toListen.ToString(), cfg.ui));
     }
-    #endregion
+#endregion
+
 }
