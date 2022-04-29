@@ -106,7 +106,7 @@ public class NWTransfer {
         DisConnect(EDisconnectType.Manual);
     }
 
-    #region Connect
+#region Connect
     public void Connect(string ip, int port, Action<EConnectStatus> callback = null) {
         if (IPAddress.TryParse(ip, out IPAddress address)) {
             Connect(address, port, callback);
@@ -129,6 +129,8 @@ public class NWTransfer {
             // socket.ReceiveTimeout = 0;
             // socket.SendTimeout = 600;
 
+            sendQueue.Clear();
+            receivedQueue.Clear();
             OnConnect = callback;
 
             try {
@@ -146,10 +148,16 @@ public class NWTransfer {
         }
     }
 
+    // 潜在bug:因为发送不是即时的，会在下一帧发送，所以disconnect的时候，会有一些信息肯定发不出去
+    // shutdown只是会保证已经在网卡中的数据会被接收和发送，而不是我们上层队列中的协议数据会被发送和接收。
     public void DisConnect(EDisconnectType disconnectType) {
         if (ConnectStatus == EConnectStatus.UnConnected) {
             return;
         }
+
+        // 断开之前清理queue
+        SendFromQueue();
+        DispatchFromQueue();
 
         try {
             // https://docs.microsoft.com/zh-cn/dotnet/api/system.net.sockets.socket.close?view=net-6.0
@@ -164,6 +172,9 @@ public class NWTransfer {
 
             _connectStatus = EConnectStatus.UnConnected;
             _sendSequence = 0;
+
+            sendQueue.Clear();
+            receivedQueue.Clear();
             OnConnect?.Invoke(ConnectStatus);
         }
     }
@@ -194,9 +205,9 @@ public class NWTransfer {
             Debug.Log("OnConnected Failed : " + e.Message);
         }
     }
-    #endregion
+#endregion
 
-    #region Package
+#region Package
     private void OnReceivedPackage(IAsyncResult ar) {
         NWBuffer buffer = (NWBuffer)ar.AsyncState;
         try {
@@ -234,9 +245,9 @@ public class NWTransfer {
             Console.WriteLine("OnReceivedPackage Failed : " + e.ToString());
         }
     }
-    #endregion
+#endregion
 
-    #region Head & Body
+#region Head & Body
     private void OnReceivedHead(IAsyncResult ar) {
         NWBuffer buffer = (NWBuffer)ar.AsyncState;
         try {
@@ -299,9 +310,9 @@ public class NWTransfer {
             Debug.Log("OnReceivedBody Failed : " + e.ToString());
         }
     }
-    #endregion
+#endregion
 
-    #region 收发数据
+#region 收发数据
     public void Send(ushort protoType, byte[] bytes) {
         // 必须要保证bytes的length要<=head中size的最大值，因为如果大于的话，将来在接收方 分包 的时候就会出现分包错误的问题
         if (IsConnected && bytes != null) {
@@ -359,17 +370,18 @@ public class NWTransfer {
         }
     }
 
-    public void Update() {
-        NWPackage package;
+    private void SendFromQueue() {
         if (sendQueue.Count > 0) {
-            package = new NWPackage();
+            NWPackage package = new NWPackage();
             if (sendQueue.Dequeue(ref package)) {
                 Send(ref package);
             }
         }
+    }
 
+    private void DispatchFromQueue() {
         if (receivedQueue.Count > 0) {
-            package = new NWPackage();
+            NWPackage package = new NWPackage();
             if (receivedQueue.Dequeue(ref package)) {
                 // 防止来自server的数据包被截获，导致给客户端频繁发包
                 if (package.head.sequence != ReceiveSequence) {
@@ -385,5 +397,11 @@ public class NWTransfer {
             }
         }
     }
-    #endregion
+
+    public void Update() {
+        SendFromQueue();
+        DispatchFromQueue();
+    }
+#endregion
+
 }
