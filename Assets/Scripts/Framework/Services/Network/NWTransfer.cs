@@ -64,6 +64,7 @@ public class NWTransfer {
         private set { _lastSuccessedProtoType = value; }
     }
 
+    // 提供给外部，区分登录/断线重连
     public Action<EConnectStatus> OnConnect;
 
     // 只有连接成功才有数值
