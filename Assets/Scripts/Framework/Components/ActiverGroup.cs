@@ -5,7 +5,7 @@ using UnityEngine;
 
 [Serializable]
 public class ActiverSingleGroup {
-    public List<Transform> actives = new List<Transform>(0);
+    public List<Transform> actives = new(0);
 
     public void SetActive(bool toActive) {
         foreach (Transform t in actives) {
@@ -17,10 +17,10 @@ public class ActiverSingleGroup {
 [Serializable]
 public class ActiverGroup {
     // 需要显示的objs
-    public List<Transform> actives = new List<Transform>(0);
+    public List<Transform> actives = new(0);
 
     // 需要隐藏的objs
-    public List<Transform> deactives = new List<Transform>(0);
+    public List<Transform> deactives = new(0);
 
     public void SetActive(bool toActive) {
         foreach (Transform t in actives) {

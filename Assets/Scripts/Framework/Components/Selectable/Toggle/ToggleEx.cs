@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -7,7 +8,7 @@ using UnityEngine.UI;
 public class ToggleEx : Selectable, IPointerClickHandler {
     public class ToggleEvent : UnityEvent<bool> { }
 
-    public ToggleEvent onValueChanged = new ToggleEvent();
+    public ToggleEvent onValueChanged = new ();
 
     public uint id;
     public ToggleRegistry ownerRegistry;
@@ -41,7 +42,11 @@ public class ToggleEx : Selectable, IPointerClickHandler {
     }
 
     public void Select() {
-        this.ownerRegistry.SwitchTo(this, this.isOn);
+        bool can = (this.clickCondition == null);
+        can |= (clickCondition != null && this.clickCondition.Invoke());
+        if (can) {
+            this.ownerRegistry.SwitchTo(this, this.isOn);
+        }
     }
 
     // Toggle控制 activer 显/隐
@@ -50,4 +55,19 @@ public class ToggleEx : Selectable, IPointerClickHandler {
         isOn = toSelect;
         this.activer?.SetActive(toSelect);
     }
+
+#region 点击条件
+    // 某些时候selectable不可点击
+    private Func<bool> clickCondition;
+
+    // 参数传递null也可以ClearCondition
+    public void RegistCondition(Func<bool> func) {
+        this.clickCondition = func;
+    }
+
+    public void ClearCondition() {
+        this.clickCondition = null;
+    }
+#endregion
+
 }
