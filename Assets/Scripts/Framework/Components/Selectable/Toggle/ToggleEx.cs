@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class ToggleEx : Selectable, IPointerClickHandler {
     public class ToggleEvent : UnityEvent<bool> { }
 
-    public ToggleEvent onValueChanged = new ();
+    public ToggleEvent onValueChanged = new ToggleEvent();
 
     public uint id;
     public ToggleRegistry ownerRegistry;

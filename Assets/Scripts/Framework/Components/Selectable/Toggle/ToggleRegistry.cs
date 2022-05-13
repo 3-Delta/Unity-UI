@@ -56,9 +56,6 @@ public class ToggleRegistry : UIBehaviour {
             if (toggle.id == id) {
                 toSelect = isOn;
             }
-            else {
-                toSelect = false;
-            }
 
             if (sendMessage) {
                 onValueChanged?.Invoke(toggle.id, toggle, toSelect);
