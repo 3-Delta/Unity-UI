@@ -2,11 +2,11 @@
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class ParticleSystemSetter : MonoBehaviour {
+public class FxSetter : MonoBehaviour {
     [SerializeField] private ParticleSystem[] fxList;
 
     private void Start() {
-        fxList = GetComponentsInChildren<ParticleSystem>();
+        this.fxList = this.GetComponentsInChildren<ParticleSystem>();
 
         foreach (var fx in fxList) {
             // fx.main.scalingMode = ParticleSystemScalingMode.Hierarchy;

@@ -2,4 +2,4 @@
 
 [RequireComponent(typeof(ParticleSystemRenderer))]
 [DisallowMultipleComponent]
-public class ParticleSystemRendererCliper : RendererCliper<ParticleSystemRenderer> { }
+public class FxRendererCliper : RendererCliper<ParticleSystemRenderer> { }
