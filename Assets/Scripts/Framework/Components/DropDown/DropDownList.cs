@@ -17,10 +17,13 @@ public class DropDownList : MonoBehaviour {
 
     public Transform expandRoot;
     public Text text;
+    public ScrollRect scrollList;
 
     private COWLoader<DropDownItem> cowLoader;
 
     public Action<DropDownItem> onSelect;
+
+    private float verticalNormalizedPosition = 1f;
 
     private void Awake() {
         this.btnExpand.onClick.AddListener(this.OnBtnExpandClicked);
@@ -36,6 +39,10 @@ public class DropDownList : MonoBehaviour {
         this.isExpand = toExpand;
         this.unExpandArrow.gameObject.SetActive(!toExpand);
         this.expandArrow.gameObject.SetActive(toExpand);
+
+        if (toExpand) {
+            this.scrollList.verticalNormalizedPosition = this.verticalNormalizedPosition;
+        }
     }
 
     // -1表示全部取消选中
@@ -54,6 +61,10 @@ public class DropDownList : MonoBehaviour {
         }
 
         this.Expand(false);
+    }
+
+    public void MoveTo(float normalization) {
+        this.scrollList.verticalNormalizedPosition = this.verticalNormalizedPosition = 1 - normalization;
     }
 
     public DropDownList TryBuild(int count, Action<ComponentCell<DropDownItem>, int /* index */> onInit, Action<ComponentCell<DropDownItem>, int /* index */> onRefresh, Action<DropDownItem> onSelect) {
