@@ -123,12 +123,6 @@ public class FUIBase /*: IListenReconnect*/ {
         }
     }
 
-    // 从当前UI打开目标UI
-    // 传递uiType给目标UI的sourceUIType
-    public void Open(int targetUIType, Tuple<ulong, ulong, ulong, object> arg = null) {
-        FUIMgr.Open(targetUIType/*, this.uiType*/, arg);
-    }
-
     public void CloseSelf() {
         FUIMgr.Close(uiType);
     }
@@ -138,6 +132,16 @@ public class FUIBase /*: IListenReconnect*/ {
         if (this.sourceUIType != -1) {
             FUIMgr.Close(this.sourceUIType);
         }
+    }
+    
+    // 从当前UI打开目标UI
+    // 传递uiType给目标UI的sourceUIType
+    public void Open(int targetUIType, Tuple<ulong, ulong, ulong, object> arg = null) {
+        FUIMgr.Open(targetUIType/*, this.uiType*/, arg);
+    }
+
+    public void Close(int targetUIType) {
+        FUIMgr.Close(targetUIType);
     }
 #endregion
 
