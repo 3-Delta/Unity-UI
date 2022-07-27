@@ -89,3 +89,5 @@
 /Hotfix/.idea/.idea.Hotfix/.idea/vcs.xml
 /Logic.Framework.csproj.DotSettings
 /*.user
+/Assets/AssetGraph.meta
+/Assets/AssetGraph
