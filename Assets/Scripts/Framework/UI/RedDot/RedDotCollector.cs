@@ -8,6 +8,8 @@ public enum ERedDotType {
     New,
 }
 
+// 长时间不玩的游戏，登录上去，希望有一个一键取消所有红点的设置。
+
 // 每个UI根节点挂载的红点的配置
 // 如果是动态生成的节点上需要红点，则使用proto的配置
 [DisallowMultipleComponent]
