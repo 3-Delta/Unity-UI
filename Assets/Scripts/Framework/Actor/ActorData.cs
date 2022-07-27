@@ -1,6 +1,9 @@
 ﻿[System.Serializable]
 public class ActorData : IDisposer {
+    // from server
     public ulong guid;
+    
+    // from csv
     public uint csvId;
 
     // 各种对于数据的触发器

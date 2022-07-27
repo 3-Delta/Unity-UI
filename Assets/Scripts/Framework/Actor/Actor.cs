@@ -7,11 +7,9 @@ public enum EActorType {
 
 [DisallowMultipleComponent]
 public abstract class Actor : MonoBehaviour, IDisposer {
-    public ActorData data { get; protected set; }
-
-    public abstract void GetData(ulong guid);
-
+    public ActorData actorData { get; protected set; }
+    
     public virtual void ResetCsv(uint csvId) {
-        this.data.Reset(csvId);
+        this.actorData.Reset(csvId);
     }
 }

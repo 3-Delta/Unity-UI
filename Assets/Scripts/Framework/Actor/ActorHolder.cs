@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Actor持有者
 [DisallowMultipleComponent]
-public class ActorComponent : MonoBehaviour, IDisposer {
+public class ActorHolder : MonoBehaviour, IDisposer {
     // 中介者
     public Actor mediator { get; private set; }
     public ValueAssigner<bool> use = new ValueAssigner<bool>(true);

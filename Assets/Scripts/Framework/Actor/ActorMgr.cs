@@ -1,19 +1,26 @@
 ﻿using System.Collections.Generic;
 
-public class ActorMgr {
-    private Dictionary<ulong, Actor> players = new Dictionary<ulong, Actor>();
-    private Dictionary<ulong, Actor> npcs = new Dictionary<ulong, Actor>();
+public class ActorMgr<TActor> where TActor : Actor {
+    private readonly Dictionary<ulong, TActor> actors = new Dictionary<ulong, TActor>();
 
-    public bool TryGet(EActorType actorType, ulong guid, out Actor actor) {
-        bool ret = false;
-        if (actorType == EActorType.Player) {
-            ret = this.players.TryGetValue(guid, out actor);
-        }
-        else if (actorType == EActorType.Npc) {
-            ret = this.npcs.TryGetValue(guid, out actor);
-        }
-
-        actor = default;
+    public bool TryGet(ulong guid, out TActor actor) {
+        bool ret = this.actors.TryGetValue(guid, out actor);
         return ret;
+    }
+    
+    public bool Add(ulong guid, TActor actorData) {
+        bool exist = this.TryGet(guid, out actorData);
+        if (!exist) {
+            this.actors.Add(guid, actorData);
+        }
+
+        return exist;
+    }
+    public void Replace(ulong guid, TActor actorData) {
+        this.actors[guid] = actorData;
+    }
+    
+    public bool Remove(ulong guid) {
+        return this.actors.Remove(guid);
     }
 }
