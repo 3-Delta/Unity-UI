@@ -2,6 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// 监听点击/长按模型等事件
+// 修改layer,控制显隐
 [DisallowMultipleComponent]
-public class TouchListener : MonoBehaviour { }
+public class VisibleChanger : MonoBehaviour { }

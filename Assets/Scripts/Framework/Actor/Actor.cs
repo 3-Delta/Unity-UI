@@ -6,10 +6,15 @@ public enum EActorType {
 }
 
 [DisallowMultipleComponent]
-public abstract class Actor : MonoBehaviour, IDisposer {
-    public ActorData actorData { get; protected set; }
+public abstract class Actor : MonoBehaviour, IDisposer
+{
+    public ulong guid;
     
-    public virtual void ResetCsv(uint csvId) {
-        this.actorData.Reset(csvId);
-    }
+    public AnimChanger animChanger;
+    public ModelChanger modelChanger;
+    public StatusChanger statusChanger;
+    public VisibleChanger visibleChanger;
+
+    // 根据guid查找actorData
+    public virtual ActorData actorData { get; }
 }

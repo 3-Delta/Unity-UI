@@ -2,6 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// 修改layer,控制显隐
+// 负责通用的寻路逻辑
 [DisallowMultipleComponent]
-public class LayerChanger : MonoBehaviour { }
+public class PathFinder : MonoBehaviour { }

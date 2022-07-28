@@ -7,11 +7,11 @@ using UnityEngine;
 public class ActorHolder : MonoBehaviour, IDisposer {
     // 中介者
     public Actor mediator { get; private set; }
-    public ValueAssigner<bool> use = new ValueAssigner<bool>(true);
+    // public ValueAssigner<bool> use = new ValueAssigner<bool>(true);
 
     public virtual void Init(Actor mediator) {
         this.mediator = mediator;
-        this.use.value = true;
+        // this.use.value = true;
 
         this.OnPreInit();
         this.OnPostInit();
