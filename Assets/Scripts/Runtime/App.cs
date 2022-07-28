@@ -6,6 +6,7 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class App : MonoBehaviour {
     public static App instance { get; private set; } = null;
+    public bool HasExited { get; private set; } = false;
 
     #region 组件
     public NWSpeedTracer nwSpeedTracer;
@@ -29,7 +30,10 @@ public class App : MonoBehaviour {
         instance = this;
 
         // 未捕获异常
-        System.AppDomain.CurrentDomain.UnhandledException += (sender, e) => { Debug.LogError(e.ExceptionObject.ToString()); };
+        AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+        {
+            Debug.LogError(e.ExceptionObject.ToString());
+        };
         SynchronizationContext.SetSynchronizationContext(UnitySynchronizationContext.UnitySyncContext);
     }
 
@@ -37,5 +41,11 @@ public class App : MonoBehaviour {
         if (AssemblyProxy.TryInit()) {
             FBridge.HotfixInit();
         }
+    }
+
+    private void OnApplicationQuit()
+    {
+        // OnApplicationQuit在OnDestroy执行
+        HasExited = true;
     }
 }
