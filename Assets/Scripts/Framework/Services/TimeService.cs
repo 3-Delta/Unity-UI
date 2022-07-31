@@ -34,13 +34,13 @@ public static class TimeService {
     }
 
     // xUtcSeconds和yUtcSeconds是浏览器北京时间秒数， timeZoneSeconds是北京时间时区相对于utc时区的偏移秒数即8*3600
-    public static bool IsSameDay(long xUtcSeconds, long yUtcSeconds, long offsetSeconds = 0, long timeZoneSeconds = 0) {
-        if (xUtcSeconds == yUtcSeconds) {
+    public static bool IsSameDay(long xUnixTimeStamp, long yUnixTimeStamp, long offsetSeconds = 0, long timeZoneSeconds = 0) {
+        if (xUnixTimeStamp == yUnixTimeStamp) {
             return true;
         }
 
-        DateTime l = FromUtcToDateTime(xUtcSeconds - offsetSeconds, timeZoneSeconds);
-        DateTime r = FromUtcToDateTime(yUtcSeconds - offsetSeconds, timeZoneSeconds);
+        DateTime l = FromUtcToDateTime(xUnixTimeStamp - offsetSeconds, timeZoneSeconds);
+        DateTime r = FromUtcToDateTime(yUnixTimeStamp - offsetSeconds, timeZoneSeconds);
         return IsSameDay(ref l, ref r);
     }
 
@@ -50,23 +50,23 @@ public static class TimeService {
         return IsSameDay(ref l, ref r);
     }
 
-    public static bool IsSameMonth(long xUtcSeconds, long yUtcSeconds, long offsetSeconds = 0, long timeZoneSeconds = 0) {
-        if (xUtcSeconds == yUtcSeconds) {
+    public static bool IsSameMonth(long xUnixTimeStamp, long yUnixTimeStamp, long offsetSeconds = 0, long timeZoneSeconds = 0) {
+        if (xUnixTimeStamp == yUnixTimeStamp) {
             return true;
         }
 
-        DateTime l = FromUtcToDateTime(xUtcSeconds - offsetSeconds, timeZoneSeconds);
-        DateTime r = FromUtcToDateTime(yUtcSeconds - offsetSeconds, timeZoneSeconds);
+        DateTime l = FromUtcToDateTime(xUnixTimeStamp - offsetSeconds, timeZoneSeconds);
+        DateTime r = FromUtcToDateTime(yUnixTimeStamp - offsetSeconds, timeZoneSeconds);
         return l.Year == r.Year && l.Month == r.Month;
     }
 
-    public static bool IsSameWeek(long xUtcSeconds, long yUtcSeconds, long offsetSeconds = 0, long timeZoneSeconds = 0) {
-        if (xUtcSeconds == yUtcSeconds) {
+    public static bool IsSameWeek(long xUnixTimeStamp, long yUnixTimeStamp, long offsetSeconds = 0, long timeZoneSeconds = 0) {
+        if (xUnixTimeStamp == yUnixTimeStamp) {
             return true;
         }
 
-        DateTime l = FromUtcToDateTime(xUtcSeconds - offsetSeconds, timeZoneSeconds);
-        DateTime r = FromUtcToDateTime(yUtcSeconds - offsetSeconds, timeZoneSeconds);
+        DateTime l = FromUtcToDateTime(xUnixTimeStamp - offsetSeconds, timeZoneSeconds);
+        DateTime r = FromUtcToDateTime(yUnixTimeStamp - offsetSeconds, timeZoneSeconds);
         return IsSameWeek(ref l, ref r);
     }
 
@@ -91,9 +91,30 @@ public static class TimeService {
     // 转换为 dateTime=FromUtcToDateTime(1659197827, 0).ToLocalTime();
     // 或者 dateTime=FromUtcToDateTime(1659197827, 28800);
     // https://tool.lu/timestamp/
-    public static DateTime FromUtcToDateTime(long utcSeconds, long offsetSeconds = 0) {
-        DateTime targetTime = Utc_Start_Time.AddSeconds(utcSeconds + offsetSeconds);
+    public static DateTime FromUtcToDateTime(long unixTimeStamp, long offsetSeconds = 0) {
+        DateTime targetTime = Utc_Start_Time.AddSeconds(unixTimeStamp + offsetSeconds);
         return targetTime;
+        
+        /*
+            // 北京时间：2022/7/31 4:59:40
+            secBefore = 1659214780;
+            // 北京时间：2022-07-31 05:00:40
+            secAfter = 1659214840;
+            // utc时区
+            var l = TimeService.FromUtcToDateTime(secBefore, -5*3600);
+            var r = TimeService.FromUtcToDateTime(secAfter, -5*3600);
+            Debug.LogError(l + "  " + r);
+            
+            // 当前时区
+            l = l.ToLocalTime();
+            r = r.ToLocalTime();
+            Debug.LogError(l + "  " + r);
+            
+            // 北京时区
+            l = TimeService.FromUtcToDateTime(secBefore, -5*3600 + 8*3600);
+            r = TimeService.FromUtcToDateTime(secAfter, -5*3600 + 8*3600);
+            Debug.LogError(l + "  " + r);
+        */
     }
     
     // TimeSpan其实就是:时间差
