@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using UnityEngine.Serialization;
 
 // https://zhuanlan.zhihu.com/p/416805924
 // https://zhuanlan.zhihu.com/p/50440945
@@ -10,8 +11,8 @@ using System.Linq;
 public abstract class OpSimulater : MonoBehaviour {
     // 控制目标
     public Transform target;
-    public RemoteOpReceiver remoteReceiver;
-    public OpInvoker opInvoker;
+    public RemoteInputReceiver remoteReceiver;
+    public InputInvoker inputInvoker;
 
     private void FixedUpdate() {
         OnPreSimulate();

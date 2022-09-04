@@ -9,7 +9,7 @@ public struct Test {
 // 其实是ai,执行opcmd
 // 这为了不引入行为树，简单对待
 [DisallowMultipleComponent]
-public class OpInvoker : MonoBehaviour {
+public class InputInvoker : MonoBehaviour {
     public float moveSpeed = 4;
 
     public void Exec(ref OpCmd cmd, Transform target) {
