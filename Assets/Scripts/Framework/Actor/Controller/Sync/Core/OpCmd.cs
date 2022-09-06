@@ -17,7 +17,7 @@ public struct OpCmd {
     public OpOutput output;
 
     public bool HasMoveInput {
-        get { return this.input.move != EMoveKey.Nil; }
+        get { return this.input.ctrl != ECtrlKey.Nil; }
     }
 
     public bool HasSkillInput {
@@ -25,23 +25,33 @@ public struct OpCmd {
     }
 
     public bool HasInput {
-        get { return this.input.move != EMoveKey.Nil && this.input.skill != ESkillKey.Nil; }
+        get { return this.input.ctrl != ECtrlKey.Nil && this.input.skill != ESkillKey.Nil; }
     }
 }
 
 // 移动按键控制
 [Flags]
-public enum EMoveKey {
+public enum ECtrlKey {
     Nil = 0,
 
     Forward = 1,
     Backward = 2,
+    
     Left = 4,
     Right = 8,
+    
     Up = 16,
     Down = 32,
 
     Jump = 64,
+}
+
+// 可能用于开发周期的调试
+// 比如Esc快捷跳出战斗
+public enum EOtherKey {
+    Nil = 0,
+    
+    KeyCode_Esc, // 推出战斗
 }
 
 // 技能按键控制,fire也属于技能
@@ -63,12 +73,21 @@ public enum ESkillKey {
 
 [Serializable]
 public struct OpInput {
-    public EMoveKey move;
+    public ECtrlKey ctrl;
     public ESkillKey skill;
+    public EOtherKey other;
 
-    public OpInput(EMoveKey move, ESkillKey skill) {
-        this.move = move;
+    public OpInput(ECtrlKey ctrl, ESkillKey skill, EOtherKey other) {
+        this.ctrl = ctrl;
         this.skill = skill;
+        this.other = other;
+    }
+
+    public OpInput Reset() {
+        this.ctrl = ECtrlKey.Nil;
+        this.skill = ESkillKey.Nil;
+        this.other = EOtherKey.Nil;
+        return this;
     }
 }
 

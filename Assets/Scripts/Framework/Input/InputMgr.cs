@@ -2,20 +2,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [DisallowMultipleComponent]
 public class InputMgr : MonoBehaviour {
-    private static InputMgr inputMgr = null;
+    public MoveInput moveInput;
 
-    private void Reset() {
-        inputMgr = this;
+    // 点击地面驱动人物移动 开关
+    public bool enableClickScreen = true;
+    // 人物移动 开关
+    public bool enableMove = true;
+
+    public static InputMgr instance { get; private set; } = null;
+
+    private OpInput _opInput;
+
+    private void Awake() {
+        instance = this;
     }
 
-    public Action<KeyCode> onKeyCode;
-    public Action onTouchDown;
-    public Action onTouchUp;
+    private void Update() {
+        if (Input.anyKey) {
+            if (moveInput) {
+                moveInput.GatherInput(ref _opInput);
+            }
+        }
+    }
 
-    public Action<Vector2> onDragStart;
-    public Action<Vector2, Vector2> onDragging;
-    public Action<Vector2, Vector2> onDragEnd;
+    public Action<Vector2> onClick;
+    public Action<ECtrlKey> onCtrl;
 }

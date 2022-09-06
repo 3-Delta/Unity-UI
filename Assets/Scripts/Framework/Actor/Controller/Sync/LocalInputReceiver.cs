@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 // 接受键鼠/遥感的输入
 // 将来从某个统一的地方接收输入，便于统一管理输入的开启,关闭
@@ -6,25 +7,19 @@
 // https://code.aliyun.com/kaclok/UnityPhysics.git
 [DisallowMultipleComponent]
 public class LocalInputReceiver : MonoBehaviour {
-    // 后续细分各种操作，比如遥感，键盘，鼠标
-    public virtual void GatherInput(ref OpInput input) {
-        input.move = EMoveKey.Nil;
-        if (Input.GetKey(KeyCode.W)) {
-            input.move |= EMoveKey.Forward;
-        }
+    protected void OnEnable() {
+        InputMgr.instance.onClick += OnClick;
+        InputMgr.instance.onCtrl += OnCtrl;
+    }
 
-        if (Input.GetKey(KeyCode.S)) {
-            input.move |= EMoveKey.Backward;
-        }
+    protected void OnDisable() {
+        InputMgr.instance.onCtrl -= OnCtrl;
+    }
 
-        if (Input.GetKey(KeyCode.A)) {
-            input.move |= EMoveKey.Left;
-        }
+    private void OnClick(Vector2 touchPosition) {
+        // 发送射线检测
+    }
 
-        if (Input.GetKey(KeyCode.D)) {
-            input.move |= EMoveKey.Right;
-        }
-
-        input.skill = ESkillKey.Nil;
+    private void OnCtrl(ECtrlKey ctrlKey) {
     }
 }

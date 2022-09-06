@@ -15,19 +15,19 @@ public class InputInvoker : MonoBehaviour {
     public void Exec(ref OpCmd cmd, Transform target) {
         if (cmd.HasMoveInput) {
             Vector3 movingDir = Vector3.zero;
-            if ((cmd.input.move & EMoveKey.Forward) != 0) {
+            if ((cmd.input.ctrl & ECtrlKey.Forward) != 0) {
                 movingDir.z += 1;
             }
 
-            if ((cmd.input.move & EMoveKey.Backward) != 0) {
+            if ((cmd.input.ctrl & ECtrlKey.Backward) != 0) {
                 movingDir.z -= 1;
             }
 
-            if ((cmd.input.move & EMoveKey.Left) != 0) {
+            if ((cmd.input.ctrl & ECtrlKey.Left) != 0) {
                 movingDir.x += 1;
             }
 
-            if ((cmd.input.move & EMoveKey.Right) != 0) {
+            if ((cmd.input.ctrl & ECtrlKey.Right) != 0) {
                 movingDir.x -= 1;
             }
 

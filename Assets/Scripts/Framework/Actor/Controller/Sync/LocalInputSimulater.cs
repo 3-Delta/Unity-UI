@@ -12,7 +12,7 @@ public class LocalInputSimulater : OpSimulater {
     protected override void OnSimulate() {
         OpCmd opCmd = GetCmd();
         // 获取指令
-        this.localInputReceiver.GatherInput(ref opCmd.input);
+        // this.localInputReceiver.GatherInput(ref opCmd.input);
 
         // Server直接执行指令
         // 客户端如果需要预表现，也直接执行
