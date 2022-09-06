@@ -88,3 +88,9 @@
 /Hotfix/.idea/.idea.Hotfix/.idea/indexLayout.xml
 /Hotfix/.idea/.idea.Hotfix/.idea/vcs.xml
 /Logic.Framework.csproj.DotSettings
+/Assets/AssetGraph.meta
+/Assets/AssetGraph/AssetBundles.meta
+/Assets/AssetGraph/AssetBundles/Cache.meta
+/Assets/AssetGraph/AssetBundles/Cache/TemporalSettingFiles.meta
+/Assets/AssetGraph/AssetBundles/Cache/TemporalSettingFiles/AssetReferenceDB.asset
+/Assets/AssetGraph/AssetBundles/Cache/TemporalSettingFiles/AssetReferenceDB.asset.meta
