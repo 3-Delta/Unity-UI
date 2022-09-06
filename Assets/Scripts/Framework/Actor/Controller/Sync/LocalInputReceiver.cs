@@ -20,6 +20,6 @@ public class LocalInputReceiver : MonoBehaviour {
         // 发送射线检测
     }
 
-    private void OnCtrl(ECtrlKey ctrlKey) {
+    private void OnCtrl() {
     }
 }

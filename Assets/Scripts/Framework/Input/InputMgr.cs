@@ -6,12 +6,15 @@ using UnityEngine.Serialization;
 
 [DisallowMultipleComponent]
 public class InputMgr : MonoBehaviour {
-    public MoveInput moveInput;
+    public CtrlInput ctrlInput;
 
     // 点击地面驱动人物移动 开关
     public bool enableClickScreen = true;
     // 人物移动 开关
-    public bool enableMove = true;
+    public bool enableCtrl = true;
+    
+    public Action<Vector2> onClick;
+    public Action onCtrl;
 
     public static InputMgr instance { get; private set; } = null;
 
@@ -23,12 +26,23 @@ public class InputMgr : MonoBehaviour {
 
     private void Update() {
         if (Input.anyKey) {
-            if (moveInput) {
-                moveInput.GatherInput(ref _opInput);
+            if (this.ctrlInput) {
+                this.ctrlInput.GatherCtrlInput(ref _opInput.ctrl);
+                this.ctrlInput.GatherSkillInput(ref _opInput.skill);
+                this.ctrlInput.GatherOtherInput(ref _opInput.other);
             }
         }
     }
 
-    public Action<Vector2> onClick;
-    public Action<ECtrlKey> onCtrl;
+    public void OnClick(Vector2 touchPosition) {
+        if (enableClickScreen) {
+            onClick?.Invoke(touchPosition);
+        }
+    }
+    
+    public void OnCtrl() {
+        if (enableCtrl) {
+            onCtrl?.Invoke();
+        }
+    }
 }
