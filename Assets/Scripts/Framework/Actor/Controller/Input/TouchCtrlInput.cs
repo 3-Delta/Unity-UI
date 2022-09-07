@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 // 依赖RayCaster
 // 需要在主界面UI的层级下面
 [DisallowMultipleComponent]
-public class TouchRaycasterCtrlInput : CtrlInput, IDragHandler, IEndDragHandler {
+public class TouchCtrlInput : CtrlInput, IDragHandler, IEndDragHandler {
     protected PointerEventData _eventData;
 
     public override void GatherCtrlInput(ref ECtrlKey input) {

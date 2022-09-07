@@ -34,6 +34,7 @@ public struct OpCmd {
 public enum ECtrlKey {
     Nil = 0,
 
+    BeginMoveCtrl = 1,
     Forward = 1,
     Backward = 2,
     
@@ -42,7 +43,8 @@ public enum ECtrlKey {
     
     Up = 16,
     Down = 32,
-
+    
+    EndMoveCtrl = 64,
     Jump = 64,
 }
 
@@ -79,6 +81,12 @@ public struct OpInput {
     
     public bool HasCtrl {
         get { return ctrl != ECtrlKey.Nil; }
+    }
+
+    public bool HasMoveCtrl {
+        get {
+            return ECtrlKey.BeginMoveCtrl <= ctrl && this.ctrl < ECtrlKey.EndMoveCtrl;
+        }
     }
 
     public bool HasSkill {

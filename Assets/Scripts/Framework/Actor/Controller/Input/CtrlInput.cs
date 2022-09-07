@@ -2,7 +2,6 @@
 using UnityEngine;
 
 // 输入
-[DisallowMultipleComponent]
 public abstract class CtrlInput : MonoBehaviour {
     public void GatherAll(ref OpInput input) {
         GatherCtrlInput(ref input.ctrl);
