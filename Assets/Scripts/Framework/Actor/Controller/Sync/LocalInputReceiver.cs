@@ -8,18 +8,22 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class LocalInputReceiver : MonoBehaviour {
     protected void OnEnable() {
-        InputMgr.instance.onClick += OnClick;
-        InputMgr.instance.onCtrl += OnCtrl;
+        JoyStick.instance.onCtrl += OnCtrl;
     }
 
     protected void OnDisable() {
-        InputMgr.instance.onCtrl -= OnCtrl;
+        JoyStick.instance.onCtrl -= OnCtrl;
+    }
+    
+    private void OnCtrl(OpInput input) {
     }
 
-    private void OnClick(Vector2 touchPosition) {
-        // 发送射线检测
-    }
-
-    private void OnCtrl() {
+    private RaycastHit[] hits;
+    private void RaycastHit(Vector2 touchPosition) {
+        var ray = CameraService.CurrentCamera3d.ScreenPointToRay(touchPosition);
+        int hitCount = Physics.RaycastNonAlloc(ray, hits);
+        if (hitCount > 0) {
+            
+        }
     }
 }

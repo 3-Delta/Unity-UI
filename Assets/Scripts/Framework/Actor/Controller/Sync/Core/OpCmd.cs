@@ -76,6 +76,24 @@ public struct OpInput {
     public ECtrlKey ctrl;
     public ESkillKey skill;
     public EOtherKey other;
+    
+    public bool HasCtrl {
+        get { return ctrl != ECtrlKey.Nil; }
+    }
+
+    public bool HasSkill {
+        get { return skill != ESkillKey.Nil; }
+    }
+
+    public bool HasOther
+    {
+        get { return other != EOtherKey.Nil; }
+    }
+    
+    public bool HasAny
+    {
+        get { return HasCtrl || HasSkill || HasOther; }
+    }
 
     public OpInput(ECtrlKey ctrl, ESkillKey skill, EOtherKey other) {
         this.ctrl = ctrl;
