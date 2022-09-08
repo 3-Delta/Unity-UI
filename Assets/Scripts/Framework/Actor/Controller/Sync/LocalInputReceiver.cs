@@ -8,11 +8,11 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class LocalInputReceiver : MonoBehaviour {
     protected void OnEnable() {
-        JoyStick.instance.onCtrl += OnCtrl;
+        PlayerInput.instance.onCtrl += OnCtrl;
     }
 
     protected void OnDisable() {
-        JoyStick.instance.onCtrl -= OnCtrl;
+        PlayerInput.instance.onCtrl -= OnCtrl;
     }
     
     private void OnCtrl(OpInput input) {

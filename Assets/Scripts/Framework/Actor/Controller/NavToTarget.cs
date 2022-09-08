@@ -7,43 +7,22 @@ using UnityEngine.AI;
 public class NavToTarget : MonoBehaviour {
     public NavMeshAgent agent;
 
-    public Action onMoveToTarget;
+    public Action onMoveTo;
     public Action<bool> onStop;
-    
-    public bool MoveToTargetPos(Vector3 destPos, Action onBegin) {
+
+    public bool ReachedTarget {
+        get {
+            return true;
+        }
+    }
+
+    public bool MoveTo(Vector3 destPos, Action onBegin) {
         bool hasNearestPoint = PathFinder.ValidatePos(destPos, out NavMeshHit hit);
         if (hasNearestPoint) {
             agent.enabled = true;
             
             onBegin?.Invoke();
             return agent.SetDestination(hit.position);
-        }
-
-        return false;
-    }
-
-    public bool MoveToNextPos(Vector2 dir, float distance) {
-        return true;
-    }
-
-    public bool MoveToNextPos(Vector3 destPos) {
-        bool hasNearestPoint = PathFinder.ValidatePos(destPos, out NavMeshHit hit);
-        if (hasNearestPoint) {
-            agent.enabled = true;
-            agent.SetDestination(hit.position);
-            return true;
-        }
-
-        return false;
-    }
-
-    // 直接传送到某个位置，切换地图的时候调用
-    public bool Warp(Vector3 destPos) {
-        bool hasNearestPoint = PathFinder.ValidatePos(destPos, out NavMeshHit hit);
-        if (hasNearestPoint) {
-            agent.enabled = true;
-            
-            return agent.Warp(hit.position);
         }
 
         return false;
@@ -57,7 +36,7 @@ public class NavToTarget : MonoBehaviour {
         bool interrupt = !reachTargetPos;
         onStop?.Invoke(interrupt);
         if (reachTargetPos) {
-            onMoveToTarget?.Invoke();
+            this.onMoveTo?.Invoke();
         }
 
         agent.isStopped = true;
@@ -66,7 +45,7 @@ public class NavToTarget : MonoBehaviour {
 
     private void Update() {
         if (agent.enabled) {
-            if (agent.pathStatus == NavMeshPathStatus.PathComplete) {
+            if (this.ReachedTarget) {
                 Stop(true);
             }
         }

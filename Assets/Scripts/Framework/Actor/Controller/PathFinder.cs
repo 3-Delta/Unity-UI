@@ -16,6 +16,18 @@ public class PathFinder : MonoBehaviour {
         bool hasNearestPoint = NavMesh.SamplePosition(pos, out hit, maxDistance, NavMesh.AllAreas);
         return hasNearestPoint;
     }
+    
+    // 直接传送到某个位置，切换地图的时候调用
+    public static bool Warp(NavMeshAgent agent, Vector3 destPos) {
+        bool hasNearestPoint = PathFinder.ValidatePos(destPos, out NavMeshHit hit);
+        if (hasNearestPoint) {
+            agent.enabled = true;
+            
+            return agent.Warp(hit.position);
+        }
+
+        return false;
+    }
 
     public bool MoveToTarget(Vector3 destPos, Action onBegin) {
         bool hasNearestPoint = ValidatePos(destPos, out NavMeshHit hit);
@@ -31,18 +43,6 @@ public class PathFinder : MonoBehaviour {
 
     public bool MoveToNext(Vector2 dir, float distance) {
         return true;
-    }
-    
-    // 直接传送到某个位置，切换地图的时候调用
-    public bool Warp(Vector3 destPos) {
-        bool hasNearestPoint = ValidatePos(destPos, out NavMeshHit hit);
-        if (hasNearestPoint) {
-            agent.enabled = true;
-            
-            return agent.Warp(hit.position);
-        }
-
-        return false;
     }
     
     public void Stop(bool reachTargetPos = false) {

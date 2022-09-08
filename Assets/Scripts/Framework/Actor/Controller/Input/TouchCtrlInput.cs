@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -7,8 +8,12 @@ using UnityEngine.EventSystems;
 // 依赖RayCaster
 // 需要在主界面UI的层级下面
 [DisallowMultipleComponent]
-public class TouchCtrlInput : CtrlInput, IDragHandler, IEndDragHandler {
+public class TouchCtrlInput : CtrlInput, IBeginDragHandler, IDragHandler, IEndDragHandler {
     protected PointerEventData _eventData;
+    
+    public Action<Vector2, PointerEventData> onBeginDrag;
+    public Action<Vector2, PointerEventData> onDrag;
+    public Action<Vector2, PointerEventData> onEndDrag;
 
     public override void GatherCtrlInput(ref ECtrlKey input) {
         if (_eventData != null) {
@@ -28,12 +33,21 @@ public class TouchCtrlInput : CtrlInput, IDragHandler, IEndDragHandler {
         }
     }
 
+    public void OnBeginDrag(PointerEventData eventData) {
+        if (eventData.button != PointerEventData.InputButton.Left) {
+            return;
+        }
+        
+        onBeginDrag?.Invoke(eventData.position, eventData);
+    }
+    
     public void OnDrag(PointerEventData eventData) {
         if (eventData.button != PointerEventData.InputButton.Left) {
             return;
         }
 
         _eventData = eventData;
+        onDrag?.Invoke(eventData.delta, eventData);
     }
 
     public void OnEndDrag(PointerEventData eventData) {
@@ -42,5 +56,6 @@ public class TouchCtrlInput : CtrlInput, IDragHandler, IEndDragHandler {
         }
 
         _eventData = null;
+        this.onEndDrag?.Invoke(eventData.position, eventData);      
     }
 }

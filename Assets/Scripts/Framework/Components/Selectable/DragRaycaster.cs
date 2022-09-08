@@ -4,9 +4,9 @@ using UnityEngine.EventSystems;
 
 [DisallowMultipleComponent]
 public class DragRaycaster : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler {
-    public Action<GameObject, Vector2> onDrag;
-    public Action<GameObject> onDragStart;
-    public Action<GameObject> onDragEnd;
+    public Action<GameObject, PointerEventData> onBeginDrag;
+    public Action<GameObject, Vector2, PointerEventData> onDrag;
+    public Action<GameObject, PointerEventData> onEndDrag;
 
     public Action<GameObject, GameObject> onDragOver;
     public Action<GameObject, GameObject> onDragOut;
@@ -17,7 +17,7 @@ public class DragRaycaster : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             return;
         }
 
-        onDrag?.Invoke(eventData.pointerDrag, eventData.delta);
+        onDrag?.Invoke(eventData.pointerDrag, eventData.delta, eventData);
     }
 
     public void OnBeginDrag(PointerEventData eventData) {
@@ -25,7 +25,7 @@ public class DragRaycaster : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             return;
         }
 
-        onDragStart?.Invoke(eventData.pointerDrag);
+        this.onBeginDrag?.Invoke(eventData.pointerDrag, eventData);
     }
 
     public void OnEndDrag(PointerEventData eventData) {
@@ -33,7 +33,7 @@ public class DragRaycaster : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
             return;
         }
 
-        onDragEnd?.Invoke(eventData.pointerDrag);
+        this.onEndDrag?.Invoke(eventData.pointerDrag, eventData);
     }
 
     public void OnPointerEnter(PointerEventData eventData) {
