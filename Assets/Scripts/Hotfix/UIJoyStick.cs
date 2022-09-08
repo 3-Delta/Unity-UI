@@ -6,6 +6,7 @@ using UnityEngine.Serialization;
 [Serializable]
 public class Joy {
     // ref https://zhuanlan.zhihu.com/p/266077243
+    // ref https://catlikecoding.com/unity/tutorials/movement/sliding-a-sphere/
     public enum EJoyType {
         FixedPosition,
         ClickPosition,
@@ -22,6 +23,12 @@ public class Joy {
     public RectTransform joyRect;
     public RectTransform circle;
     public RectTransform arrow;
+
+    public float r {
+        get {
+            return this.circle.sizeDelta.x / 2.5f;
+        }
+    }
 
     // 显隐UI遥感
     public void Active(bool toActive) {
@@ -56,10 +63,20 @@ public class Joy {
     }
 
     // 控制Arrow的位置和旋转
-    public void CtrlArrow(in OpInput input) {
-        if (input.HasMoveCtrl) {
-            // input.ctrl
-        }
+    public void CtrlArrow(Vector2 delta, PointerEventData eventData) {
+        // pos
+        var dir = delta.normalized;
+        this.arrow.localPosition = dir * r;
+        
+        // angle
+        // float angle = Vector2.SignedAngle(Vector2.up, dir);
+        // this.arrow.localEulerAngles = new Vector3(0f, 0f, angle);
+        
+        // angle
+        bool isClockwise = VectorUtils.IsClockwise(Vector2.up, dir);
+        float ag = Vector2.Angle(Vector2.up, dir);
+        ag = isClockwise ? ag : -ag;
+        this.arrow.localEulerAngles = new Vector3(0f, 0f, ag);
     }
 }
 
@@ -92,6 +109,7 @@ public class UIJoyStick : MonoBehaviour {
 
     private void _OnDrag(Vector2 delta, PointerEventData eventData) {
         this.uiJoy.SetCirclePosition(eventData.position, eventData);
+        this.uiJoy?.CtrlArrow(delta, eventData);
     }
 
     private void _EndDrag(Vector2 touchPosition, PointerEventData eventData) {
@@ -99,8 +117,6 @@ public class UIJoyStick : MonoBehaviour {
     }
 
     private void _OnCtrl(OpInput input) {
-        this.uiJoy?.CtrlArrow(in input);
-        // 1. 摇杆旋转
         // 控制人物移动
     }
 }
