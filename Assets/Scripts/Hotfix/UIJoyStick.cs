@@ -42,41 +42,32 @@ public class Joy {
             this.circle.localPosition = fixedPos.localPosition;
         }
         else {
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(joyRect, touchPos, eventData.pressEventCamera, out Vector2 localPosition)) {
-                this.circle.localPosition = localPosition;
-            }
-            else {
-                // error 透射点在joyRect区域之外
-            }
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(joyRect, touchPos, eventData.pressEventCamera, out Vector2 localPosition);
+            this.circle.localPosition = localPosition;
         }
     }
 
     public void SetCirclePosition(Vector2 touchPos, PointerEventData eventData) {
         if (joyType == EJoyType.TouchPosition) {
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(joyRect, touchPos, eventData.pressEventCamera, out Vector2 localPosition)) {
-                this.circle.localPosition = localPosition;
-            }
-            else {
-                // error 透射点在joyRect区域之外
-            }
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(joyRect, touchPos, eventData.pressEventCamera, out Vector2 localPosition); 
+            this.circle.localPosition = localPosition;
         }
     }
 
     // 控制Arrow的位置和旋转
     public void CtrlArrow(Vector2 delta, PointerEventData eventData) {
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(circle, eventData.position, eventData.pressEventCamera, out Vector2 localPosition);
+        if (localPosition.magnitude > r) {
+            localPosition = localPosition.normalized * r;
+        }
+
         // pos
-        var dir = delta.normalized;
-        this.arrow.localPosition = dir * r;
+        this.arrow.localPosition = localPosition;
         
+        var dir = localPosition / r;
         // angle
-        // float angle = Vector2.SignedAngle(Vector2.up, dir);
-        // this.arrow.localEulerAngles = new Vector3(0f, 0f, angle);
-        
-        // angle
-        bool isClockwise = VectorUtils.IsClockwise(Vector2.up, dir);
-        float ag = Vector2.Angle(Vector2.up, dir);
-        ag = isClockwise ? ag : -ag;
-        this.arrow.localEulerAngles = new Vector3(0f, 0f, ag);
+        float angle = Vector2.SignedAngle(Vector2.up, dir);
+        this.arrow.localEulerAngles = new Vector3(0f, 0f, angle);
     }
 }
 
