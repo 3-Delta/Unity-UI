@@ -18,6 +18,7 @@ public enum ESceneNode {
     Timeline, // timeline节点
     ScreenTouch, // 挂载<ScreenTouch>的节点
     PlayerInput, // 键鼠/touch输入
+    SafeAreaAdjuster, // 安全区调整器
 }
 
 [DisallowMultipleComponent]
