@@ -1,0 +1,11 @@
+{
+    "name": "NavMeshComponentsExamples",
+    "references": [
+        "NavMeshComponents",
+        "UnityEngine.UI"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}
