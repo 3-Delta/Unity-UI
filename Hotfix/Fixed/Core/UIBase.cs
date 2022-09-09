@@ -16,4 +16,11 @@ namespace Logic.Hotfix
             this.layout.TryBind(transform);
         }
     }
+    
+    // UI打开之后设置定时器自动关闭
+    [Serializable]
+    public class UIBaseDelayDestroy<TLayout> : UIBaseWithLayout<TLayout> where TLayout : UILayoutBase, new()
+    {
+        // 
+    }
 }
