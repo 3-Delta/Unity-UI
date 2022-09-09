@@ -5,7 +5,7 @@
 public class NWGuarder : MonoBehaviour {
     [SerializeField] private NWTransfer transfer;
 
-    private void Awake() {
+    private void Reset() {
         hideFlags = HideFlags.DontSaveInBuild;
     }
 

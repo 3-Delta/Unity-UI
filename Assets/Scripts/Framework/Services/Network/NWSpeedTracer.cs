@@ -26,7 +26,7 @@ public class NWSpeedTracer : MonoBehaviour {
     [SerializeField] private double currentSpeed;
     [SerializeField] private bool isTimeOut;
 #else
-    public double current { get; private set; }
+    public double currentSpeed { get; private set; }
     public bool isTimeOut { get; private set; }
 #endif
 
