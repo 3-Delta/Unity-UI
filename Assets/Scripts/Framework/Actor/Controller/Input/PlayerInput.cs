@@ -29,12 +29,6 @@ public class PlayerInput : MonoBehaviour {
     
     public Action<OpInput> onCtrl;
     
-    public static PlayerInput instance { get; private set; } = null;
-    
-    private void Awake() {
-        instance = this;
-    }
-    
     private void Update() {
         _opInput.Reset();
         // if (Input.anyKey) 

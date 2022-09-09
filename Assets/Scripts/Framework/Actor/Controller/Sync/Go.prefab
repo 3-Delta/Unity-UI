@@ -96,6 +96,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   agent: {fileID: 7028031140547484292}
+  targetPosition: {x: 0, y: 0, z: 0}
 --- !u!114 &5891835407842726647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,7 +124,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   toTarget: {fileID: 7642008463052561034}
   toNext: {fileID: 5891835407842726647}
-  agent: {fileID: 7028031140547484292}
 --- !u!1 &1634200063087855922
 GameObject:
   m_ObjectHideFlags: 0
@@ -133,6 +133,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1634200063087855921}
+  - component: {fileID: 7515837173463159974}
   m_Layer: 0
   m_Name: Go
   m_TagString: Untagged
@@ -157,6 +158,25 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7515837173463159974
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1634200063087855922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 201fbe683fa76fc459234618c96f95f5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  guid: 0
+  _playerInput: {fileID: 0}
+  pathFinder: {fileID: 4863306351286544403}
+  animChanger: {fileID: 7419580846973844931}
+  modelChanger: {fileID: 5990487758122448826}
+  statusChanger: {fileID: 0}
+  visibleChanger: {fileID: 0}
 --- !u!1 &1634200063292930141
 GameObject:
   m_ObjectHideFlags: 0
@@ -217,6 +237,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2151561cd46a78446a0d7b2ba8e558b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mediator: {fileID: 7515837173463159974}
+  blockClick: 0
+  blockCtrl: 0
 --- !u!114 &1270028250282697330
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -243,8 +266,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 1634200063087855921}
   remoteReceiver: {fileID: 1270028250282697330}
-  inputInvoker: {fileID: 0}
-  localInputReceiver: {fileID: 0}
+  inputInvoker: {fileID: 3276621095002157523}
+  localInputReceiver: {fileID: 1634200063292930147}
   inputSender: {fileID: 1634200063292930146}
   isLocalPredicted: 1
 --- !u!114 &3276621095002157523

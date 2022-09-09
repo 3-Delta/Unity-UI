@@ -6,7 +6,7 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public class ActorHolder : MonoBehaviour, IDisposer {
     // 中介者
-    public Actor mediator { get; private set; }
+    public Actor mediator;
     // public ValueAssigner<bool> use = new ValueAssigner<bool>(true);
 
     public virtual void Init(Actor mediator) {

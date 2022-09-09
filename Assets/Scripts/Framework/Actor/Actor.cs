@@ -9,7 +9,20 @@ public enum EActorType {
 public abstract class Actor : MonoBehaviour, IDisposer
 {
     public ulong guid;
+
+    [SerializeField] private PlayerInput _playerInput;
+
+    public PlayerInput playerInput {
+        get {
+            if (!_playerInput) {
+                SceneNodeService.TryGet(ESceneNode.PlayerInput, out _playerInput);
+            }
+
+            return _playerInput;
+        }
+    }
     
+    public PathFinder pathFinder;
     public AnimChanger animChanger;
     public ModelChanger modelChanger;
     public StatusChanger statusChanger;

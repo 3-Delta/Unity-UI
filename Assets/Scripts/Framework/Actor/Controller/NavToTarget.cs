@@ -7,19 +7,25 @@ using UnityEngine.AI;
 public class NavToTarget : MonoBehaviour {
     public NavMeshAgent agent;
 
+    public Vector3 targetPosition;
     public Action onMoveTo;
     public Action<bool> onStop;
-
+    
     public bool ReachedTarget {
         get {
-            return true;
+            // http://t.zoukankan.com/sword-magical-blog-p-9665297.html
+            // unity源码就是：remainingDistance < dis
+            var dis = Mathf.Max(0.001f, this.agent.stoppingDistance);
+            return !this.agent.pathPending && this.agent.remainingDistance <= dis;
         }
     }
 
-    public bool MoveTo(Vector3 destPos, Action onBegin) {
+    public bool MoveTo(Vector3 destPos, Action onBegin = null, Action onMoveTo = null, Action<bool> onStop = null) {
         bool hasNearestPoint = PathFinder.ValidatePos(destPos, out NavMeshHit hit);
         if (hasNearestPoint) {
-            agent.enabled = true;
+            this.agent.enabled = true;
+            this.onMoveTo = onMoveTo;
+            this.onStop = onStop;
             
             onBegin?.Invoke();
             return agent.SetDestination(hit.position);
@@ -28,14 +34,13 @@ public class NavToTarget : MonoBehaviour {
         return false;
     }
     
-    public void Stop(bool reachTargetPos = false) {
+    public void Stop(bool interrupt = false) {
         if (!agent.enabled || agent.isStopped) {
             return;
         }
-
-        bool interrupt = !reachTargetPos;
+        
         onStop?.Invoke(interrupt);
-        if (reachTargetPos) {
+        if (!interrupt) {
             this.onMoveTo?.Invoke();
         }
 
@@ -46,7 +51,7 @@ public class NavToTarget : MonoBehaviour {
     private void Update() {
         if (agent.enabled) {
             if (this.ReachedTarget) {
-                Stop(true);
+                Stop(false);
             }
         }
     }

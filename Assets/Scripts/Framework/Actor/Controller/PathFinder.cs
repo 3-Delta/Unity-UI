@@ -7,8 +7,7 @@ using UnityEngine.AI;
 public class PathFinder : MonoBehaviour {
     public NavToTarget toTarget;
     public NavToNext toNext;
-    public NavMeshAgent agent;
-
+    
     public Action onMoveToTarget;
     public Action<bool> onStop;
 
@@ -29,34 +28,16 @@ public class PathFinder : MonoBehaviour {
         return false;
     }
 
-    public bool MoveToTarget(Vector3 destPos, Action onBegin) {
-        bool hasNearestPoint = ValidatePos(destPos, out NavMeshHit hit);
-        if (hasNearestPoint) {
-            agent.enabled = true;
-            
-            onBegin?.Invoke();
-            return agent.SetDestination(hit.position);
-        }
-
-        return false;
+    public bool MoveToTarget(Vector3 destPos, Action onBegin = null) {
+        return toTarget.MoveTo(destPos, onBegin);
     }
 
     public bool MoveToNext(Vector2 dir, float distance) {
         return true;
     }
     
-    public void Stop(bool reachTargetPos = false) {
-        if (!agent.enabled || agent.isStopped) {
-            return;
-        }
-
-        bool interrupt = !reachTargetPos;
-        onStop?.Invoke(interrupt);
-        if (reachTargetPos) {
-            onMoveToTarget?.Invoke();
-        }
-
-        agent.isStopped = true;
-        agent.enabled = false;
+    public void Stop() {
+        toTarget.Stop();
+        toNext.Stop();
     }
 }

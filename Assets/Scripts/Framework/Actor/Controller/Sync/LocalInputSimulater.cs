@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 [DisallowMultipleComponent]
 public class LocalInputSimulater : OpSimulater {
     public LocalInputReceiver localInputReceiver;
-    public InputInputSender inputSender;
+    public InputSender inputSender;
     public bool isLocalPredicted = true;
 
     protected override void OnSimulate() {

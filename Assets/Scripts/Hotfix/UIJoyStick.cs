@@ -55,7 +55,7 @@ public class Joy {
     }
 
     // 控制Arrow的位置和旋转
-    public void CtrlArrow(Vector2 delta, PointerEventData eventData) {
+    public void CtrlArrow(PointerEventData eventData) {
         RectTransformUtility.ScreenPointToLocalPointInRectangle(circle, eventData.position, eventData.pressEventCamera, out Vector2 localPosition);
         if (localPosition.magnitude > r) {
             localPosition = localPosition.normalized * r;
@@ -81,16 +81,12 @@ public class UIJoyStick : MonoBehaviour {
         this.playerInput.onBeginDrag += this._OnBeginDrag;
         this.playerInput.onDrag += this._OnDrag;
         this.playerInput.onEndDrag += this._EndDrag;
-
-        this.playerInput.onCtrl += this._OnCtrl;
     }
 
     private void OnDisable() {
         this.playerInput.onBeginDrag -= this._OnBeginDrag;
         this.playerInput.onDrag -= this._OnDrag;
         this.playerInput.onEndDrag -= this._EndDrag;
-
-        this.playerInput.onCtrl -= this._OnCtrl;
     }
     
     private void _OnBeginDrag(Vector2 touchPosition, PointerEventData eventData) {
@@ -100,14 +96,10 @@ public class UIJoyStick : MonoBehaviour {
 
     private void _OnDrag(Vector2 delta, PointerEventData eventData) {
         this.uiJoy.SetCirclePosition(eventData.position, eventData);
-        this.uiJoy?.CtrlArrow(delta, eventData);
+        this.uiJoy?.CtrlArrow(eventData);
     }
 
     private void _EndDrag(Vector2 touchPosition, PointerEventData eventData) {
         this.uiJoy?.Active(false);
-    }
-
-    private void _OnCtrl(OpInput input) {
-        // 控制人物移动
     }
 }
