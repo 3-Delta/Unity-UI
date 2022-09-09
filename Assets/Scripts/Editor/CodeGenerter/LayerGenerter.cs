@@ -1,12 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Text;
 using UnityEditor;
 using UnityEngine;
 
 public class LayerGenerter {
+    public static string DefaultOutput {
+        get { return Path.Combine(Application.dataPath, "Scripts/Framework/Utility/UnityLayer.cs"); }
+    }
+
+    // [RuntimeInitializeOnLoadMethod]
     public static void Do(string outputFileWithExt) {
+        if (string.IsNullOrWhiteSpace(outputFileWithExt)) {
+            outputFileWithExt = DefaultOutput;
+        }
+
         string enumName = "ELayers";
         string className = "CLayers";
 
@@ -25,16 +32,16 @@ public class LayerGenerter {
 
         SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
         SerializedProperty it = tagManager.GetIterator();
-        while (it.NextVisible(true))
-        {
-            if (it.name == "layers")
-            {
-                for (int i = 0, count = it.arraySize; i < count; ++i)
-                {
+        while (it.NextVisible(true)) {
+            if (it.name == "layers") {
+                contentEnum.Append("\t");
+                contentEnum.AppendLine("All = -1, // -1");
+                contentEnum.AppendLine();
+
+                for (int i = 0, count = it.arraySize; i < count; ++i) {
                     SerializedProperty serializedProperty = it.GetArrayElementAtIndex(i);
                     string stringValue = serializedProperty.stringValue;
-                    if (!string.IsNullOrEmpty(stringValue))
-                    {
+                    if (!string.IsNullOrWhiteSpace(stringValue)) {
                         string intValue = i == 0 ? "0" : string.Format("1 << {0}", (i - 1).ToString());
                         int realIntValue = i == 0 ? 0 : 1 << (i - 1);
                         stringValue = stringValue.Replace(" ", "");
@@ -43,10 +50,11 @@ public class LayerGenerter {
                         contentEnum.AppendLine();
 
                         contentClass.Append("\t");
-                        contentClass.AppendFormat(CodeDef.classConstPublicMemberWithValue, "string", stringValue, string.Format("\"{0}\"", serializedProperty.stringValue));
+                        contentClass.AppendFormat(CodeDef.classConstPublicMemberWithValue, "string", stringValue, string.Format("\"{0}\"", stringValue));
                         contentClass.AppendLine();
                     }
                 }
+
                 break;
             }
         }
@@ -55,10 +63,10 @@ public class LayerGenerter {
         contentEnum.AppendLine();
 
         contentClass.AppendLine(CodeDef.segmentTail);
-        if (!File.Exists(outputFileWithExt))
-        {
+        if (!File.Exists(outputFileWithExt)) {
             using (File.Create(outputFileWithExt)) { }
         }
+
         File.WriteAllText(outputFileWithExt, contentEnum.ToString() + contentClass.ToString());
         AssetDatabase.Refresh();
     }

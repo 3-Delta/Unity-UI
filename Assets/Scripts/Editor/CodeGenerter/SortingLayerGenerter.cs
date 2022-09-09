@@ -3,9 +3,9 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
-public class TagGenerter {
+public class SortingLayerGenerter {
     public static string DefaultOutput {
-        get { return Path.Combine(Application.dataPath, "Scripts/Framework/Utility/UnityTags.cs"); }
+        get { return Path.Combine(Application.dataPath, "Scripts/Framework/Utility/UnitySortingLayer.cs"); }
     }
 
     // [RuntimeInitializeOnLoadMethod]
@@ -14,8 +14,8 @@ public class TagGenerter {
             outputFileWithExt = DefaultOutput;
         }
 
-        string enumName = "ETags";
-        string className = "CTags";
+        string enumName = "ESortingLayers";
+        string className = "CSortingLayers";
 
         StringBuilder contentEnum = new StringBuilder();
         contentEnum.AppendLine(@"using System;");
@@ -32,14 +32,14 @@ public class TagGenerter {
         SerializedObject tagManager = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/TagManager.asset")[0]);
         SerializedProperty it = tagManager.GetIterator();
         while (it.NextVisible(true)) {
-            if (it.name == "tags") {
+            if (it.name == "m_SortingLayers") {
                 for (int i = 0, count = it.arraySize; i < count; ++i) {
                     SerializedProperty serializedProperty = it.GetArrayElementAtIndex(i);
-                    string stringValue = serializedProperty.stringValue;
+                    string stringValue = serializedProperty.displayName;
                     if (!string.IsNullOrWhiteSpace(stringValue)) {
                         stringValue = stringValue.Replace(" ", "");
                         contentEnum.Append("\t");
-                        contentEnum.AppendFormat(CodeDef.enumMember, stringValue);
+                        contentEnum.AppendFormat(CodeDef.enumMemberWithValue, stringValue, i.ToString());
                         contentEnum.AppendLine();
 
                         contentClass.Append("\t");
