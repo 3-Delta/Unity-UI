@@ -235,8 +235,8 @@ public class FUIBase /*: IListenReconnect*/ {
             injector = transform.gameObject.AddComponent<UIInjector>();
         }
 
-        if (transform.TryGetComponent<FUICloser>(out FUICloser closer)) {
-            closer.uiType = uiType;
+        if (transform.TryGetComponent<UIMethodInvoker>(out UIMethodInvoker methodInvoker)) {
+            methodInvoker.instance = this;
         }
 
         injector.value = this;
