@@ -36,13 +36,27 @@ public class Joy {
             circle.gameObject.SetActive(toActive);
         }
     }
-    
+
+    // 限制在矩形内部
+    private Vector2 ValidatePos(in Vector2 localPosition) {
+        var worldPosition = joyRect.TransformPoint(localPosition);
+        var relativePosition = range.InverseTransformPoint(worldPosition);
+        
+        var rect = range.rect;
+        relativePosition = VectorUtils.NearestPoint(in rect, in relativePosition, false);
+
+        worldPosition = range.TransformPoint(relativePosition);
+        relativePosition = joyRect.InverseTransformPoint(worldPosition);
+        return relativePosition;
+    }
+
     public void SetCircleFirstPosition(Vector2 touchPos, PointerEventData eventData) {
         if (joyType == EJoyType.FixedPosition) {
             this.circle.localPosition = fixedPos.localPosition;
         }
         else {
             RectTransformUtility.ScreenPointToLocalPointInRectangle(joyRect, touchPos, eventData.pressEventCamera, out Vector2 localPosition);
+            localPosition = ValidatePos(in localPosition);
             this.circle.localPosition = localPosition;
         }
     }
@@ -50,6 +64,7 @@ public class Joy {
     public void SetCirclePosition(Vector2 touchPos, PointerEventData eventData) {
         if (joyType == EJoyType.TouchPosition) {
             RectTransformUtility.ScreenPointToLocalPointInRectangle(joyRect, touchPos, eventData.pressEventCamera, out Vector2 localPosition); 
+            localPosition = ValidatePos(in localPosition);
             this.circle.localPosition = localPosition;
         }
     }
@@ -61,7 +76,7 @@ public class Joy {
             localPosition = localPosition.normalized * r;
         }
 
-        // pos
+        // localPosition
         this.arrow.localPosition = localPosition;
         
         var dir = localPosition / r;

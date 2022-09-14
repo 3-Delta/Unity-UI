@@ -8,4 +8,13 @@ public class VectorUtils {
         var crossDir = Vector3.Cross(fromDir, toDir);
         return crossDir.z > 0;
     }
+
+    public static Vector3 NearestPoint(in Rect rect, in Vector3 point, bool includeIn) {
+        Vector3 ret = point;
+        if (includeIn || !rect.Contains(point)) {
+            ret.x = Mathf.Clamp(point.x, rect.xMin, rect.xMax);
+            ret.y = Mathf.Clamp(point.y, rect.yMin, rect.yMax);
+        }
+        return ret;
+    }
 }
