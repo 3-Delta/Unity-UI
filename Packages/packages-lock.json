@@ -76,6 +76,13 @@
       "dependencies": {},
       "url": "https://packages.unity.cn"
     },
+    "com.unity.scriptablebuildpipeline": {
+      "version": "1.15.2",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://packages.unity.cn"
+    },
     "com.unity.shaderprofiler": {
       "version": "0.0.1-preview.1",
       "depth": 0,

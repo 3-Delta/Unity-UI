@@ -3,6 +3,7 @@
     "com.oddworm.heapexplorer": "https://github.com/pschraut/UnityHeapExplorer.git",
     "com.ourpalm.ilruntime": "2.0.2",
     "com.unity.adaptiveperformance": "1.1.10",
+    "com.unity.scriptablebuildpipeline": "1.15.2",
     "com.unity.build-report-inspector": "0.2.2-preview",
     "com.unity.ide.rider": "3.0.14",
     "com.unity.memoryprofiler": "0.2.10-preview.1",
