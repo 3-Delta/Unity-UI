@@ -23,7 +23,7 @@ public class NavToTarget : MonoBehaviour {
 #if UNITY_EDITOR
     [ContextMenu(nameof(MoveTo))]
     public bool MoveTo() {
-        MoveTo(targetPosition);
+        return MoveTo(targetPosition);
     }
 #endif
 

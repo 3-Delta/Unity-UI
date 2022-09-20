@@ -5,13 +5,13 @@ using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 
-[CustomEditor(typeof(HumanoidMountNode))]
-public class HumanoidMountNodeInspector : EnumComponentListInspector<Transform, EHumanoidMountNode> {
+[CustomEditor(typeof(HumanoidBoneMountNode))]
+public class HumanoidBoneMountNodeInspector : EnumComponentListInspector<Transform, EHumanoidBoneMountNode> {
 }
 #endif
 
 // 挂点类型
-public enum EHumanoidMountNode {
+public enum EHumanoidBoneMountNode {
     LeftEye = 0,
     LeftEar,
     LeftShoulder,
@@ -40,7 +40,7 @@ public enum EHumanoidMountNode {
 }
 
 [DisallowMultipleComponent]
-public class HumanoidMountNode : EnumComponentList<Transform, EHumanoidMountNode> {
+public class HumanoidBoneMountNode : EnumComponentList<Transform, EHumanoidBoneMountNode> {
 }
 
 
