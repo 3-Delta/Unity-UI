@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public enum EActorType {
     Player,
@@ -6,28 +7,33 @@ public enum EActorType {
 }
 
 [DisallowMultipleComponent]
-public abstract class Actor : MonoBehaviour, IDisposer
-{
+public abstract class Actor : MonoBehaviour, IDisposer {
     public ulong guid;
+    // 根据guid查找actorData
+    public virtual ActorData actorData { get; }
 
-    [SerializeField] private PlayerInput _playerInput;
+    public ActorMountNode hierichy;
 
-    public PlayerInput playerInput {
-        get {
-            if (!_playerInput) {
-                SceneNodeService.TryGet(ESceneNode.PlayerInput, out _playerInput);
-            }
-
-            return _playerInput;
-        }
+    public Transform GetNode(EActorMountNode node) {
+        return this.hierichy.Get(node);
     }
     
-    public PathFinder pathFinder;
-    public AnimChanger animChanger;
+    public T GetNode<T>(EActorMountNode node) where T : Component {
+        return this.hierichy.Get(node).GetComponent<T>();
+    }
+}
+
+[DisallowMultipleComponent]
+public abstract class HumanoidActor : Actor {
+#region 壳上的mono
     public ModelChanger modelChanger;
     public StatusChanger statusChanger;
     public VisibleChanger visibleChanger;
+    public PathFinder pathFinder;
+#endregion
 
-    // 根据guid查找actorData
-    public virtual ActorData actorData { get; }
+#region 具体player上的mono
+    public AnimChanger animChanger;
+#endregion
+
 }

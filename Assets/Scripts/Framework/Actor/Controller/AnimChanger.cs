@@ -2,4 +2,4 @@
 
 // 用于替换动画
 [DisallowMultipleComponent]
-public class AnimChanger : MonoBehaviour { }
+public class AnimChanger : HumanoidActorController { }

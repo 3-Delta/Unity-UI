@@ -161,7 +161,8 @@ namespace UnityEditor.AddressableAssets.GUI
 
                 {
                     GUILayout.Space(8);
-                    var guiMode = new GUIContent("Play Mode Script");
+                    // 资源加载策略
+                    var guiMode = new GUIContent("Load");
                     Rect rMode = GUILayoutUtility.GetRect(guiMode, EditorStyles.toolbarDropDown);
                     if (EditorGUI.DropdownButton(rMode, guiMode, FocusType.Passive, EditorStyles.toolbarDropDown))
                     {
@@ -176,6 +177,7 @@ namespace UnityEditor.AddressableAssets.GUI
                     }
                 }
 
+                // 资源构建策略
                 var guiBuild = new GUIContent("Build");
                 Rect rBuild = GUILayoutUtility.GetRect(guiBuild, EditorStyles.toolbarDropDown);
                 if (EditorGUI.DropdownButton(rBuild, guiBuild, FocusType.Passive, EditorStyles.toolbarDropDown))

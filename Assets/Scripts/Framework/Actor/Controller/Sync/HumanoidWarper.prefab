@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7419580846973844931}
   - component: {fileID: 7028031140547484292}
   - component: {fileID: 7642008463052561034}
+  - component: {fileID: 7537793797709790988}
   - component: {fileID: 5891835407842726647}
   - component: {fileID: 4863306351286544403}
   - component: {fileID: 5515541730088342379}
@@ -50,6 +51,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d22f86b57c9dff74a9c89bc093d4156a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mediator: {fileID: 0}
 --- !u!114 &7419580846973844931
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -62,6 +64,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ea890f27ecbabf46a15c2d27712dac6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mediator: {fileID: 0}
 --- !u!195 &7028031140547484292
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -96,8 +99,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9eba8cd1e8604eafa8e2cdc5b3ffb544, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  agent: {fileID: 7028031140547484292}
+  selfAgent: {fileID: 7028031140547484292}
   targetPosition: {x: 0, y: 0, z: 0}
+  speed: 0
+--- !u!114 &7537793797709790988
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 245921552098304186}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4dc94a2b62fb4f0e89d31a98acf65eb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  selfAgent: {fileID: 7028031140547484292}
+  speed: 1
+  stopDistance: 0.5
 --- !u!114 &5891835407842726647
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,8 +143,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3071460f1dc94741a0b4e7ecfec3b7be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toTarget: {fileID: 7642008463052561034}
-  toNext: {fileID: 5891835407842726647}
+  mediator: {fileID: 0}
+  toTargetPos: {fileID: 0}
+  followTargetPos: {fileID: 5891835407842726647}
 --- !u!114 &5515541730088342379
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149,8 +170,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1634200063087855921}
   - component: {fileID: 7515837173463159974}
+  - component: {fileID: 4306917128250534895}
   m_Layer: 0
-  m_Name: Player
+  m_Name: HumanoidWarper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -186,12 +208,30 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   guid: 0
-  _playerInput: {fileID: 0}
-  pathFinder: {fileID: 4863306351286544403}
-  animChanger: {fileID: 7419580846973844931}
-  modelChanger: {fileID: 5990487758122448826}
+  hierichy: {fileID: 4306917128250534895}
+  modelChanger: {fileID: 0}
   statusChanger: {fileID: 0}
   visibleChanger: {fileID: 0}
+  pathFinder: {fileID: 0}
+  animChanger: {fileID: 0}
+  _playerInput: {fileID: 0}
+--- !u!114 &4306917128250534895
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1634200063087855922}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 356e8f481be1498bbc2a5cb4876a4aea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodes:
+  - {fileID: 1634200063087855921}
+  - {fileID: 3756938361295079362}
+  - {fileID: 1634200063292930140}
+  - {fileID: 1634200064126466171}
 --- !u!1 &1634200063292930141
 GameObject:
   m_ObjectHideFlags: 0

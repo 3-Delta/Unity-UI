@@ -2,9 +2,10 @@
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceProviders;
 using SO = System.Object;
 
-public class AddressableUtils {
+public static class AddressableUtils {
     public static bool LoadAssetAsync<TObject>(ref AsyncOperationHandle<TObject> handler, SO key, Action<AsyncOperationHandle<TObject>> onCompleted) {
         ReleaseAsset(ref handler, onCompleted);
         handler = Addressables.LoadAssetAsync<TObject>(key);
@@ -22,10 +23,28 @@ public class AddressableUtils {
         return false;
     }
 
+    public static void ReleaseAsset<TObject>(ref AsyncOperationHandle<TObject> handler, Action<AsyncOperationHandle<TObject>> onCompleted) {
+        if (handler.IsValid()) {
+            handler.Completed -= onCompleted;
+
+            Addressables.Release<TObject>(handler);
+            handler = default;
+        }
+    }
+
+    public static void ReleaseAsset(ref AsyncOperationHandle handler, Action<AsyncOperationHandle> onCompleted) {
+        if (handler.IsValid()) {
+            handler.Completed -= onCompleted;
+
+            Addressables.Release(handler);
+            handler = default;
+        }
+    }
+
     // 实例化
-    public static void InstantiateAssetAsync(ref AsyncOperationHandle<GameObject> handler, SO key, Action<AsyncOperationHandle<GameObject>> onCompleted, Transform parent) {
+    public static void InstantiateAsync(ref AsyncOperationHandle<GameObject> handler, SO key, Action<AsyncOperationHandle<GameObject>> onCompleted, Transform parent, bool trackHandle = true) {
         ReleaseInstance(ref handler, onCompleted);
-        handler = Addressables.InstantiateAsync(key, parent);
+        handler = Addressables.InstantiateAsync(key, parent, trackHandle);
         if (handler.IsValid()) {
             if (handler.IsDone) {
                 onCompleted?.Invoke(handler);
@@ -36,25 +55,18 @@ public class AddressableUtils {
         }
     }
 
-    public static void ReleaseAsset<TObject>(ref AsyncOperationHandle<TObject> handler, Action<AsyncOperationHandle<TObject>> onCompleted) {
+    public static void InstantiateAsync(ref AsyncOperationHandle<GameObject> handler, SO key, Action<AsyncOperationHandle<GameObject>> onCompleted, InstantiationParameters insParms, bool trackHandle = true) {
+        ReleaseInstance(ref handler, onCompleted);
+        handler = Addressables.InstantiateAsync(key, insParms, trackHandle);
         if (handler.IsValid()) {
-            handler.Completed -= onCompleted;
-
-            Addressables.Release<TObject>(handler);
-            handler = default;
+            if (handler.IsDone) {
+                onCompleted?.Invoke(handler);
+            }
+            else {
+                handler.Completed += onCompleted;
+            }
         }
     }
-    
-
-    public static void ReleaseAsset(ref AsyncOperationHandle handler, Action<AsyncOperationHandle> onCompleted) {
-        if (handler.IsValid()) {
-            handler.Completed -= onCompleted;
-
-            Addressables.Release(handler);
-            handler = default;
-        }
-    }
-    
 
     public static bool ReleaseInstance(ref AsyncOperationHandle handler, Action<AsyncOperationHandle> onCompleted) {
         if (handler.IsValid()) {

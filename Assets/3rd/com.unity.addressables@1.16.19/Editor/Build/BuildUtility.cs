@@ -22,6 +22,7 @@ namespace UnityEditor.AddressableAssets.Build
                     s_EditorAssemblies = new HashSet<string>();
                     foreach (var assembly in CompilationPipeline.GetAssemblies())
                     {
+                        // 是否为编辑器assembly的标记
                         if ((assembly.flags & AssemblyFlags.EditorAssembly) != 0)
                             s_EditorAssemblies.Add(assembly.name);
                     }

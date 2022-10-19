@@ -19,14 +19,6 @@ namespace UnityEngine.ResourceManagement.ResourceProviders
         /// The scene instance.
         /// </summary>
         public Scene Scene { get { return m_Scene; } internal set { m_Scene = value; } }
-        /// <summary>
-        /// Activate the scene via the AsyncOperation.
-        /// </summary>
-        [Obsolete("Activate() has been deprecated.  Please use ActivateAsync().")]
-        public void Activate()
-        {
-            m_Operation.allowSceneActivation = true;
-        }
 
         /// <summary>
         /// Activate the scene via the AsyncOperation.  This is the scene loading AsyncOperation provided by the engine.

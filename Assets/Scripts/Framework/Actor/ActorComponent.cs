@@ -1,15 +1,13 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 // Actor持有者
 [DisallowMultipleComponent]
-public class ActorHolder : MonoBehaviour, IDisposer {
+public abstract class ActorComponent<TActor> : MonoBehaviour, IDisposer where TActor : Actor {
     // 中介者
-    public Actor mediator;
+    public TActor mediator;
     // public ValueAssigner<bool> use = new ValueAssigner<bool>(true);
 
-    public virtual void Init(Actor mediator) {
+    public virtual void Init(TActor mediator) {
         this.mediator = mediator;
         // this.use.value = true;
 

@@ -45,6 +45,7 @@ namespace UnityEditor.AddressableAssets
 
         internal AddressableAssetSettings LoadSettingsObject()
         {
+            // 防止重入
             //prevent re-entrant stack overflow
             if (m_LoadingSettingsObject)
             {

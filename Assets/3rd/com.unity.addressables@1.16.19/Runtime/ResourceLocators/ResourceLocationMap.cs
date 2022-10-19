@@ -38,39 +38,41 @@ namespace UnityEngine.AddressableAssets.ResourceLocators
             if (locations == null)
                 return;
             Locations = new Dictionary<object, IList<IResourceLocation>>(locations.Count * 2);
-            var locMap = new Dictionary<string, ResourceLocationBase>();
+            var checkDuplicateMap = new Dictionary<string, ResourceLocationBase>();
             var dataMap = new Dictionary<string, ResourceLocationData>();
             //create and collect locations
             for (int i = 0; i < locations.Count; i++)
             {
-                var rlData = locations[i];
-                if (rlData.Keys == null || rlData.Keys.Length < 1)
+                var one = locations[i];
+                if (one.Keys == null || one.Keys.Length < 1)
                 {
-                    Addressables.LogErrorFormat("Address with id '{0}' does not have any valid keys, skipping...", rlData.InternalId);
+                    Addressables.LogErrorFormat("Address with id '{0}' does not have any valid keys, skipping...", one.InternalId);
                     continue;
                 }
-                if (locMap.ContainsKey(rlData.Keys[0]))
+
+                var key = one.Keys[0];
+                if (checkDuplicateMap.ContainsKey(key))
                 {
-                    Addressables.LogErrorFormat("Duplicate address '{0}' with id '{1}' found, skipping...", rlData.Keys[0], rlData.InternalId);
+                    Addressables.LogErrorFormat("Duplicate address '{0}' with id '{1}' found, skipping...", key, one.InternalId);
                     continue;
                 }
-                var loc = new ResourceLocationBase(rlData.Keys[0], Addressables.ResolveInternalId(rlData.InternalId), rlData.Provider, rlData.ResourceType);
-                locMap.Add(rlData.Keys[0], loc);
-                dataMap.Add(rlData.Keys[0], rlData);
+                var loc = new ResourceLocationBase(key, Addressables.ResolveInternalId(one.InternalId), one.Provider, one.ResourceType);
+                checkDuplicateMap.Add(key, loc);
+                dataMap.Add(key, one);
             }
 
             //fix up dependencies between them
-            foreach (var kvp in locMap)
+            foreach (var kvp in checkDuplicateMap)
             {
                 var data = dataMap[kvp.Key];
                 if (data.Dependencies != null)
                 {
                     foreach (var d in data.Dependencies)
-                        kvp.Value.Dependencies.Add(locMap[d]);
+                        kvp.Value.Dependencies.Add(checkDuplicateMap[d]);
                     kvp.Value.ComputeDependencyHash();
                 }
             }
-            foreach (KeyValuePair<string, ResourceLocationBase> kvp in locMap)
+            foreach (KeyValuePair<string, ResourceLocationBase> kvp in checkDuplicateMap)
             {
                 ResourceLocationData rlData = dataMap[kvp.Key];
                 foreach (var k in rlData.Keys)
@@ -116,6 +118,7 @@ namespace UnityEngine.AddressableAssets.ResourceLocators
                 return true;
             }
 
+            // 检查类型匹配的个数
             var validTypeCount = 0;
             foreach (var l in locs)
                 if (type.IsAssignableFrom(l.ResourceType))

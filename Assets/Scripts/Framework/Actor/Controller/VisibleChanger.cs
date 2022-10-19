@@ -4,4 +4,4 @@ using UnityEngine;
 
 // 修改layer,控制显隐
 [DisallowMultipleComponent]
-public class VisibleChanger : MonoBehaviour { }
+public class VisibleChanger : HumanoidActorController { }

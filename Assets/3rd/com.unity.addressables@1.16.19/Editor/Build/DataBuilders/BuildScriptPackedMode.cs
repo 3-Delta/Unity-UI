@@ -36,7 +36,7 @@ namespace UnityEditor.AddressableAssets.Build.DataBuilders
         {
             get
             {
-                return "Default Build Script";
+                return "Default Build Script(sbp)";
             }
         }
 

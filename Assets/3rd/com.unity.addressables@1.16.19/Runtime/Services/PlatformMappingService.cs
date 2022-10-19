@@ -67,6 +67,7 @@ namespace UnityEngine.AddressableAssets
     public class PlatformMappingService
     {
 #if UNITY_EDITOR
+        // BuildTarget和AddressablesPlatform 关系
         private static readonly Dictionary<BuildTarget, AddressablesPlatform> s_BuildTargetMapping =
             new Dictionary<BuildTarget, AddressablesPlatform>()
         {
@@ -87,6 +88,7 @@ namespace UnityEngine.AddressableAssets
 #endif
         };
 #endif
+        // RuntimePlatform和AddressablesPlatform 关系
         private static readonly Dictionary<RuntimePlatform, AddressablesPlatform> s_RuntimeTargetMapping =
             new Dictionary<RuntimePlatform, AddressablesPlatform>()
         {

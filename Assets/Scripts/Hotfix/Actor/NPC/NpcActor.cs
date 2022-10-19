@@ -2,6 +2,6 @@
 using UnityEngine;
 
 [Serializable]
-public class NpcActor : Actor
+public class NpcActor : HumanoidActor
 {
 }

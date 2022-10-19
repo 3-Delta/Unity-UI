@@ -4,7 +4,7 @@ using UnityEngine.AI;
 
 // 寻路到下一个位置
 [DisallowMultipleComponent]
-public class NavToNext : MonoBehaviour {
+public class NavFollowTargetPos : MonoBehaviour {
     public NavMeshAgent agent;
 
     public Action onMoveToTarget;

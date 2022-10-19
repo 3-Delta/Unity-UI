@@ -1,12 +1,13 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Serialization;
 
 // 负责通用的寻路逻辑
 [DisallowMultipleComponent]
-public class PathFinder : MonoBehaviour {
-    public NavToTarget toTarget;
-    public NavToNext toNext;
+public class PathFinder : HumanoidActorController {
+    public NavToTargetPos toTargetPos;
+    [FormerlySerializedAs("toNext")] public NavFollowTargetPos followTargetPos;
     
     public Action onMoveToTarget;
     public Action<bool> onStop;
@@ -29,7 +30,7 @@ public class PathFinder : MonoBehaviour {
     }
 
     public bool MoveToTarget(Vector3 destPos, Action onBegin = null) {
-        return toTarget.MoveTo(destPos, onBegin);
+        return this.toTargetPos.MoveTo(destPos, 1f, onBegin);
     }
 
     public bool MoveToNext(Vector2 dir, float distance) {
@@ -37,7 +38,7 @@ public class PathFinder : MonoBehaviour {
     }
     
     public void Stop() {
-        toTarget.Stop();
-        toNext.Stop();
+        this.toTargetPos.Stop();
+        this.followTargetPos.Stop();
     }
 }

@@ -29,6 +29,8 @@ namespace UnityEngine.AddressableAssets.Initialization
             {
                 Caching.compressionEnabled = data.CompressionEnabled;
                 var activeCache = Caching.currentCacheForWriting;
+                
+                // 如果有自定义cache的需求
                 if (!string.IsNullOrEmpty(data.CacheDirectoryOverride))
                 {
                     var dir = Addressables.ResolveInternalId(data.CacheDirectoryOverride);

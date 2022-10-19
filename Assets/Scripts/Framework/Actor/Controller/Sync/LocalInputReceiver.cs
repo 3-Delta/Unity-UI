@@ -8,24 +8,24 @@ using UnityEngine.EventSystems;
 // npc/player等挂载
 // ref https://code.aliyun.com/kaclok/UnityPhysics.git
 [DisallowMultipleComponent]
-public class LocalInputReceiver : ActorController {
+public class LocalInputReceiver : HumanoidActorController {
     public bool blockClick = false;
     public bool blockCtrl = false;
     
-    protected void OnEnable() {
-        if (!blockClick) {
-            mediator.playerInput.onClick += this._OnClick;
-        }
-
-        if (!blockCtrl) {
-            mediator.playerInput.onCtrl += this._OnCtrl;
-        }
-    }
-
-    protected void OnDisable() {
-        mediator.playerInput.onClick -= this._OnClick;
-        mediator.playerInput.onCtrl -= this._OnCtrl;
-    }
+    // protected void OnEnable() {
+    //     if (!blockClick) {
+    //         (mediator as PlayerActor).playerInput.onClick += this._OnClick;
+    //     }
+    //
+    //     if (!blockCtrl) {
+    //         mediator.playerInput.onCtrl += this._OnCtrl;
+    //     }
+    // }
+    //
+    // protected void OnDisable() {
+    //     mediator.playerInput.onClick -= this._OnClick;
+    //     mediator.playerInput.onCtrl -= this._OnCtrl;
+    // }
 
     private void _OnClick(Vector2 touchPosition, PointerEventData eventData) {
         if (!blockClick) {
