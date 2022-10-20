@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using UnityEngine;
 
 // 一般工作在框架层
@@ -42,6 +43,7 @@ public class COWComponentQuickLoader<T> : MonoBehaviour where T : Component {
             if (!clone.TryGetComponent<ComponentCell<T>>(out var rlt)) {
                 rlt = clone.AddComponent<ComponentCell<T>>();
             }
+
             onInit?.Invoke(rlt, this.Count);
 
             this._components.Add(rlt);
@@ -71,4 +73,66 @@ public class COWComponentQuickLoader<T> : MonoBehaviour where T : Component {
         this.TryBuild(targetCount, onInit);
         return this.TryRefresh(targetCount, onRrfresh);
     }
+
+    public void Add(ComponentCell<T> cell, bool activeRealCount) {
+        this._components.Add(cell);
+
+        if (activeRealCount) {
+            this.RealCount += 1;
+        }
+    }
+
+    public void Clear() {
+        this.RealCount = 0;
+    }
 }
+
+// 数据层面的复用
+public class COW<T> {
+    private readonly List<T> ls = new List<T>();
+    
+    public int Count {
+        get { return this.ls.Count; }
+    }
+
+    public int RealCount { get; private set; }
+
+    public T this[int index] {
+        get { return ls[index]; }
+    }
+
+    public void Clear() {
+        ls.Clear();
+        RealCount = 0;
+    }
+
+    public COW<T> TrySet<P>(int targetCount, IList<P> list, [NotNull] Func<int /*index*/, P /*data*/, T> onCreate) {
+        RealCount = targetCount;
+        while (targetCount > Count) {
+            int index = Count;
+            T t = onCreate.Invoke(index, list[index]);
+            
+            this.ls.Add(t);
+        }
+        return this;
+    }
+    
+    public COW<T> TrySet<TKey, TValue>(int targetCount, IDictionary<TKey, TValue> dict, [NotNull] Func<int /*index*/, IDictionary<TKey, TValue> /*data*/, T> onCreate) {
+        RealCount = targetCount;
+        while (targetCount > Count) {
+            int index = Count;
+            T t = onCreate.Invoke(index, dict);
+            
+            this.ls.Add(t);
+        }
+        return this;
+    }
+
+    public void Add(T t, bool activeRealCount) {
+        this.ls.Add(t);
+        if (activeRealCount) {
+            RealCount += 1;
+        }
+    }
+}
+
