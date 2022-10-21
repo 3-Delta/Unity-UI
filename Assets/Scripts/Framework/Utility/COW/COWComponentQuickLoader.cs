@@ -104,7 +104,7 @@ public class COW<T> {
         ls.Clear();
         RealCount = 0;
     }
-
+    
     public COW<T> TrySet<P>(int targetCount, IList<P> list, Func<int /*index*/, T> onCreate, Action<int /*index*/, P /*data*/, T> onRefresh) {
         RealCount = targetCount;
         while (targetCount > Count) {
