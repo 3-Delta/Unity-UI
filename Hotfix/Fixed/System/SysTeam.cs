@@ -1,4 +1,4 @@
-﻿namespace Logic.Hotfix
+﻿namespace Logic.Hotfix.Fixed
 {
     public class SysTeam : SysBase<SysAccount>
     {

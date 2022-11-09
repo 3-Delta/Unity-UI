@@ -65,11 +65,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Fixed\Core\EUIType.cs" />
+    <Compile Include="Fixed\Core\HotfixBridge.cs" />
     <Compile Include="Fixed\Core\SysBase.cs" />
     <Compile Include="Fixed\Core\SystemList.cs" />
     <Compile Include="Fixed\Core\SystemMgr.cs" />
     <Compile Include="Fixed\Core\UIBase.cs" />
+    <Compile Include="Fixed\Core\UIEntry.cs" />
     <Compile Include="Fixed\Core\UILayoutBase.cs" />
+    <Compile Include="Fixed\Core\UIMgr.cs" />
     <Compile Include="Fixed\Core\Vd.cs" />
     <Compile Include="Fixed\Protos\Common.cs" />
     <Compile Include="Fixed\Protos\EntitySync.cs" />
@@ -86,7 +89,6 @@
     <Compile Include="Fixed\System\Service\ServerTimeService.cs" />
     <Compile Include="Fixed\System\SysAccount.cs" />
     <Compile Include="Fixed\System\SysTeam.cs" />
-    <Compile Include="Fixed\Utility\UI\TextSetter.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -95,6 +97,7 @@
     <Content Include="Fixed\Scene\场景控制相关.txt" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Fixed\Utility\" />
     <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

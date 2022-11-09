@@ -41,14 +41,13 @@ public class FUIStack {
             if (cfg == null) {
                 return false;
             }
-
-            // Debug.LogError(cfg.ui.Assembly.FullName);
+            
 #if __REFL_RELOAD__ && UNITY_EDITOR
-            ui = AssemblyProxy.CreateInstance(cfg.ui.FullName) as FUIBase;
+            ui = AssemblyProxy.CreateInstance(cfg.uiTypeWithNamespace) as FUIBase;
 #else
             ui = cfg.CreateInstance();
 #endif
-            
+
             if (ui == null) {
                 return false;
             }

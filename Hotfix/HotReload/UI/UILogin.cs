@@ -1,4 +1,4 @@
-﻿using Logic.Hotfix;
+﻿using Logic.Hotfix.Fixed;
 
 using UnityEngine.UI;
 
@@ -29,7 +29,7 @@ namespace Logic.Hotfix.HotReload
         protected override void OnOpened()
         {
             base.OnOpened();
-            layout.x.GetComponent<Text>().text = "===========";
+            layout.x.GetComponent<Text>().text = "=====ccccccc======";
         }
     }
 }

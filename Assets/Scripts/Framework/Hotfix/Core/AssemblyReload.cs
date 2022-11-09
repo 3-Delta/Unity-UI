@@ -13,7 +13,7 @@ public class AssemblyReload : IAssembly {
 
     private Dictionary<string, Type> fixedTypes = new Dictionary<string, Type>();
     private Dictionary<string, Type> hotReloadTypes = new Dictionary<string, Type>();
-
+    
     public object CreateInstance(string fullName) {
         // 不知道能否？
         // fixedAssembly.CreateInstance(fullName) ?? hotReloadAssembly.CreateInstance(fullName);

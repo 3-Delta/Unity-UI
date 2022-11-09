@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Logic.Hotfix
+namespace Logic.Hotfix.Fixed
 {
     [Serializable]
     public class UIBaseWithLayout<TLayout> : FUIBase where TLayout : UILayoutBase, new()

@@ -39,21 +39,21 @@ public static class AssemblyProxy {
     public static Type[] GetTypes() {
         return assembly?.GetTypes();
     }
-
-    public static object CreateInstance(string fullName) {
-        return assembly?.CreateInstance(fullName);
+    
+    public static object CreateInstance(string typeNameWithNamespace) {
+        return assembly?.CreateInstance(typeNameWithNamespace);
     }
 
-    public static StaticMethod CreateStaticMethod(string typeNameIncludeNamespace, string methodName, int argCount) {
-        return assembly?.CreateStaticMethod(typeNameIncludeNamespace, methodName, argCount);
+    public static StaticMethod CreateStaticMethod(string typeNameWithNamespace, string methodName, int argCount) {
+        return assembly?.CreateStaticMethod(typeNameWithNamespace, methodName, argCount);
     }
 
-    public static InstanceMethod CreateInstanceMethod(string typeNameIncludeNamespace, string methodName, ref object refInstance, int argCount) {
-        return assembly?.CreateInstanceMethod(typeNameIncludeNamespace, methodName, ref refInstance, argCount);
+    public static InstanceMethod CreateInstanceMethod(string typeNameWithNamespace, string methodName, ref object refInstance, int argCount) {
+        return assembly?.CreateInstanceMethod(typeNameWithNamespace, methodName, ref refInstance, argCount);
     }
 
 #if __REFL_RELOAD__ && UNITY_EDITOR
-    [MenuItem("Assembly/HotReload")]
+    [MenuItem("Assembly/HotReloadInject")]
     private static void HotReload() {
         AssemblyReload ass = assembly as AssemblyReload;
         ass?.LoadHotReload();

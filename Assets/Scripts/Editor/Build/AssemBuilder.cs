@@ -165,12 +165,18 @@ public class AssemBuilder {
 }
 
 public class HotReloadBuilder {
-    [MenuItem("Assembly/Build/Hotfix(Fixed + HotReload)")]
-    public static void BuildHotfix() {
+    [MenuItem("Assembly/Build/HotfixAll(Fixed + HotReload)")]
+    public static void BuildHotfixAll() {
         AssemBuilder.Build(HotfixSettings.HotfixHotReloadRelativePath, "Logic.Hotfix", new[] {
             "Hotfix/Fixed/",
             "Hotfix/HotReload/",
         }, Array.Empty<string>(), null);
+    }
+    
+    [MenuItem("Assembly/Build/HotfixSeparate(Fixed + HotReload)")]
+    public static void BuildHotfixSeparate() {
+        BuildFixed();
+        BuildHotReload();
     }
 
     [MenuItem("Assembly/Build/Fixed")]

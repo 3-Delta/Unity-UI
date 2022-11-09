@@ -1,4 +1,5 @@
-﻿namespace Logic.Hotfix {
+﻿namespace Logic.Hotfix.Fixed
+{
     // 处理重连
     public class ReconnectService : SysBase<ReconnectService> {
         public bool isReconnecting { get; private set; }
