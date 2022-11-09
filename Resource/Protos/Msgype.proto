@@ -1,5 +1,5 @@
 syntax = "proto3";
-package Logic.pbf;
+package Logic.Hotfix.Fixed.Pbf;
 
 // 框架层协议号，更换游戏项目依然可以使用
 // 最大支持65535

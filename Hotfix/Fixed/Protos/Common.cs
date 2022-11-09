@@ -6,7 +6,7 @@
 using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using scg = global::System.Collections.Generic;
-namespace Logic.Pbf {
+namespace Logic.Hotfix.Fixed.Pbf {
 
   #region Messages
   public sealed class Item : pb::IMessage {

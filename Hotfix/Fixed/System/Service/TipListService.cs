@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Logic.Hotfix
+namespace Logic.Hotfix.Fixed
 {
     // 登录游戏之后，某些需要在主界面上展示的队列
     // 需要考虑登录之后进入的是战斗，或者cutscene的情况

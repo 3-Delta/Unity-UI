@@ -1,4 +1,4 @@
-﻿using Logic.Hotfix;
+﻿using Logic.Hotfix.Fixed;
 
 using UnityEngine;
 
@@ -38,6 +38,8 @@ namespace Logic.Hotfix.HotReload
             base.OnLoaded(transform);
 
             layout.Listen(this);
+
+            Debug.LogError("====hotreload=====");
         }
 
         public void OnBtnClickedbtnOpenUI()

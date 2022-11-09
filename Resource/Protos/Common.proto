@@ -1,5 +1,5 @@
 syntax = "proto3";
-package Logic.pbf;
+package Logic.Hotfix.Fixed.Pbf;
 
 // 拓展proto，支持nullable
 // https://www.codercto.com/a/10882.html

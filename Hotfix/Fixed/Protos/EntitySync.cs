@@ -6,7 +6,7 @@
 using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using scg = global::System.Collections.Generic;
-namespace Logic.Pbf {
+namespace Logic.Hotfix.Fixed.Pbf {
 
   #region Enums
   public enum EEntityStatus {
@@ -95,9 +95,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "status" field.</summary>
     public const int StatusFieldNumber = 1;
-    private global::Logic.Pbf.EEntityStatus status_ = 0;
+    private global::Logic.Hotfix.Fixed.Pbf.EEntityStatus status_ = 0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.EEntityStatus Status {
+    public global::Logic.Hotfix.Fixed.Pbf.EEntityStatus Status {
       get { return status_; }
       set {
         status_ = value;
@@ -106,9 +106,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "position" field.</summary>
     public const int PositionFieldNumber = 2;
-    private global::Logic.Pbf.FloatVector3 position_;
+    private global::Logic.Hotfix.Fixed.Pbf.FloatVector3 position_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.FloatVector3 Position {
+    public global::Logic.Hotfix.Fixed.Pbf.FloatVector3 Position {
       get { return position_; }
       set {
         position_ = value;
@@ -117,9 +117,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "rotation" field.</summary>
     public const int RotationFieldNumber = 3;
-    private global::Logic.Pbf.FloatVector3 rotation_;
+    private global::Logic.Hotfix.Fixed.Pbf.FloatVector3 rotation_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.FloatVector3 Rotation {
+    public global::Logic.Hotfix.Fixed.Pbf.FloatVector3 Rotation {
       get { return rotation_; }
       set {
         rotation_ = value;
@@ -128,9 +128,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "scale" field.</summary>
     public const int ScaleFieldNumber = 4;
-    private global::Logic.Pbf.FloatVector3 scale_;
+    private global::Logic.Hotfix.Fixed.Pbf.FloatVector3 scale_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.FloatVector3 Scale {
+    public global::Logic.Hotfix.Fixed.Pbf.FloatVector3 Scale {
       get { return scale_; }
       set {
         scale_ = value;
@@ -139,9 +139,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "speed" field.</summary>
     public const int SpeedFieldNumber = 5;
-    private global::Logic.Pbf.FloatVector3 speed_;
+    private global::Logic.Hotfix.Fixed.Pbf.FloatVector3 speed_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.FloatVector3 Speed {
+    public global::Logic.Hotfix.Fixed.Pbf.FloatVector3 Speed {
       get { return speed_; }
       set {
         speed_ = value;
@@ -150,9 +150,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "accelerate" field.</summary>
     public const int AccelerateFieldNumber = 6;
-    private global::Logic.Pbf.FloatVector3 accelerate_;
+    private global::Logic.Hotfix.Fixed.Pbf.FloatVector3 accelerate_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.FloatVector3 Accelerate {
+    public global::Logic.Hotfix.Fixed.Pbf.FloatVector3 Accelerate {
       get { return accelerate_; }
       set {
         accelerate_ = value;
@@ -220,40 +220,40 @@ namespace Logic.Pbf {
             input.SkipLastField();
             break;
           case 8: {
-            status_ = (global::Logic.Pbf.EEntityStatus) input.ReadEnum();
+            status_ = (global::Logic.Hotfix.Fixed.Pbf.EEntityStatus) input.ReadEnum();
             break;
           }
           case 18: {
             if (position_ == null) {
-              position_ = new global::Logic.Pbf.FloatVector3();
+              position_ = new global::Logic.Hotfix.Fixed.Pbf.FloatVector3();
             }
             input.ReadMessage(position_);
             break;
           }
           case 26: {
             if (rotation_ == null) {
-              rotation_ = new global::Logic.Pbf.FloatVector3();
+              rotation_ = new global::Logic.Hotfix.Fixed.Pbf.FloatVector3();
             }
             input.ReadMessage(rotation_);
             break;
           }
           case 34: {
             if (scale_ == null) {
-              scale_ = new global::Logic.Pbf.FloatVector3();
+              scale_ = new global::Logic.Hotfix.Fixed.Pbf.FloatVector3();
             }
             input.ReadMessage(scale_);
             break;
           }
           case 42: {
             if (speed_ == null) {
-              speed_ = new global::Logic.Pbf.FloatVector3();
+              speed_ = new global::Logic.Hotfix.Fixed.Pbf.FloatVector3();
             }
             input.ReadMessage(speed_);
             break;
           }
           case 50: {
             if (accelerate_ == null) {
-              accelerate_ = new global::Logic.Pbf.FloatVector3();
+              accelerate_ = new global::Logic.Hotfix.Fixed.Pbf.FloatVector3();
             }
             input.ReadMessage(accelerate_);
             break;
@@ -271,9 +271,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "op" field.</summary>
     public const int OpFieldNumber = 1;
-    private global::Logic.Pbf.EOp op_ = 0;
+    private global::Logic.Hotfix.Fixed.Pbf.EOp op_ = 0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.EOp Op {
+    public global::Logic.Hotfix.Fixed.Pbf.EOp Op {
       get { return op_; }
       set {
         op_ = value;
@@ -324,7 +324,7 @@ namespace Logic.Pbf {
             input.SkipLastField();
             break;
           case 8: {
-            op_ = (global::Logic.Pbf.EOp) input.ReadEnum();
+            op_ = (global::Logic.Hotfix.Fixed.Pbf.EOp) input.ReadEnum();
             break;
           }
           case 16: {
@@ -344,9 +344,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "typeID" field.</summary>
     public const int TypeIDFieldNumber = 1;
-    private global::Logic.Pbf.TypeID typeID_;
+    private global::Logic.Hotfix.Fixed.Pbf.TypeID typeID_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.TypeID TypeID {
+    public global::Logic.Hotfix.Fixed.Pbf.TypeID TypeID {
       get { return typeID_; }
       set {
         typeID_ = value;
@@ -380,7 +380,7 @@ namespace Logic.Pbf {
             break;
           case 10: {
             if (typeID_ == null) {
-              typeID_ = new global::Logic.Pbf.TypeID();
+              typeID_ = new global::Logic.Hotfix.Fixed.Pbf.TypeID();
             }
             input.ReadMessage(typeID_);
             break;
@@ -398,9 +398,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "typeID" field.</summary>
     public const int TypeIDFieldNumber = 1;
-    private global::Logic.Pbf.TypeID typeID_;
+    private global::Logic.Hotfix.Fixed.Pbf.TypeID typeID_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.TypeID TypeID {
+    public global::Logic.Hotfix.Fixed.Pbf.TypeID TypeID {
       get { return typeID_; }
       set {
         typeID_ = value;
@@ -452,7 +452,7 @@ namespace Logic.Pbf {
             break;
           case 10: {
             if (typeID_ == null) {
-              typeID_ = new global::Logic.Pbf.TypeID();
+              typeID_ = new global::Logic.Hotfix.Fixed.Pbf.TypeID();
             }
             input.ReadMessage(typeID_);
             break;
@@ -474,11 +474,11 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "typeID" field.</summary>
     public const int TypeIDFieldNumber = 1;
-    private global::Logic.Pbf.TypeID typeID_;
+    private global::Logic.Hotfix.Fixed.Pbf.TypeID typeID_;
     /// <summary>
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.TypeID TypeID {
+    public global::Logic.Hotfix.Fixed.Pbf.TypeID TypeID {
       get { return typeID_; }
       set {
         typeID_ = value;
@@ -512,7 +512,7 @@ namespace Logic.Pbf {
             break;
           case 10: {
             if (typeID_ == null) {
-              typeID_ = new global::Logic.Pbf.TypeID();
+              typeID_ = new global::Logic.Hotfix.Fixed.Pbf.TypeID();
             }
             input.ReadMessage(typeID_);
             break;
@@ -530,9 +530,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "typeID" field.</summary>
     public const int TypeIDFieldNumber = 1;
-    private global::Logic.Pbf.TypeID typeID_;
+    private global::Logic.Hotfix.Fixed.Pbf.TypeID typeID_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.TypeID TypeID {
+    public global::Logic.Hotfix.Fixed.Pbf.TypeID TypeID {
       get { return typeID_; }
       set {
         typeID_ = value;
@@ -566,7 +566,7 @@ namespace Logic.Pbf {
             break;
           case 10: {
             if (typeID_ == null) {
-              typeID_ = new global::Logic.Pbf.TypeID();
+              typeID_ = new global::Logic.Hotfix.Fixed.Pbf.TypeID();
             }
             input.ReadMessage(typeID_);
             break;
@@ -584,9 +584,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "typeID" field.</summary>
     public const int TypeIDFieldNumber = 1;
-    private global::Logic.Pbf.TypeID typeID_;
+    private global::Logic.Hotfix.Fixed.Pbf.TypeID typeID_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.TypeID TypeID {
+    public global::Logic.Hotfix.Fixed.Pbf.TypeID TypeID {
       get { return typeID_; }
       set {
         typeID_ = value;
@@ -620,7 +620,7 @@ namespace Logic.Pbf {
             break;
           case 10: {
             if (typeID_ == null) {
-              typeID_ = new global::Logic.Pbf.TypeID();
+              typeID_ = new global::Logic.Hotfix.Fixed.Pbf.TypeID();
             }
             input.ReadMessage(typeID_);
             break;
@@ -638,9 +638,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "typeID" field.</summary>
     public const int TypeIDFieldNumber = 1;
-    private global::Logic.Pbf.TypeID typeID_;
+    private global::Logic.Hotfix.Fixed.Pbf.TypeID typeID_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.TypeID TypeID {
+    public global::Logic.Hotfix.Fixed.Pbf.TypeID TypeID {
       get { return typeID_; }
       set {
         typeID_ = value;
@@ -649,9 +649,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "entity" field.</summary>
     public const int EntityFieldNumber = 2;
-    private global::Logic.Pbf.Entity entity_;
+    private global::Logic.Hotfix.Fixed.Pbf.Entity entity_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.Entity Entity {
+    public global::Logic.Hotfix.Fixed.Pbf.Entity Entity {
       get { return entity_; }
       set {
         entity_ = value;
@@ -692,14 +692,14 @@ namespace Logic.Pbf {
             break;
           case 10: {
             if (typeID_ == null) {
-              typeID_ = new global::Logic.Pbf.TypeID();
+              typeID_ = new global::Logic.Hotfix.Fixed.Pbf.TypeID();
             }
             input.ReadMessage(typeID_);
             break;
           }
           case 18: {
             if (entity_ == null) {
-              entity_ = new global::Logic.Pbf.Entity();
+              entity_ = new global::Logic.Hotfix.Fixed.Pbf.Entity();
             }
             input.ReadMessage(entity_);
             break;
@@ -717,9 +717,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "typeID" field.</summary>
     public const int TypeIDFieldNumber = 1;
-    private global::Logic.Pbf.TypeID typeID_;
+    private global::Logic.Hotfix.Fixed.Pbf.TypeID typeID_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.TypeID TypeID {
+    public global::Logic.Hotfix.Fixed.Pbf.TypeID TypeID {
       get { return typeID_; }
       set {
         typeID_ = value;
@@ -728,9 +728,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "op" field.</summary>
     public const int OpFieldNumber = 2;
-    private global::Logic.Pbf.OpCommand op_;
+    private global::Logic.Hotfix.Fixed.Pbf.OpCommand op_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.OpCommand Op {
+    public global::Logic.Hotfix.Fixed.Pbf.OpCommand Op {
       get { return op_; }
       set {
         op_ = value;
@@ -739,9 +739,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "entity" field.</summary>
     public const int EntityFieldNumber = 3;
-    private global::Logic.Pbf.Entity entity_;
+    private global::Logic.Hotfix.Fixed.Pbf.Entity entity_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.Entity Entity {
+    public global::Logic.Hotfix.Fixed.Pbf.Entity Entity {
       get { return entity_; }
       set {
         entity_ = value;
@@ -789,21 +789,21 @@ namespace Logic.Pbf {
             break;
           case 10: {
             if (typeID_ == null) {
-              typeID_ = new global::Logic.Pbf.TypeID();
+              typeID_ = new global::Logic.Hotfix.Fixed.Pbf.TypeID();
             }
             input.ReadMessage(typeID_);
             break;
           }
           case 18: {
             if (op_ == null) {
-              op_ = new global::Logic.Pbf.OpCommand();
+              op_ = new global::Logic.Hotfix.Fixed.Pbf.OpCommand();
             }
             input.ReadMessage(op_);
             break;
           }
           case 26: {
             if (entity_ == null) {
-              entity_ = new global::Logic.Pbf.Entity();
+              entity_ = new global::Logic.Hotfix.Fixed.Pbf.Entity();
             }
             input.ReadMessage(entity_);
             break;
@@ -821,9 +821,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "op" field.</summary>
     public const int OpFieldNumber = 1;
-    private global::Logic.Pbf.SCUpdateEntity op_;
+    private global::Logic.Hotfix.Fixed.Pbf.SCUpdateEntity op_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.SCUpdateEntity Op {
+    public global::Logic.Hotfix.Fixed.Pbf.SCUpdateEntity Op {
       get { return op_; }
       set {
         op_ = value;
@@ -857,7 +857,7 @@ namespace Logic.Pbf {
             break;
           case 10: {
             if (op_ == null) {
-              op_ = new global::Logic.Pbf.SCUpdateEntity();
+              op_ = new global::Logic.Hotfix.Fixed.Pbf.SCUpdateEntity();
             }
             input.ReadMessage(op_);
             break;
@@ -875,9 +875,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "time" field.</summary>
     public const int TimeFieldNumber = 1;
-    private global::Logic.Pbf.RefreshTime time_;
+    private global::Logic.Hotfix.Fixed.Pbf.RefreshTime time_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.RefreshTime Time {
+    public global::Logic.Hotfix.Fixed.Pbf.RefreshTime Time {
       get { return time_; }
       set {
         time_ = value;
@@ -929,7 +929,7 @@ namespace Logic.Pbf {
             break;
           case 10: {
             if (time_ == null) {
-              time_ = new global::Logic.Pbf.RefreshTime();
+              time_ = new global::Logic.Hotfix.Fixed.Pbf.RefreshTime();
             }
             input.ReadMessage(time_);
             break;
@@ -1005,9 +1005,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "op" field.</summary>
     public const int OpFieldNumber = 1;
-    private global::Logic.Pbf.EBattleOp op_ = 0;
+    private global::Logic.Hotfix.Fixed.Pbf.EBattleOp op_ = 0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.EBattleOp Op {
+    public global::Logic.Hotfix.Fixed.Pbf.EBattleOp Op {
       get { return op_; }
       set {
         op_ = value;
@@ -1058,7 +1058,7 @@ namespace Logic.Pbf {
             input.SkipLastField();
             break;
           case 8: {
-            op_ = (global::Logic.Pbf.EBattleOp) input.ReadEnum();
+            op_ = (global::Logic.Hotfix.Fixed.Pbf.EBattleOp) input.ReadEnum();
             break;
           }
           case 16: {
@@ -1089,11 +1089,11 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "ops" field.</summary>
     public const int OpsFieldNumber = 2;
-    private static readonly pb::FieldCodec<global::Logic.Pbf.OpCommand> _repeated_ops_codec
-        = pb::FieldCodec.ForMessage(18, global::Logic.Pbf.OpCommand.Parser);
-    private readonly pbc::RepeatedField<global::Logic.Pbf.OpCommand> ops_ = new pbc::RepeatedField<global::Logic.Pbf.OpCommand>();
+    private static readonly pb::FieldCodec<global::Logic.Hotfix.Fixed.Pbf.OpCommand> _repeated_ops_codec
+        = pb::FieldCodec.ForMessage(18, global::Logic.Hotfix.Fixed.Pbf.OpCommand.Parser);
+    private readonly pbc::RepeatedField<global::Logic.Hotfix.Fixed.Pbf.OpCommand> ops_ = new pbc::RepeatedField<global::Logic.Hotfix.Fixed.Pbf.OpCommand>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::Logic.Pbf.OpCommand> Ops {
+    public pbc::RepeatedField<global::Logic.Hotfix.Fixed.Pbf.OpCommand> Ops {
       get { return ops_; }
     }
 

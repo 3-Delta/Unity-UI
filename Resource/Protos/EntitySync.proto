@@ -1,5 +1,5 @@
 syntax = "proto3";
-package Logic.pbf;
+package Logic.Hotfix.Fixed.Pbf;
 
 import "Common.proto";
 

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package Logic.pbf;
+package Logic.Hotfix.Fixed.Pbf;
 
 message CSHeartBeat {
   // uint32 time = 1;

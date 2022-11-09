@@ -1,5 +1,5 @@
 syntax = "proto3";
-package Logic.pbf;
+package Logic.Hotfix.Fixed.Pbf;
 
 enum EServerState {
 		Normal = 0; // 正常 

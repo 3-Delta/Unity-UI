@@ -1,8 +1,6 @@
-﻿using Google.Protobuf;
+﻿using Logic.Pbf;
 
-using Logic.Pbf;
-
-namespace Logic.Hotfix
+namespace Logic.Hotfix.Fixed
 {
     // 处理servertime
     public class ServerTimeService : SysBase<ServerTimeService>

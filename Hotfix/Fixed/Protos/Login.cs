@@ -6,7 +6,7 @@
 using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using scg = global::System.Collections.Generic;
-namespace Logic.Pbf {
+namespace Logic.Hotfix.Fixed.Pbf {
 
   #region Messages
   public sealed class CSLogin : pb::IMessage {
@@ -150,12 +150,12 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "time" field.</summary>
     public const int TimeFieldNumber = 2;
-    private global::Logic.Pbf.TimeSync time_;
+    private global::Logic.Hotfix.Fixed.Pbf.TimeSync time_;
     /// <summary>
     /// 时间同步
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.TimeSync Time {
+    public global::Logic.Hotfix.Fixed.Pbf.TimeSync Time {
       get { return time_; }
       set {
         time_ = value;
@@ -218,7 +218,7 @@ namespace Logic.Pbf {
           }
           case 18: {
             if (time_ == null) {
-              time_ = new global::Logic.Pbf.TimeSync();
+              time_ = new global::Logic.Hotfix.Fixed.Pbf.TimeSync();
             }
             input.ReadMessage(time_);
             break;

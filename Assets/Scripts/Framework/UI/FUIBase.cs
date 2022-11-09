@@ -41,13 +41,13 @@ public class FUIBase /*: IListenReconnect*/ {
     public bool hasExecutedShow { get; private set; }
     public List<int> relatives { get; private set; } = new List<int>();
 #endif
-
+    
     public FUIBase() { }
 
     // UIEntry能否将UIEntry设置为表格填写的形式，也就是提剔除uiconfig
     // 因为有时候，可能需要在B ui打开的时候，将前面的A ui关闭掉。所以需要外部设置这些回调
     public void Init(int uiType, FUIEntry cfg) {
-        Debug.LogError(string.Format("Init {0} {1}", uiType.ToString(), cfg.ui));
+        Debug.LogError(string.Format("Init {0} {1}", uiType.ToString(), cfg.uiTypeWithNamespace));
 
         this.uiType = uiType;
         this.cfg = cfg;
@@ -55,7 +55,7 @@ public class FUIBase /*: IListenReconnect*/ {
 
     // 防止点击事件
     public void BlockRaycaster(bool toBlcok) {
-        Debug.LogError(string.Format("BlockRaycaster {0} {1} {2}", uiType.ToString(), cfg.ui, toBlcok.ToString()));
+        Debug.LogError(string.Format("BlockRaycaster {0} {1} {2}", uiType.ToString(), cfg.uiTypeWithNamespace, toBlcok.ToString()));
 
         if (adapter != null) {
             adapter.BlockRaycaster(toBlcok);
@@ -63,7 +63,7 @@ public class FUIBase /*: IListenReconnect*/ {
     }
 
     public void SetOrder(int order) {
-        Debug.LogError(string.Format("SetOrder {0} {1} {2}", uiType.ToString(), cfg.ui, order.ToString()));
+        Debug.LogError(string.Format("SetOrder {0} {1} {2}", uiType.ToString(), cfg.uiTypeWithNamespace, order.ToString()));
         int oldOrder = this.order;
         this.order = order;
 
@@ -213,7 +213,7 @@ public class FUIBase /*: IListenReconnect*/ {
     private void SetName() {
 #if UNITY_EDITOR
         if (transform != null) {
-            transform.name = string.Format("{0} {1} {2}", uiType.ToString(), order.ToString(), cfg.ui);
+            transform.name = string.Format("{0} {1} {2}", uiType.ToString(), order.ToString(), cfg.uiTypeWithNamespace);
         }
 #endif
     }
@@ -277,41 +277,41 @@ public class FUIBase /*: IListenReconnect*/ {
 #region 生命周期
     protected virtual void OnLoaded(Transform transform) {
         // 资源组件解析
-        Debug.LogError(string.Format("OnLoaded {0} {1}", uiType.ToString(), cfg.ui));
+        Debug.LogError(string.Format("OnLoaded {0} {1}", uiType.ToString(), cfg.uiTypeWithNamespace));
     }
 
     protected virtual void OnTransfer(Tuple<ulong, ulong, ulong, object> arg) {
         // ui已经打开的时候调用OnTransfer
-        Debug.LogError(string.Format("OnTransfer {0} {1}", uiType.ToString(), cfg.ui));
+        Debug.LogError(string.Format("OnTransfer {0} {1}", uiType.ToString(), cfg.uiTypeWithNamespace));
     }
 
     protected virtual void OnOpen(Tuple<ulong, ulong, ulong, object> arg) {
         // ui没有打开的时候调用UIMgr.Open
-        Debug.LogError(string.Format("OnOpen {0} {1}", uiType.ToString(), cfg.ui));
+        Debug.LogError(string.Format("OnOpen {0} {1}", uiType.ToString(), cfg.uiTypeWithNamespace));
     }
 
     protected virtual void OnClose() {
-        Debug.LogError(string.Format("OnClose {0} {1}", uiType.ToString(), cfg.ui));
+        Debug.LogError(string.Format("OnClose {0} {1}", uiType.ToString(), cfg.uiTypeWithNamespace));
     }
 
     protected virtual void OnOpened() {
-        Debug.LogError(string.Format("OnOpened {0} {1}", uiType.ToString(), cfg.ui));
+        Debug.LogError(string.Format("OnOpened {0} {1}", uiType.ToString(), cfg.uiTypeWithNamespace));
     }
 
     protected virtual void OnShow() {
-        Debug.LogError(string.Format("OnShow {0} {1}", uiType.ToString(), cfg.ui));
+        Debug.LogError(string.Format("OnShow {0} {1}", uiType.ToString(), cfg.uiTypeWithNamespace));
     }
 
     protected virtual void OnHide() {
-        Debug.LogError(string.Format("OnHide {0} {1}", uiType.ToString(), cfg.ui));
+        Debug.LogError(string.Format("OnHide {0} {1}", uiType.ToString(), cfg.uiTypeWithNamespace));
     }
 
     protected virtual void ProcessEvent(bool toListen) {
-        Debug.LogError(string.Format("ProcessEvent {0} {1} {2}", uiType.ToString(), toListen.ToString(), cfg.ui));
+        Debug.LogError(string.Format("ProcessEvent {0} {1} {2}", uiType.ToString(), toListen.ToString(), cfg.uiTypeWithNamespace));
     }
 
     protected virtual void ProcessEventForShowHide(bool toListen) {
-        Debug.LogError(string.Format("ProcessEventForShowHide {0} {1} {2}", uiType.ToString(), toListen.ToString(), cfg.ui));
+        Debug.LogError(string.Format("ProcessEventForShowHide {0} {1} {2}", uiType.ToString(), toListen.ToString(), cfg.uiTypeWithNamespace));
     }
 #endregion
 

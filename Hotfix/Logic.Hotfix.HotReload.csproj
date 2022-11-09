@@ -64,9 +64,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HotReload\HotfixBridge.cs" />
-    <Compile Include="HotReload\UIEntry.cs" />
-    <Compile Include="HotReload\UIMgr.cs" />
     <Compile Include="HotReload\UI\UILogin.cs" />
     <Compile Include="HotReload\UI\UIMain.cs" />
     <Compile Include="HotReload\UI\UIWairForNetwork.cs" />

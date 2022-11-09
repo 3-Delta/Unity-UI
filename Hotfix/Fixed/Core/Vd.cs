@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Logic.Hotfix
+namespace Logic.Hotfix.Fixed
 {
     public class VD
     {

@@ -1,6 +1,6 @@
 ﻿#define DEVELOPMENT_MODE
 
-namespace Logic.Hotfix
+namespace Logic.Hotfix.Fixed
 {
     public interface IReload
     {

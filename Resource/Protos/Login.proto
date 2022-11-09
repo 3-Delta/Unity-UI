@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 import "Time.proto";
-package Logic.pbf;
+package Logic.Hotfix.Fixed.Pbf;
 
 message CSLogin {
 		uint32 sdkType = 1;

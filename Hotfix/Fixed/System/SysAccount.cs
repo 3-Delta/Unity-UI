@@ -1,6 +1,6 @@
 ﻿using Logic.Pbf;
 
-namespace Logic.Hotfix
+namespace Logic.Hotfix.Fixed
 {
     public partial class SysAccount : SysBase<SysAccount>
     {

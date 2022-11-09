@@ -26,30 +26,30 @@ public class FUIEntry {
 #if UNITY_EDITOR
     public int uiType;
     public string prefabPath;
-    public Type ui;
+    public string uiTypeWithNamespace;
     public EUIOption option;
     public EUILayer layer;
 #else
     public int uiType { get; private set; }
     public string prefabPath { get; private set; }
-    public Type ui { get; private set; }
+    public string uiTypeWithNamespace { get; private set; }
     public EUIOption option { get; private set; }
     public EUILayer layer { get; private set; }
 #endif
 
     public FUIEntry() { }
 
-    public FUIEntry Reset(int uiType, string prefabPath, Type ui, EUIOption option = EUIOption.None, EUILayer layer = EUILayer.NormalStack) {
+    public FUIEntry Reset(int uiType, string prefabPath, string uiTypeWithNamespace, EUIOption option = EUIOption.None, EUILayer layer = EUILayer.NormalStack) {
         this.uiType = uiType;
         this.prefabPath = prefabPath;
-        this.ui = ui;
+        this.uiTypeWithNamespace = uiTypeWithNamespace;
         this.layer = layer;
         this.option = option;
         return this;
     }
 
     public virtual FUIBase CreateInstance() {
-        return Activator.CreateInstance(ui) as FUIBase;
+        return Activator.CreateInstance("Logic.Hotfix.HotReload", this.uiTypeWithNamespace).Unwrap() as FUIBase;
     }
 
     public bool Contains(EUIOption target) {

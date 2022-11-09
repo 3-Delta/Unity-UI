@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Logic.Hotfix
+namespace Logic.Hotfix.Fixed
 {
     public class UIMgr : FUIMgr
     {

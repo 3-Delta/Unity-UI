@@ -6,7 +6,7 @@
 using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using scg = global::System.Collections.Generic;
-namespace Logic.Pbf {
+namespace Logic.Hotfix.Fixed.Pbf {
 
   #region Enums
   public enum EServerState {
@@ -139,9 +139,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "state" field.</summary>
     public const int StateFieldNumber = 8;
-    private global::Logic.Pbf.EServerState state_ = 0;
+    private global::Logic.Hotfix.Fixed.Pbf.EServerState state_ = 0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.EServerState State {
+    public global::Logic.Hotfix.Fixed.Pbf.EServerState State {
       get { return state_; }
       set {
         state_ = value;
@@ -150,9 +150,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "color" field.</summary>
     public const int ColorFieldNumber = 9;
-    private global::Logic.Pbf.EStateColor color_ = 0;
+    private global::Logic.Hotfix.Fixed.Pbf.EStateColor color_ = 0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.EStateColor Color {
+    public global::Logic.Hotfix.Fixed.Pbf.EStateColor Color {
       get { return color_; }
       set {
         color_ = value;
@@ -161,9 +161,9 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "tags" field.</summary>
     public const int TagsFieldNumber = 10;
-    private global::Logic.Pbf.EStateTag tags_ = 0;
+    private global::Logic.Hotfix.Fixed.Pbf.EStateTag tags_ = 0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Logic.Pbf.EStateTag Tags {
+    public global::Logic.Hotfix.Fixed.Pbf.EStateTag Tags {
       get { return tags_; }
       set {
         tags_ = value;
@@ -308,15 +308,15 @@ namespace Logic.Pbf {
             break;
           }
           case 64: {
-            state_ = (global::Logic.Pbf.EServerState) input.ReadEnum();
+            state_ = (global::Logic.Hotfix.Fixed.Pbf.EServerState) input.ReadEnum();
             break;
           }
           case 72: {
-            color_ = (global::Logic.Pbf.EStateColor) input.ReadEnum();
+            color_ = (global::Logic.Hotfix.Fixed.Pbf.EStateColor) input.ReadEnum();
             break;
           }
           case 80: {
-            tags_ = (global::Logic.Pbf.EStateTag) input.ReadEnum();
+            tags_ = (global::Logic.Hotfix.Fixed.Pbf.EStateTag) input.ReadEnum();
             break;
           }
           case 88: {
@@ -609,34 +609,34 @@ namespace Logic.Pbf {
 
     /// <summary>Field number for the "serverList" field.</summary>
     public const int ServerListFieldNumber = 1;
-    private static readonly pb::FieldCodec<global::Logic.Pbf.ServerInfo> _repeated_serverList_codec
-        = pb::FieldCodec.ForMessage(10, global::Logic.Pbf.ServerInfo.Parser);
-    private readonly pbc::RepeatedField<global::Logic.Pbf.ServerInfo> serverList_ = new pbc::RepeatedField<global::Logic.Pbf.ServerInfo>();
+    private static readonly pb::FieldCodec<global::Logic.Hotfix.Fixed.Pbf.ServerInfo> _repeated_serverList_codec
+        = pb::FieldCodec.ForMessage(10, global::Logic.Hotfix.Fixed.Pbf.ServerInfo.Parser);
+    private readonly pbc::RepeatedField<global::Logic.Hotfix.Fixed.Pbf.ServerInfo> serverList_ = new pbc::RepeatedField<global::Logic.Hotfix.Fixed.Pbf.ServerInfo>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::Logic.Pbf.ServerInfo> ServerList {
+    public pbc::RepeatedField<global::Logic.Hotfix.Fixed.Pbf.ServerInfo> ServerList {
       get { return serverList_; }
     }
 
     /// <summary>Field number for the "serverGroup" field.</summary>
     public const int ServerGroupFieldNumber = 2;
-    private static readonly pb::FieldCodec<global::Logic.Pbf.ServerGroup> _repeated_serverGroup_codec
-        = pb::FieldCodec.ForMessage(18, global::Logic.Pbf.ServerGroup.Parser);
-    private readonly pbc::RepeatedField<global::Logic.Pbf.ServerGroup> serverGroup_ = new pbc::RepeatedField<global::Logic.Pbf.ServerGroup>();
+    private static readonly pb::FieldCodec<global::Logic.Hotfix.Fixed.Pbf.ServerGroup> _repeated_serverGroup_codec
+        = pb::FieldCodec.ForMessage(18, global::Logic.Hotfix.Fixed.Pbf.ServerGroup.Parser);
+    private readonly pbc::RepeatedField<global::Logic.Hotfix.Fixed.Pbf.ServerGroup> serverGroup_ = new pbc::RepeatedField<global::Logic.Hotfix.Fixed.Pbf.ServerGroup>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::Logic.Pbf.ServerGroup> ServerGroup {
+    public pbc::RepeatedField<global::Logic.Hotfix.Fixed.Pbf.ServerGroup> ServerGroup {
       get { return serverGroup_; }
     }
 
     /// <summary>Field number for the "whiteList" field.</summary>
     public const int WhiteListFieldNumber = 3;
-    private static readonly pb::FieldCodec<global::Logic.Pbf.ServerInfo> _repeated_whiteList_codec
-        = pb::FieldCodec.ForMessage(26, global::Logic.Pbf.ServerInfo.Parser);
-    private readonly pbc::RepeatedField<global::Logic.Pbf.ServerInfo> whiteList_ = new pbc::RepeatedField<global::Logic.Pbf.ServerInfo>();
+    private static readonly pb::FieldCodec<global::Logic.Hotfix.Fixed.Pbf.ServerInfo> _repeated_whiteList_codec
+        = pb::FieldCodec.ForMessage(26, global::Logic.Hotfix.Fixed.Pbf.ServerInfo.Parser);
+    private readonly pbc::RepeatedField<global::Logic.Hotfix.Fixed.Pbf.ServerInfo> whiteList_ = new pbc::RepeatedField<global::Logic.Hotfix.Fixed.Pbf.ServerInfo>();
     /// <summary>
     /// 白名单
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public pbc::RepeatedField<global::Logic.Pbf.ServerInfo> WhiteList {
+    public pbc::RepeatedField<global::Logic.Hotfix.Fixed.Pbf.ServerInfo> WhiteList {
       get { return whiteList_; }
     }
 

@@ -1,4 +1,4 @@
-﻿namespace Logic.Hotfix
+﻿namespace Logic.Hotfix.Fixed
 {
     // 非热更层 调用 热更层 的入口
     public static class HotfixBridge
