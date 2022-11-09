@@ -9,10 +9,10 @@ public class AssemblyILRuntime : IAssembly {
     private ILRuntime.Runtime.Enviorment.AppDomain appDomain = null;
     private MemoryStream dllMemory;
     private MemoryStream pdbMemory;
-
-    public object CreateInstance(string fullName) {
+    
+    public object CreateInstance(string typeNameIncludeNamespace) {
         try {
-            return appDomain.Instantiate(fullName);
+            return appDomain.Instantiate(typeNameIncludeNamespace);
         }
         catch {
             return null;
@@ -25,6 +25,14 @@ public class AssemblyILRuntime : IAssembly {
 
     public StaticMethod CreateStaticMethod(string typeNameIncludeNamespace, string methodName, int argCount) {
         return new ILRStaticMethod(appDomain, typeNameIncludeNamespace, methodName, argCount);
+    }
+    
+    public Type GetType(string typeNameWithNamespace) {
+        if (appDomain.LoadedTypes.TryGetValue(typeNameWithNamespace, out var rlt)) {
+            return rlt.ReflectionType;
+        }
+
+        return null;
     }
 
     public Type[] GetTypes() {

@@ -6,9 +6,9 @@ using UnityEngine;
 public class AssemblyReflection : IAssembly {
     private Assembly assembly = null;
 
-    public object CreateInstance(string fullName) {
+    public object CreateInstance(string typeNameIncludeNamespace) {
         try {
-            return assembly.CreateInstance(fullName);
+            return assembly.CreateInstance(typeNameIncludeNamespace);
         }
         catch {
             return null;
@@ -19,6 +19,9 @@ public class AssemblyReflection : IAssembly {
     }
     public StaticMethod CreateStaticMethod(string typeNameIncludeNamespace, string methodName, int argCount) {
         return new MonoStaticMethod(assembly, typeNameIncludeNamespace, methodName);
+    }
+    public Type GetType(string typeNameWithNamespace) {
+        return assembly.GetType(typeNameWithNamespace);
     }
     public Type[] GetTypes() {
         return assembly.GetTypes();

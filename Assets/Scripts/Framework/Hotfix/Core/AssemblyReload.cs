@@ -14,16 +14,16 @@ public class AssemblyReload : IAssembly {
     private Dictionary<string, Type> fixedTypes = new Dictionary<string, Type>();
     private Dictionary<string, Type> hotReloadTypes = new Dictionary<string, Type>();
     
-    public object CreateInstance(string fullName) {
+    public object CreateInstance(string typeNameIncludeNamespace) {
         // 不知道能否？
-        // fixedAssembly.CreateInstance(fullName) ?? hotReloadAssembly.CreateInstance(fullName);
+        // fixedAssembly.CreateInstance(typeNameIncludeNamespace) ?? hotReloadAssembly.CreateInstance(typeNameIncludeNamespace);
         object rlt = null;
         try {
-            if (fixedTypes.TryGetValue(fullName, out _)) {
-                rlt = fixedAssembly.CreateInstance(fullName);
+            if (fixedTypes.TryGetValue(typeNameIncludeNamespace, out _)) {
+                rlt = fixedAssembly.CreateInstance(typeNameIncludeNamespace);
             }
-            else if (hotReloadTypes.TryGetValue(fullName, out _)) {
-                rlt = hotReloadAssembly.CreateInstance(fullName);
+            else if (hotReloadTypes.TryGetValue(typeNameIncludeNamespace, out _)) {
+                rlt = hotReloadAssembly.CreateInstance(typeNameIncludeNamespace);
             }
 
             return rlt;
@@ -55,6 +55,17 @@ public class AssemblyReload : IAssembly {
         return null;
     }
 
+    public Type GetType(string typeNameWithNamespace) {
+        if (fixedTypes.TryGetValue(typeNameWithNamespace, out var rlt)) {
+            return rlt;
+        }
+        else if (hotReloadTypes.TryGetValue(typeNameWithNamespace, out rlt)) {
+            return rlt;
+        }
+
+        return null;
+    }
+    
     public Type[] GetTypes() {
         return allTypes;
     }
