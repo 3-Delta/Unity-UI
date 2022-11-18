@@ -106,7 +106,7 @@ public class ButtonWithReason : MonoBehaviour {
     public Action OnSuccess;
     public Action<int> OnFail;
 
-    // 根据reason刷新button的状态，比如 置灰，比如 取消点击交互功能
+    // 根据reason刷新button的状态，比如 置灰，比如 取消点击交互功能, 比如 隐藏 按钮
     public Action<int> onDoRefresh;
 
     private void Awake() {
