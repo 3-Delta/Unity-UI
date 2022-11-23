@@ -11,11 +11,11 @@ Shader "UI/Default"
     {
         _Color ("Tint", Color) = (1, 1, 1, 1)
         [PerRendererData] _MainTex ("Sprite Texture(RGBA)", 2D) = "white" {}
-        
+
         // 圆角裁切
         [Toggle]/* [IntRange]*/ [Enum(ESwitch)] _InvertAlphaMask("InvertAlphaMask", Range(0, 1)) = 0
         [NoScaleOffset] _AlphaMaskTex("AlphaMask(A)", 2D) = "white" {}
-        
+
         [Header(Stencil)]
         [Enum(UnityEngine.Rendering.CompareFunction)] _StencilComp ("StencilComparison", Float) = 8
         _Stencil ("RefValue", Float) = 0
@@ -37,19 +37,26 @@ Shader "UI/Default"
         [Enum(UnityEngine.Rendering.CompareFunction)] _ZTest ("ZTest", Float) = 4
         // (Off, 0, On, 1)
         [Toggle] /* [IntRange]*/ [Enum(ESwitch)] _ZWrite ("ZWrite", Range(0, 1)) = 0
-        
+
         [Enum(UnityEngine.Rendering.CullMode)] _CullMode ("CullMode", Range(0, 1)) = 0
-        
+
         [HideInInspector] _ClipRect ("ClipRect", Vector) = (0, 0, 0, 0)
 
         [Toggle(UNITY_UI_ALPHACLIP)] _UseUIAlphaClip ("Use Alpha Clip", Float) = 0
         // 置灰
         [Toggle] /* [IntRange]*/ [Enum(ESwitch)] _IsGrey("IsGrey", Range(0, 1)) = 0
-        
+
         // 旋转缩放
         _MeshScale ("MeshScale", float) = 0
 
-        // https://zhuanlan.zhihu.com/p/84867268 shader中通过Marco实现纹理的wrapMode,而不是通过纹理的设置实现 
+        // https://zhuanlan.zhihu.com/p/84867268 shader中通过Marco实现纹理的wrapMode,而不是通过纹理的设置实现
+        // urp中可以使用类似
+        // SAMPLER(sampler_linear_clamp);
+        // SAMPLER(sampler_point_clamp); 但是也是提前固定的，不能运行时修改
+        [KeywordEnum(Repeat, Clamp, Mirror, MirrorOnce)] _WrapMode ("WrapMode", Float) = 0
+
+        // uv偏移
+        _UVOffset ("UVOffset", Vector) = (0, 0, 0, 0)
     }
 
     SubShader
@@ -84,7 +91,7 @@ Shader "UI/Default"
         Pass
         {
             Name "UI_Default"
-        CGPROGRAM
+            CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
             #pragma target 2.0
@@ -93,35 +100,37 @@ Shader "UI/Default"
             #include "UnityUI.cginc"
 
             #pragma enable_d3d11_debug_symbols
-            
+
             #pragma multi_compile __ UNITY_UI_CLIP_RECT
             #pragma multi_compile __ UNITY_UI_ALPHACLIP
+            #pragma shader_feature _WRAPMODE_REPEAT _WRAPMODE_CLAMP _WRAPMODE_MIRROR _WRAPMODE_MIRRORONCE
 
             struct appdata_t
             {
-                float4 vertex   : POSITION;
-                float4 color    : COLOR;
+                float4 vertex : POSITION;
+                float4 color : COLOR;
                 float2 texcoord : TEXCOORD0;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct v2f
             {
-                float4 vertex   : SV_POSITION;
-                fixed4 color    : COLOR;
-                float2 texcoord  : TEXCOORD0;
+                float4 vertex : SV_POSITION;
+                fixed4 color : COLOR;
+                float2 texcoord : TEXCOORD0;
                 float4 worldPosition : TEXCOORD1;
                 UNITY_VERTEX_OUTPUT_STEREO
             };
 
             sampler2D _MainTex;
             sampler2D _AlphaMaskTex;
-            
+
             fixed4 _Color;
             fixed _IsGrey;
             half _MeshScale;
+            float4 _UVOffset;
             fixed _InvertAlphaMask;
-        
+
             fixed4 _TextureSampleAdd;
             float4 _ClipRect;
             float4 _MainTex_ST;
@@ -131,14 +140,14 @@ Shader "UI/Default"
                 v2f OUT;
                 UNITY_SETUP_INSTANCE_ID(v);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(OUT);
-                
+
                 // https://edu.uwa4d.com/lesson-detail/197/1120/1?isPreview=0
                 // 顶点坐标设置_MeshScale偏移[以mesh中心点为缩放中心]
                 v.vertex.xy += ((v.texcoord - float2(0.5f, 0.5f)) * _MeshScale);
-                
+
                 // 设置不同的Pivot是否存在影响？
                 // v.vertex.xy += ((v.vertex.xy - float2(0.5f, 0.5f)) * _MeshScale);
-                
+
                 // 这里只是一个LocalSpace，为什么充当WorldSPace? 关键结果还是正确的！
                 // 因为本质上UGUI 使用Canvas作为一个整体的subMesh进行渲染，所以最终canvas上每个graphic都不会存在自己的localspace,都是以canvas这个submesh作为渲染单元进行的，然后
                 // _CLipRect也是以canvas为基准，各个rectmask2d的的相对于canvas的一个偏移的rect,那么双方相当于都在一个 统一的以canvas为基准的坐标系中，自然可以进行合理的计算。
@@ -152,9 +161,22 @@ Shader "UI/Default"
             }
 
             fixed4 frag(v2f IN) : SV_Target
-            {                
-                half4 color = (tex2D(_MainTex, IN.texcoord) + _TextureSampleAdd) * IN.color;
-                
+            {
+                float2 uvOffset = float2(_UVOffset.x, _UVOffset.y);
+                float2 uv = IN.texcoord + uvOffset;
+
+                #if _WRAPMODE_REPEAT
+                uv = frac(uv);
+                #elif _WRAPMODE_CLAMP
+                    uv = saturate(uv);
+                #elif _WRAPMODE_MIRROR
+                    uv = frac(abs(uv));
+                #elif _WRAPMODE_MIRRORONCE
+                    uv = saturate(abs(uv));
+                #endif
+
+                half4 color = (tex2D(_MainTex, uv) + _TextureSampleAdd) * IN.color;
+
                 #ifdef UNITY_UI_CLIP_RECT
                     float2 pos = IN.worldPosition.xy;
                     color.a *= UnityGet2DClipping(pos, _ClipRect);
@@ -163,7 +185,7 @@ Shader "UI/Default"
                 #ifdef UNITY_UI_ALPHACLIP
                     // 圆角裁切
                     _InvertAlphaMask = 1 - step(_InvertAlphaMask, 0.5);
-                    half maskAlpha = tex2D(_AlphaMaskTex, IN.texcoord).a;
+                    half maskAlpha = tex2D(_AlphaMaskTex, IN.texcoord + uvOffset).a;
                     maskAlpha = lerp(maskAlpha, 1 - maskAlpha, _InvertAlphaMask);
                     color.a *= maskAlpha;
                     
@@ -175,10 +197,10 @@ Shader "UI/Default"
                 _IsGrey = 1 - step(_IsGrey, 0.5);
                 // 之前犯了愚蠢的错误，认为在ui层面这是gray就行，后来发现不行，因为gray是针对于每个像素进行的处理
                 color.rgb = lerp(color.rgb, Luminance(color.rgb), _IsGrey);
-                
+
                 return color;
             }
-        ENDCG
+            ENDCG
         }
     }
 }
