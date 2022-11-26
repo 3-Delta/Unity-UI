@@ -24,11 +24,11 @@
                 SystemList.list[i].OnReload();
             }
         }
-        public override void OnLogin()
+        public override void OnLogin(bool isReconnect)
         {
             for (int i = 0, length = SystemList.list.Count; i < length; i++)
             {
-                SystemList.list[i].OnLogin();
+                SystemList.list[i].OnLogin(isReconnect);
             }
         }
         public override void OnLogout()
@@ -36,6 +36,22 @@
             for (int i = 0, length = SystemList.list.Count; i < length; i++)
             {
                 SystemList.list[i].OnLogout();
+            }
+        }
+
+        public override void OnSynced(bool isReconnect)
+        {
+            for (int i = 0, length = SystemList.list.Count; i < length; i++)
+            {
+                SystemList.list[i].OnSynced(isReconnect);
+            }
+        }
+
+        public override void ToVisualize()
+        {
+            for (int i = 0, length = SystemList.list.Count; i < length; i++)
+            {
+                SystemList.list[i].ToVisualize();
             }
         }
     }

@@ -36,16 +36,16 @@ namespace Logic.Hotfix.Fixed
     {
         protected override void ProcessEvent(bool toRegister)
         {
-            NWDelegateService.emiter.Handle((ushort)EMsgType.Cslogin, OnResLogin, toRegister);
+            NWDelegateService.emiter.Handle<bool>((ushort)EMsgType.Cslogin, OnResLogin, toRegister);
             NWDelegateService.emiter.Handle((ushort)EMsgType.Cslogout, OnResLogout, toRegister);
             NWDelegateService.emiter.Handle((ushort)EMsgType.Csreconnect, OnResReconnect, toRegister);
         }
         
-        public override void OnSynced()
+        public override void OnSynced(bool isReconnect)
         {
             ++_syncCount;
             msgFromReconnect = false;
-            SystemMgr.Instance.OnSynced();
+            SystemMgr.Instance.OnSynced(isReconnect);
         }
 
         public void Connect(string ip, int port) {
@@ -71,11 +71,11 @@ namespace Logic.Hotfix.Fixed
         }
 
         // 登录回包
-        public void OnResLogin() {
+        public void OnResLogin(bool isReconnect) {
             _syncCount = 0;
             hasLogin = true;
             msgFromReconnect = false;
-            SystemMgr.Instance.OnLogin();
+            SystemMgr.Instance.OnLogin(isReconnect);
         }
         #endregion
 
