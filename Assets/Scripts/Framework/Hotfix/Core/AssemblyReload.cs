@@ -4,6 +4,10 @@ using System.IO;
 using System.Reflection;
 using UnityEngine;
 
+public interface IReload {
+    void OnReload();
+}
+
 #if UNITY_EDITOR
 public class AssemblyReload : IAssembly {
     private Assembly fixedAssembly = null;

@@ -24,6 +24,7 @@ namespace Logic.Hotfix.Fixed
         void OnReload();
     }
 
+    [System.Serializable]
     public abstract class SysBase<T> : ISysModule where T : ISysModule, new()
     {
         protected SysBase() { }
@@ -40,7 +41,7 @@ namespace Logic.Hotfix.Fixed
         public void Exit()
         {
             ProcessEvent(false);
-            OnEnter();
+            OnExit();
         }
 
         protected virtual void OnEnter() { }
@@ -57,5 +58,8 @@ namespace Logic.Hotfix.Fixed
 
         // 表格配置等重载
         public virtual void OnReload() { }
+
+        // 数据可视化,比如序列化成io的json文件，或者序列化道redis，或者数据库中
+        public virtual void ToVisualize() { }
     }
 }
