@@ -1,55 +1,151 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using static UnityEngine.UI.GridLayoutGroup;
 
-[Serializable]
-public class InfinityGridCell {
-    public int index = -1;
-    public RectTransform bindGo;
-    // 参数
-    public object userData;
+#if UNITY_EDITOR
+using UnityEditor;
+using SC;
+using UnityEngine;
+using UnityEngine.UI;
+namespace SC
+{
+    [CustomEditor(typeof(InfinityGrid))]
+    public class ScrollRectGridInsprctor : Editor
+    {
+        InfinityGrid _grid = null;
+        InfinityGrid grid
+        {
+            get
+            {
+                if (_grid == null)
+                    _grid = target as InfinityGrid;
+                return _grid;
+            }
+        }
 
+        bool _foldout = false;
+
+        public override void OnInspectorGUI()
+        {
+            base.OnInspectorGUI();
+
+            if(Application.isPlaying)
+            {
+                EditorGUILayout.LabelField(string.Format("Cell Count {0}", grid.CellCount));
+            }
+            else
+            {
+                grid.CellCount = EditorGUILayout.IntField("Cell Count", grid.CellCount);
+            }
+
+            EditorGUI.BeginChangeCheck();
+            _foldout = EditorGUILayout.Foldout(_foldout, "Padding");
+            if (_foldout)
+            {
+                grid.Left = EditorGUILayout.IntField("Left", grid.Left);
+                grid.Right = EditorGUILayout.IntField("Right", grid.Right);
+                grid.Top = EditorGUILayout.IntField("Top", grid.Top);
+                grid.Bottom = EditorGUILayout.IntField("Bottom", grid.Bottom);
+                EditorGUILayout.Space();
+            }            
+
+            grid.CellSize = EditorGUILayout.Vector2Field("Cell Size", grid.CellSize);
+            grid.Spacing = EditorGUILayout.Vector2Field("Spacing", grid.Spacing);
+            grid.StartAxis = (GridLayoutGroup.Axis)EditorGUILayout.EnumPopup("StartAxis", grid.StartAxis);
+            if (grid.StartAxis == GridLayoutGroup.Axis.Horizontal)
+            {
+                grid.AxisLimit = EditorGUILayout.IntField("Horizontal Count", grid.AxisLimit);
+            }
+            else
+            {
+                grid.AxisLimit = EditorGUILayout.IntField("Vertical Count", grid.AxisLimit);
+            }
+
+            if(EditorGUI.EndChangeCheck())
+            {
+                grid.Update();
+            }
+
+            if (GUILayout.Button("clear"))
+            {
+                grid.Clear();
+            }
+            if (GUILayout.Button("test"))
+            {
+                grid.Update();
+            }
+        }
+    }
+}
+#endif
+
+/* 使用案例
+ *
+            // 注册代理  
+            infinityGrid.onCreateCell += RoleInfinityGridCreateCell;
+            infinityGrid.onCellChange += RoleInfinityGridCellChange;
+            
+            // 刷新数据
+            infinityGrid.CellCount = 元素个数;
+            infinityGrid.ForceRefreshActiveCell()
+            
+            void RoleInfinityGridCreateCell(InfinityGridCell cell) {
+                GameObject go = cell.mRootTransform.gameObject;
+                
+                UI_WarriorGroup_Transfer_Layout.RoleItem vd = new UI_WarriorGroup_Transfer_Layout.RoleItem();
+                vd.BindGameObject(go);
+                cell.BindUserData(vd);
+            }
+
+            void RoleInfinityGridCellChange(InfinityGridCell cell, int index) {
+                 var vd = cell.mUserData as UI_WarriorGroup_Transfer_Layout.RoleItem;
+            }
+ */
+
+public class InfinityGridCell {
     public bool bDirty { get; private set; }
-    
+    public int nIndex { get; private set; } = -1;
+    public RectTransform mRootTransform { get; private set; }
+    public System.Object mUserData { get; private set; }
+
     internal void SetDirty(bool v) {
-        this.bDirty = v;
+        bDirty = v;
     }
 
     internal void SetIndex(int index) {
-        if (this.index != index) {
-            this.bDirty = true;
-            this.index = index;
-#if UNITY_EDITOR
-            this.bindGo.name = index.ToString();
-#endif
+        if (nIndex != index) {
+            bDirty = true;
+            nIndex = index;
+            mRootTransform.name = index.ToString();
         }
     }
 
     public void BindGameObject(GameObject go) {
-        this.bindGo = go.transform as RectTransform;
+        mRootTransform = go.transform as RectTransform;
     }
 
-    public void BindUserData(object userDta) {
-        this.userData = userDta;
+    public void BindUserData(System.Object userData) {
+        mUserData = userData;
     }
 }
 
 [RequireComponent(typeof(ScrollRect))]
 [DisallowMultipleComponent]
 public class InfinityGrid : MonoBehaviour {
-    public ScrollRect _scrollview = null;
+    public ScrollRect _scrollView = null;
     public RectTransform _content = null;
-    public GameObject _proto = null;
+    public GameObject _element = null;
+
     public bool setCellPosition = true;
-
-    [SerializeField] private Axis _startAxis = Axis.Horizontal;
-    [SerializeField] private RectOffset _padding = default;
-    [SerializeField] private Vector2 _cellsize = new Vector2(100, 100);
-    [SerializeField] private Vector2 _spacing = new Vector2(1, 1);
-
-    [SerializeField] private int _axisLimit = 1;
+    [SerializeField] [HideInInspector] private RectOffset _padding = new RectOffset();
+    [SerializeField] [HideInInspector] private Axis _startAxis = Axis.Horizontal;
+    [SerializeField] [HideInInspector] private int _axisLimit = 1;
+    [SerializeField] [HideInInspector] private Vector2 _cellSize = Vector2.one;
+    [SerializeField] [HideInInspector] private Vector2 _spacing = Vector2.one;
 
     private int _cellCount;
     private int _indexStart = -1;
@@ -58,170 +154,172 @@ public class InfinityGrid : MonoBehaviour {
     private int _xCellCount = 0;
     private int _yCellCount = 0;
 
-    private bool _isLayoutDirty = true;
-    private bool _isSettingDirty = true;
+    private bool isDrity = true;
+    private bool isSettingDrity = true;
+    private bool hasCellChange = true;
 
-    private bool _hasCellChanged = true;
+    private Queue<InfinityGridCell> mCellPool = new Queue<InfinityGridCell>();
+    private List<InfinityGridCell> mCells = new List<InfinityGridCell>();
 
-    private Queue<InfinityGridCell> cellPool = new Queue<InfinityGridCell>();
-    private List<InfinityGridCell> cells = new List<InfinityGridCell>();
-
-    public Action<InfinityGridCell> onCellCreated;
-    public Action<InfinityGridCell, int> onCellChanged;
+    public Action<InfinityGridCell> onCreateCell;
+    public Action<InfinityGridCell, int> onCellChange;
 
     public Vector2 ContentSize {
-        get { return this.Content.sizeDelta; }
+        get { return Content.sizeDelta; }
     }
 
     public RectTransform Content {
         get {
-            if (this._content == null) {
-                this._content = this.ScrollView.content;
+            if (_content == null) {
+                _content = ScrollView.content;
             }
 
-            return this._content;
+            return _content;
         }
     }
 
     public ScrollRect ScrollView {
         get {
-            if (this._scrollview == null) {
-                this._scrollview = this.GetComponent<ScrollRect>();
+            if (null == _scrollView) {
+                _scrollView = gameObject.GetComponent<ScrollRect>();
             }
 
-            return this._scrollview;
+            return _scrollView;
         }
     }
 
     public Vector2 NormalizedPosition {
-        get { return this.ScrollView.normalizedPosition; }
+        get { return ScrollView.normalizedPosition; }
         set {
-            if (this.ScrollView.normalizedPosition != value) {
-                this.ScrollView.normalizedPosition = value;
-                this._isLayoutDirty = true;
+            if (ScrollView.normalizedPosition != value) {
+                ScrollView.normalizedPosition = value;
+                isDrity = true;
             }
         }
     }
 
     public Axis StartAxis {
-        get { return this._startAxis; }
+        get { return _startAxis; }
         set {
-            if (this._startAxis != value) {
-                this._startAxis = value;
-                this._isSettingDirty = true;
+            if (_startAxis != value) {
+                _startAxis = value;
+                isSettingDrity = true;
             }
         }
     }
 
     public int AxisLimit {
-        get { return this._axisLimit; }
+        get { return _axisLimit; }
         set {
-            if (this._axisLimit != value) {
-                this._axisLimit = value;
-                if (this._axisLimit < 1) {
-                    this._axisLimit = 1;
+            if (_axisLimit != value) {
+                _axisLimit = value;
+                if (_axisLimit < 1) {
+                    _axisLimit = 1;
                 }
 
-                this._isSettingDirty = true;
+                isSettingDrity = true;
             }
         }
     }
 
     public Vector2 CellSize {
-        get { return this._cellsize; }
+        get { return _cellSize; }
         set {
-            if (this._cellsize != value) {
-                this._cellsize = value;
-                if (this._cellsize.x < 1 || this._cellsize.y < 1) {
-                    this._cellsize = new Vector2(Mathf.Max(1, this._cellsize.x), Mathf.Max(1, this._cellsize.y));
+            if (_cellSize != value) {
+                _cellSize = value;
+
+                if (_cellSize.x < 1 || _cellSize.y < 1) {
+                    _cellSize = new Vector2(Mathf.Max(1, _cellSize.x), Mathf.Max(1, _cellSize.y));
                 }
 
-                this._isSettingDirty = true;
+                isSettingDrity = true;
             }
         }
     }
 
     public Vector2 Spacing {
-        get { return this._spacing; }
+        get { return _spacing; }
         set {
-            if (this._spacing != value) {
-                this._spacing = value;
-                this._isSettingDirty = true;
+            if (_spacing != value) {
+                _spacing = value;
+                isSettingDrity = true;
             }
         }
     }
 
     public int CellCount {
-        get { return this._cellCount; }
+        get { return _cellCount; }
         set {
-            if (this._cellCount != value) {
-                this._cellCount = value;
-                this._isSettingDirty = true;
+            if (_cellCount != value) {
+                _cellCount = value;
+                isSettingDrity = true;
             }
         }
     }
 
     public int Left {
-        get { return this._padding.left; }
+        get { return _padding.left; }
         set {
-            if (this._padding.left != value) {
-                this._padding.left = value;
-                this._isSettingDirty = true;
+            if (_padding.left != value) {
+                _padding.left = value;
+                isSettingDrity = true;
             }
         }
     }
 
     public int Right {
-        get { return this._padding.right; }
+        get { return _padding.right; }
         set {
-            if (this._padding.right != value) {
-                this._padding.right = value;
-                this._isSettingDirty = true;
+            if (_padding.right != value) {
+                _padding.right = value;
+                isSettingDrity = true;
             }
         }
     }
 
     public int Top {
-        get { return this._padding.top; }
+        get { return _padding.top; }
         set {
-            if (this._padding.top != value) {
-                this._padding.top = value;
-                this._isSettingDirty = true;
+            if (_padding.top != value) {
+                _padding.top = value;
+                isSettingDrity = true;
             }
         }
     }
 
     public int Bottom {
-        get { return this._padding.bottom; }
+        get { return _padding.bottom; }
         set {
-            if (this._padding.bottom != value) {
-                this._padding.bottom = value;
-                this._isSettingDirty = true;
+            if (_padding.bottom != value) {
+                _padding.bottom = value;
+                isSettingDrity = true;
             }
         }
     }
 
     private int InstanceCount {
-        get { return this.cellPool.Count + this.cells.Count; }
+        get { return mCellPool.Count + mCells.Count; }
     }
 
     public void ApplyLayout() {
-        this._isLayoutDirty = false;
+        isDrity = false;
 
-        // 逐个加载
-        int realShowCount = Mathf.Min(this.InstanceCount + 1, this._showCount);
+        //实现逐个加载
+        int realShowCount = Mathf.Min(InstanceCount + 1, _showCount);
 
 #region 计算新的开头结尾
-        int newStartIndex = 0, newEndIndex = 0;
-        if (this.StartAxis == Axis.Horizontal) {
-            newStartIndex = (int)((this.Content.anchoredPosition.y - this.Top) / (this._cellsize.y + this.Spacing.y)) * this._xCellCount;
+        int newStartIndex;
+        int newEndIndex;
+
+        if (StartAxis == Axis.Horizontal) {
+            newStartIndex = (int)((Content.anchoredPosition.y - Top) / (_cellSize.y + Spacing.y)) * _xCellCount;
         }
         else {
-            newStartIndex = (int)((this.Content.anchoredPosition.x - this.Left) / (this._cellsize.x + this.Spacing.x)) * this._yCellCount;
+            newStartIndex = (int)((-Content.anchoredPosition.x - Left) / (_cellSize.x + Spacing.x)) * _yCellCount;
         }
 
-        if (newStartIndex > this._cellCount - realShowCount) {
-            newStartIndex = this._cellCount - realShowCount;
+        if (newStartIndex > _cellCount - realShowCount) {
+            newStartIndex = _cellCount - realShowCount;
         }
         else if (newStartIndex < 0) {
             newStartIndex = 0;
@@ -230,32 +328,32 @@ public class InfinityGrid : MonoBehaviour {
         newEndIndex = realShowCount + newStartIndex - 1;
 #endregion
 
-        int head = newStartIndex - this._indexStart;
-        int tail = this._indexEnd - newEndIndex;
+        int head = newStartIndex - _indexStart;
+        int tail = _indexEnd - newEndIndex;
 
-        this._indexStart = newStartIndex;
-        this._indexEnd = newEndIndex;
+        _indexStart = newStartIndex;
+        _indexEnd = newEndIndex;
 
 #region 去除多余的开头结尾
         if (head > 0) {
-            int removeCount = Mathf.Min(head, this.cells.Count);
+            int removeCount = Mathf.Min(head, mCells.Count);
             if (removeCount > 0) {
                 for (int i = 0; i < removeCount; ++i) {
-                    this.Collect(this.cells[i]);
+                    Collect(mCells[i]);
                 }
 
-                this.cells.RemoveRange(0, removeCount);
+                mCells.RemoveRange(0, removeCount);
             }
         }
 
         if (tail > 0) {
-            int removeCount = Mathf.Min(tail, this.cells.Count);
+            int removeCount = Mathf.Min(tail, mCells.Count);
             if (removeCount > 0) {
-                for (int i = this.cells.Count - 1; i >= this.cells.Count - removeCount; --i) {
-                    this.Collect(this.cells[i]);
+                for (int i = mCells.Count - 1; i >= mCells.Count - removeCount; --i) {
+                    Collect(mCells[i]);
                 }
 
-                this.cells.RemoveRange(this.cells.Count - removeCount, removeCount);
+                mCells.RemoveRange(mCells.Count - removeCount, removeCount);
             }
         }
 #endregion
@@ -264,273 +362,297 @@ public class InfinityGrid : MonoBehaviour {
         if (head < 0) {
             int addCount = Mathf.Min(-head, realShowCount);
             for (int i = 0; i < addCount; ++i) {
-                this.cells.Insert(0, this.BuildOne());
+                mCells.Insert(0, Alloc());
             }
         }
 
         if (tail < 0) {
             int addCount = Mathf.Min(-tail, realShowCount);
             for (int i = 0; i < addCount; ++i) {
-                this.cells.Add(this.BuildOne());
+                mCells.Add(Alloc());
             }
         }
 #endregion
 
-#region 刷新列表index
-        int x = 0, y = 0;
-        for (int i = 0; i < this.cells.Count; ++i) {
-            InfinityGridCell cell = this.cells[i];
-            int oldIndex = cell.index;
-            cell.SetIndex(i + this._indexStart);
+#region 刷新列表Index
+        int x, y = 0;
+        InfinityGridCell cell = null;
+        for (int i = 0; i < mCells.Count; ++i) {
+            cell = mCells[i];
+            int oldIndex = cell.nIndex;
+            cell.SetIndex(i + _indexStart);
 
-            if (this.StartAxis == Axis.Horizontal) {
-                y = cell.index / this._xCellCount;
-                x = cell.index - y * this._xCellCount;
+            if (_startAxis == Axis.Horizontal) {
+                y = cell.nIndex / _xCellCount;
+                x = cell.nIndex - y * _xCellCount;
             }
             else {
-                x = cell.index / this._yCellCount;
-                y = cell.index - x * this._yCellCount;
+                x = cell.nIndex / _yCellCount;
+                y = cell.nIndex - x * _yCellCount;
             }
 
-            if (this.setCellPosition) {
-                var xx = x * (this._cellsize.x + this.Spacing.x) + this.Left;
-                var yy = -y * (this._cellsize.y + this.Spacing.y) - this.Top;
-                cell.bindGo.localPosition = new Vector3(xx, yy, 0);
+            if (setCellPosition) {
+                cell.mRootTransform.localPosition = new Vector3(x * (_cellSize.x + Spacing.x) + Left, -y * (_cellSize.y + Spacing.y) - Top, 0);
             }
 
-            if (cell.index != oldIndex) {
-                this._hasCellChanged = true;
+            if (cell.nIndex != oldIndex) {
+                hasCellChange = true;
             }
         }
 #endregion
 
-        // 逐个加载
-        if (this.InstanceCount < this._showCount) {
-            this._isLayoutDirty = true;
+        //实现逐个加载
+        if (InstanceCount < _showCount) {
+            isDrity = true;
         }
     }
 
     public void ApplySetting() {
-        this._isSettingDirty = false;
+        isSettingDrity = false;
 
-        if (this.ScrollView == null) {
+        if (null == ScrollView) {
+            Debug.LogError("UIGrid ApplySetting ScrollRect is null");
             return;
         }
 
-        if (this.StartAxis == Axis.Horizontal) {
-            this._xCellCount = this._axisLimit;
-            this._yCellCount = Mathf.CeilToInt((float)this._cellCount / this._axisLimit);
-            this._showCount = (int)((this.ScrollView.viewport.rect.height / this._cellsize.y) + 2) * this._xCellCount;
+        //_scrollRect.content.anchoredPosition = Vector2.zero;
+
+        if (StartAxis == Axis.Horizontal) {
+            _xCellCount = _axisLimit;
+            _yCellCount = Mathf.CeilToInt((float)_cellCount / _axisLimit);
+            _showCount = (int)((ScrollView.viewport.rect.height / _cellSize.y) + 2) * _xCellCount;
         }
         else {
-            this._yCellCount = this._axisLimit;
-            this._xCellCount = Mathf.CeilToInt((float)this._cellCount / this._axisLimit);
-            this._showCount = (int)((this.ScrollView.viewport.rect.width / this._cellsize.x) + 2) * this._yCellCount;
+            _yCellCount = _axisLimit;
+            _xCellCount = Mathf.CeilToInt((float)_cellCount / _axisLimit);
+            _showCount = (int)((ScrollView.viewport.rect.width / _cellSize.x) + 2) * _yCellCount;
         }
 
-        var x = this._xCellCount * this._cellsize.x + (this._xCellCount - 1) * this.Spacing.x + this.Left + this.Right;
-        var y = this._yCellCount * this._cellsize.y + (this._yCellCount - 1) * this.Spacing.y + this.Top + this.Bottom;
-        this.Content.sizeDelta = new Vector2(x, y);
+        Content.sizeDelta = new Vector2(_xCellCount * _cellSize.x + (_xCellCount - 1) * Spacing.x + Left + Right, _yCellCount * _cellSize.y + (_yCellCount - 1) * Spacing.y + Top + Bottom);
+        //ScrollView.normalizedPosition = new Vector2(0, 1);
 
-        this._showCount = Mathf.Min(this._showCount, this._cellCount);
-        this._isLayoutDirty = true;
+        _showCount = Mathf.Min(_showCount, _cellCount);
+
+        isDrity = true;
     }
 
     public void Clear() {
-        this.CellCount = 0;
+        CellCount = 0;
 
-        for (int i = 0; i < this.cells.Count; ++i) {
-            InfinityGridCell cell = this.cells[i];
-            if (cell != null && cell.bindGo != null) {
+        for (int i = 0; i < mCells.Count; ++i) {
+            InfinityGridCell cell = mCells[i];
+            if (cell != null && cell.mRootTransform != null) {
                 cell.BindUserData(null);
-                DestroyImmediate(cell.bindGo.gameObject);
+                DestroyImmediate(cell.mRootTransform.gameObject);
             }
         }
 
-        this.cells.Clear();
+        mCells.Clear();
 
-        while (this.cellPool.Count > 0) {
-            InfinityGridCell cell = this.cellPool.Dequeue();
-            if (cell != null && cell.bindGo != null) {
+        while (mCellPool.Count > 0) {
+            InfinityGridCell cell = mCellPool.Dequeue();
+            if (cell != null && cell.mRootTransform != null) {
                 cell.BindUserData(null);
-                DestroyImmediate(cell.bindGo.gameObject);
+                DestroyImmediate(cell.mRootTransform.gameObject);
             }
         }
 
-        this._indexStart = -1;
-        this._indexEnd = -1;
+        _indexStart = -1;
+        _indexEnd = -1;
     }
 
-    private InfinityGridCell BuildOne() {
+    private InfinityGridCell Alloc() {
         InfinityGridCell cell = null;
-        if (this.cellPool.Count > 0) {
-            cell = this.cellPool.Dequeue();
+        if (mCellPool.Count > 0) {
+            cell = mCellPool.Dequeue();
         }
         else {
-            GameObject go = Instantiate(this._proto);
+            GameObject go = GameObject.Instantiate(_element);
             cell = new InfinityGridCell();
             cell.SetIndex(-1);
             cell.BindGameObject(go);
 
-            cell.bindGo.SetParent(this.Content, false);
-            cell.bindGo.localScale = Vector3.one;
-            cell.bindGo.pivot = new Vector2(0, 1);
+            cell.mRootTransform.SetParent(Content, false);
+            cell.mRootTransform.localScale = Vector3.one;
+            cell.mRootTransform.pivot = new Vector2(0, 1);
 
-            this.onCellCreated?.Invoke(cell);
+            onCreateCell?.Invoke(cell);
         }
 
-        cell.bindGo.anchoredPosition3D = Vector3.zero;
-        cell.bindGo.gameObject.SetActive(true);
+        cell.mRootTransform.anchoredPosition3D = Vector3.zero;
+        cell.mRootTransform.gameObject.SetActive(true);
         return cell;
     }
 
-    private void Collect(InfinityGridCell cell) {
-        this.cellPool.Enqueue(cell);
-        cell.SetIndex(-1);
-        cell.bindGo.gameObject.SetActive(false);
+    private void Collect(InfinityGridCell uIGridElement) {
+        mCellPool.Enqueue(uIGridElement);
+        uIGridElement.SetIndex(-1);
+        uIGridElement.mRootTransform.gameObject.SetActive(false);
     }
 
     private void OnValueChanged(Vector2 v) {
-        this._isLayoutDirty = true;
-        if (this.Content != this.ScrollView.content) {
-            this.Content.anchoredPosition = this.ScrollView.content.anchoredPosition;
+        isDrity = true;
+        if (Content != ScrollView.content) {
+            Content.anchoredPosition = ScrollView.content.anchoredPosition;
         }
     }
 
     private void Awake() {
-        if (this.ScrollView != null) {
-            this._scrollview.onValueChanged.AddListener(this.OnValueChanged);
-            this.Content.anchorMin = new Vector2(0, 1);
-            this.Content.anchorMax = new Vector2(0, 1);
-            this.Content.pivot = new Vector2(0, 1);
+        if (null != ScrollView) {
+            _scrollView.onValueChanged.AddListener(OnValueChanged);
+            Content.anchorMin = new Vector2(0f, 1f); //new Vector2(0.5f, 1f);
+            Content.anchorMax = new Vector2(0f, 1f); //new Vector2(0.5f, 1f);
+            Content.pivot = new Vector2(0f, 1f); //new Vector2(0.5f, 1f);
         }
-
-        this._proto.SetActive(false);
     }
 
-    private void Update() {
-        if (this._isSettingDirty) {
-            this.ApplySetting();
+    public void Apply() {
+        if (isSettingDrity) {
+            ApplySetting();
         }
 
-        if (this._isLayoutDirty) {
-            this.ApplyLayout();
+        if (isDrity) {
+            ApplyLayout();
+        }
+    }
+
+    public void Update() {
+        if (isSettingDrity) {
+            ApplySetting();
         }
 
-        if (this._hasCellChanged && this.onCellChanged != null) {
-            for (int i = 0; i < this.cells.Count; ++i) {
-                InfinityGridCell cell = this.cells[i];
+        if (isDrity) {
+            ApplyLayout();
+        }
+
+        if (hasCellChange && onCellChange != null) {
+            InfinityGridCell cell;
+            for (int i = 0; i < mCells.Count; ++i) {
+                cell = mCells[i];
                 if (cell.bDirty) {
                     cell.SetDirty(false);
-                    this.onCellChanged.Invoke(cell, cell.index);
+                    onCellChange(cell, cell.nIndex);
                 }
             }
 
-            this._hasCellChanged = false;
+            hasCellChange = false;
         }
     }
 
     public void ForceRefreshActiveCell() {
-        for (int i = 0; i < this.cells.Count; ++i) {
-            InfinityGridCell cell = this.cells[i];
+        InfinityGridCell cell;
+        for (int i = 0; i < mCells.Count; ++i) {
+            cell = mCells[i];
             cell.SetDirty(true);
         }
 
-        this.StopMovement();
-        this._isSettingDirty = true;
-        this._hasCellChanged = true;
+        StopMovement();
+        isSettingDrity = true;
+        hasCellChange = true;
     }
 
     public void StopMovement() {
-        this.ScrollView.StopMovement();
+        ScrollView.StopMovement();
     }
 
-    public InfinityGridCell GetCellByIndex(int index) {
-        if (this._indexStart < 0 || this._indexEnd < 0) {
+    public InfinityGridCell GetItemByIndex(int index) {
+        if (_indexStart < 0 || _indexEnd < 0) {
             return null;
         }
 
-        if (index < this._indexStart || index > this._indexEnd) {
+        if (index < _indexStart || index > _indexEnd) {
             return null;
         }
 
-        for (int i = 0; i < this.cells.Count; ++i) {
-            InfinityGridCell cell = this.cells[i];
-            if (cell.index == index) {
-                return cell;
-            }
+        for (int i = 0; i < mCells.Count; ++i) {
+            if (mCells[i].nIndex == index)
+                return mCells[i];
         }
 
         return null;
     }
 
     public void MoveIndexToTop(int index) {
-        if (index < 0 || index >= this.CellCount) {
+        if (index < 0 || index >= CellCount)
             return;
-        }
 
-        int l = index / this._axisLimit;
+        int l = index / _axisLimit;
         if (l == 0) {
-            this.NormalizedPosition = Vector2.zero;
+            NormalizedPosition = new Vector2(0, 0);
             return;
         }
 
-        float x = 0, y = 0;
-        if (this.StartAxis == Axis.Horizontal) {
-            y = l * (this.Spacing.y + this.CellSize.y) / (this._scrollview.content.sizeDelta.y - this._scrollview.viewport.sizeDelta.y);
+        float x = 0;
+        float y = 0;
+
+        if (StartAxis == Axis.Horizontal) {
+            y = l * (Spacing.y + CellSize.y) / (_scrollView.content.rect.height - _scrollView.viewport.rect.height);
         }
         else {
-            x = l * (this.Spacing.x + this.CellSize.x) / (this._scrollview.content.sizeDelta.x - this._scrollview.viewport.sizeDelta.x);
+            x = l * (Spacing.x + CellSize.x) / (_scrollView.content.rect.width - _scrollView.viewport.rect.width);
         }
 
         x = Mathf.Clamp01(x);
         y = Mathf.Clamp01(y);
-        this.NormalizedPosition = new Vector2(x, y);
+
+        NormalizedPosition = new Vector2(x, y);
     }
 
     public void MoveToIndex(int index) {
-        if (index < 0 || index >= this.CellCount) {
+        if (index < 0 || index >= CellCount)
             return;
-        }
 
-        int l = index / this._axisLimit;
+        int l = index / _axisLimit;
         if (l == 0) {
-            this._content.anchoredPosition = Vector2.zero;
+            _content.anchoredPosition = Vector2.zero;
+            //NormalizedPosition = new Vector2(0, 0);
             return;
         }
 
-        float x = 0, y = 0;
-        if (this.StartAxis == Axis.Horizontal) {
-            y = ((l - 1) * (this.Spacing.y + this.CellSize.y) + this.Top + this.CellSize.y * 0.5f - this._scrollview.viewport.sizeDelta.y * 0.5f);
+        float x = 0;
+        float y = 0;
+
+        if (StartAxis == Axis.Horizontal) {
+            y = ((l - 1) * (Spacing.y + CellSize.y) + Top + CellSize.y * 0.5f - _scrollView.viewport.sizeDelta.y * 0.5f);
         }
         else {
-            x = ((l - 1) * (this.Spacing.x + this.CellSize.x) + this.Top + this.CellSize.x * 0.5f - this._scrollview.viewport.sizeDelta.x * 0.5f);
+            x = ((l - 1) * (Spacing.x + CellSize.x) + Top + CellSize.x * 0.5f - _scrollView.viewport.sizeDelta.x * 0.5f);
         }
 
-        this._content.anchoredPosition = new Vector2(x, y);
+        _content.anchoredPosition = new Vector2(x, y);
+        //x = Mathf.Clamp01(x);
+        //y = Mathf.Clamp01(y);
+
+        //NormalizedPosition = new Vector2(x, y);
     }
 
-    public void MoveToMiddle(int index) {
-        if (index < 0 || index >= this.CellCount) {
+    public void MoveIndexToMiddle(int index) {
+        if (index < 0 || index >= CellCount)
             return;
-        }
 
-        int l = index / this._axisLimit;
+        int l = index / _axisLimit;
         if (l == 0) {
-            this.NormalizedPosition = Vector2.zero;
+            NormalizedPosition = new Vector2(0, 0);
             return;
         }
 
-        float x = 0, y = 0;
-        if (this.StartAxis == Axis.Horizontal) {
-            y = ((l - 1) * (this.Spacing.y + this.CellSize.y) + this.Top + this.CellSize.y * 0.5f - this._scrollview.viewport.sizeDelta.y * 0.5f) / (this._scrollview.content.sizeDelta.y - this._scrollview.viewport.sizeDelta.y);
+        float x = 0;
+        float y = 0;
+
+        if (StartAxis == Axis.Horizontal) {
+            y = ((l - 1) * (Spacing.y + CellSize.y) + Top + CellSize.y * 0.5f - _scrollView.viewport.rect.height * 0.5f) / (_scrollView.content.rect.height - _scrollView.viewport.rect.height);
         }
         else {
-            x = ((l - 1) * (this.Spacing.x + this.CellSize.x) + this.Top + this.CellSize.x * 0.5f - this._scrollview.viewport.sizeDelta.x * 0.5f) / (this._scrollview.content.sizeDelta.x - this._scrollview.viewport.sizeDelta.x);
+            x = ((l - 1) * (Spacing.x + CellSize.x) + Top + CellSize.x * 0.5f - _scrollView.viewport.rect.width * 0.5f) / (_scrollView.content.rect.width - _scrollView.viewport.rect.width);
         }
 
         x = Mathf.Clamp01(x);
         y = Mathf.Clamp01(y);
-        this.NormalizedPosition = new Vector2(x, y);
+
+        NormalizedPosition = new Vector2(x, y);
+    }
+
+    public IReadOnlyList<InfinityGridCell> GetCells() {
+        return mCells;
     }
 }
