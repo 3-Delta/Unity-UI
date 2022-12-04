@@ -1,6 +1,17 @@
 using System;
 using System.Collections.Generic;
 
+// 枚举作为key的box 
+public class Enum2IntEqualityComparer<TEnum> : IEqualityComparer<TEnum> where TEnum : struct {
+    public bool Equals(TEnum x, TEnum y) {
+        return EnumInt32ToInt.Convert(x) == EnumInt32ToInt.Convert(y);
+    }
+
+    public int GetHashCode(TEnum obj) {
+        return EnumInt32ToInt.Convert(obj);
+    }
+}
+
 public class DelegateList {
     // 为了保证顺序性，即先注册先执行，所以使用list,而不是map
     private List<Delegate> delegates = new List<Delegate>(0);
