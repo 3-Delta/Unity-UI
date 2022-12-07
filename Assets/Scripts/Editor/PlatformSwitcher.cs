@@ -22,7 +22,7 @@ public class PlatformSwitcher : IActiveBuildTargetChanged {
     public int callbackOrder { get; }
 
     public void OnActiveBuildTargetChanged(BuildTarget previousTarget, BuildTarget newTarget) {
-        Debug.LogError("OnActiveBuildTargetChanged:" + previousTarget + " -> " + newTarget);
+        Debug.LogError("OnActiveBuildTargetChanged:  " + previousTarget + " -> " + newTarget);
 
         if (previousTarget == newTarget) {
             return;
