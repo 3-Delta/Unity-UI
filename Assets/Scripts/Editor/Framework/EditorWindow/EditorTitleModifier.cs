@@ -1,52 +1,52 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-
 using UnityEditor;
-
 using UnityEngine;
 
+// https://github.com/mob-sakai/MainWindowTitleModifierForUnity
 // https://github.com/XINCGer/UnityToolchainsTrick/tree/main/Assets/Editor/Examples/Example_20_TitleModifier
 #if UNITY_EDITOR
+[InitializeOnLoad]
 public class EditorTitleModifier {
-    private const int Delay = 2000;
-
-    [InitializeOnLoadMethod]
-    private static void Init() {
-        ModifyTitleAsync();
+    // for .NET Standard 2.0
+    /*
+    static EditorTitleModifier() {
+        EditorApplication.updateMainWindowTitle -= ChangeApplicationTitle;
+        EditorApplication.updateMainWindowTitle += ChangeApplicationTitle;
+        // EditorApplication.UpdateMainWindowTitle();
     }
-
-    private static async void ModifyTitleAsync() {
-        await Task.Delay(Delay);
-        ModifyTitle();
+    
+    static void ChangeApplicationTitle(ApplicationTitleDescriptor title) {
+        title.title = $"{title.title} --> {Application.dataPath}";
     }
+    */
 
-    private static void ModifyTitle() {
-        Type tEditorApplication = typeof(EditorApplication);
-        Type tApplicationTitleDescriptor = tEditorApplication.Assembly.GetTypes()
+    // for .NET 4.x
+    static EditorTitleModifier() {
+        Type editor = typeof(EditorApplication);
+        EventInfo updateTitle = editor.GetEvent("updateMainWindowTitle", BindingFlags.Static | BindingFlags.NonPublic);
+
+        Type titleDescriptor = editor.Assembly.GetTypes()
             .First(x => x.FullName == "UnityEditor.ApplicationTitleDescriptor");
-
-        EventInfo eiUpdateMainWindowTitle =
-            tEditorApplication.GetEvent("updateMainWindowTitle", BindingFlags.Static | BindingFlags.NonPublic);
-        MethodInfo miUpdateMainWindowTitle =
-            tEditorApplication.GetMethod("UpdateMainWindowTitle", BindingFlags.Static | BindingFlags.NonPublic);
-
-        Type delegateType = typeof(Action<>).MakeGenericType(tApplicationTitleDescriptor);
+        Type delegateType = typeof(Action<>).MakeGenericType(titleDescriptor);
         MethodInfo methodInfo = ((Action<object>)UpdateWindowTitle).Method;
         Delegate del = Delegate.CreateDelegate(delegateType, null, methodInfo);
 
-        eiUpdateMainWindowTitle.GetAddMethod(true).Invoke(null, new object[] { del });
-        miUpdateMainWindowTitle.Invoke(null, new object[0]);
-        eiUpdateMainWindowTitle.GetRemoveMethod(true).Invoke(null, new object[] { del });
+        var args = new object[] {
+            del
+        };
+        updateTitle.GetRemoveMethod(true).Invoke(null, args);
+        updateTitle.GetAddMethod(true).Invoke(null, args);
     }
 
-    static void UpdateWindowTitle(object desc) {
+    static void UpdateWindowTitle(object titleDesc) {
         var fieldInfo = typeof(EditorApplication).Assembly.GetTypes()
             .First(x => x.FullName == "UnityEditor.ApplicationTitleDescriptor")
             .GetField("title", BindingFlags.Instance | BindingFlags.Public);
-        var str = fieldInfo.GetValue(desc) as string;
-        fieldInfo.SetValue(desc, str + " --> " + Application.dataPath);
+        
+        var str = fieldInfo.GetValue(titleDesc) as string;
+        fieldInfo.SetValue(titleDesc, $"{str} --> {Application.dataPath}");
     }
 }
 #endif
