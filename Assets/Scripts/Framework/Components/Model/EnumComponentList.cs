@@ -4,29 +4,30 @@ using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 
-public class EnumComponentListInspector<T_CP, T_Enum> : Editor
-    where T_CP : Component
-    where T_Enum : Enum {
+public class EnumComponentListInspector<T_CP, T_Enum> : Editor where T_CP : Component where T_Enum : Enum {
+
+    public string[] enumNames = new string[0];
+
+    public void OnEnable() {
+        this.enumNames = Enum.GetNames(typeof(T_Enum));
+    }
 
     public override void OnInspectorGUI() {
         serializedObject.Update();
 
         EnumComponentList<T_CP, T_Enum> node = target as EnumComponentList<T_CP, T_Enum>;
-        T_CP[] cps = node.nodes;
-
         if (GUILayout.Button("FindAll")) {
             node.FindAll();
         }
 
         if (DrawHeader("Array", "nodes", false, false)) {
-            for (int i = 0; i < cps.Length; i++) {
-
-                string key = Enum.GetName(typeof(T_Enum), i);
+            for (int i = 0; i < enumNames.Length; i++) {
+                string key = enumNames[i];
                 SerializedProperty p = serializedObject.FindProperty(string.Format("{0}.Array.data[{1}]", "nodes", i));
                 EditorGUILayout.PropertyField(p, new GUIContent(key));
             }
         }
-        
+
         serializedObject.ApplyModifiedProperties();
     }
 
@@ -67,12 +68,9 @@ public class EnumComponentListInspector<T_CP, T_Enum> : Editor
 #endif
 
 [DisallowMultipleComponent]
-public class EnumComponentList<T_CP, T_Enum> : MonoBehaviour
-    where T_CP : Component
-    where T_Enum : Enum {
+public class EnumComponentList<T_CP, T_Enum> : MonoBehaviour where T_CP : Component where T_Enum : Enum {
 
     public T_CP[] nodes = new T_CP[Enum.GetNames(typeof(T_Enum)).Length];
 
-    public virtual void FindAll() {
-    }
+    public virtual void FindAll() { }
 }

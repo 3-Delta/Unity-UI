@@ -18,7 +18,5 @@ public class ReadOnlyPropertyDrawer : PropertyDrawer {
 }
 #endif
 
-// 在枚举的field是附属，需要定义枚举为[System.Flags]
-// 即第一个枚举一定要是1，而不是0
 [AttributeUsage(AttributeTargets.Field)]
 public class ReadOnlyPropertyAttribute : PropertyAttribute { }
