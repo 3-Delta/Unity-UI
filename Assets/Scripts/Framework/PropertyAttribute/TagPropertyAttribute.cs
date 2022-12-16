@@ -17,6 +17,7 @@ public class TagPropertyDrawer : PropertyDrawer {
 }
 #endif
 
+// string[] tags = UnityEditorInternal.InternalEditorUtility.tags;
 // public string tag;
 [AttributeUsage(AttributeTargets.Field)]
 public class TagPropertyAttribute : PropertyAttribute {

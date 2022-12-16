@@ -5,6 +5,8 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
+// 获取所有layer
+// string[] layers = UnityEditorInternal.InternalEditorUtility.layers
 public class LayerGenerter {
     public static void Do(string outputFileWithExt) {
         string enumName = "ELayers";

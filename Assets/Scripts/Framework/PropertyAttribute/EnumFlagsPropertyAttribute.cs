@@ -8,6 +8,8 @@ using UnityEditor;
 public class FlagsEnumPropertyDrawer : PropertyDrawer {
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
         property.intValue = EditorGUI.MaskField(position, label, property.intValue, property.enumNames);
+        
+        // 另外可以参考：https://github.com/dbrizov/NaughtyAttributes
     }
 }
 #endif

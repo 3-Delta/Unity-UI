@@ -17,6 +17,8 @@ public class LayerPropertyDrawer : PropertyDrawer {
 }
 #endif
 
+// string[] = UnityEditorInternal.InternalEditorUtility.layers
+
 // public int layer;
 [AttributeUsage(AttributeTargets.Field)]
 public class LayerPropertyAttribute : PropertyAttribute {

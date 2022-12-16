@@ -5,6 +5,8 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 
+// 获取所有tags
+// string[] tags = UnityEditorInternal.InternalEditorUtility.tags
 public class TagGenerter {
     public static void Do(string outputFileWithExt) {
         string enumName = "ETags";
