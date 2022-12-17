@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-// #if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 
 // 需要参考Unity默认的数组是怎么序列化的
@@ -55,7 +55,7 @@ public class EnumListPropertyDrawer : PropertyDrawer {
         return state;
     }
 }
-// #endif
+#endif
 
 [AttributeUsage(AttributeTargets.Field)]
 public class EnumListPropertyAttribute : PropertyAttribute {
