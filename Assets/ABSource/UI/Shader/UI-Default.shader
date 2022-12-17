@@ -57,6 +57,10 @@ Shader "UI/Default"
 
         // uv偏移
         _UVOffset ("UVOffset", Vector) = (0, 0, 0, 0)
+        
+        // https://github.com/kirevdokimov/Unity-UI-Rounded-Corners
+        // Definition in Properties section is required to Mask works properly
+        _WidthHeightRadius ("WidthHeightRadius", Vector) = (0, 0, 0, 0)
     }
 
     SubShader
@@ -98,6 +102,9 @@ Shader "UI/Default"
 
             #include "UnityCG.cginc"
             #include "UnityUI.cginc"
+            
+            #include "SDFUtils.cginc"
+            #include "ShaderSetup.cginc"
 
             #pragma enable_d3d11_debug_symbols
 
@@ -112,16 +119,7 @@ Shader "UI/Default"
                 float2 texcoord : TEXCOORD0;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
-
-            struct v2f
-            {
-                float4 vertex : SV_POSITION;
-                fixed4 color : COLOR;
-                float2 texcoord : TEXCOORD0;
-                float4 worldPosition : TEXCOORD1;
-                UNITY_VERTEX_OUTPUT_STEREO
-            };
-
+            
             sampler2D _MainTex;
             sampler2D _AlphaMaskTex;
 
@@ -134,6 +132,8 @@ Shader "UI/Default"
             fixed4 _TextureSampleAdd;
             float4 _ClipRect;
             float4 _MainTex_ST;
+            
+            float4 _WidthHeightRadius;
 
             v2f vert(appdata_t v)
             {
@@ -154,7 +154,7 @@ Shader "UI/Default"
                 OUT.worldPosition = v.vertex;
                 OUT.vertex = UnityObjectToClipPos(OUT.worldPosition);
 
-                OUT.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
+                OUT.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
 
                 OUT.color = v.color * _Color;
                 return OUT;
@@ -163,7 +163,7 @@ Shader "UI/Default"
             fixed4 frag(v2f IN) : SV_Target
             {
                 float2 uvOffset = float2(_UVOffset.x, _UVOffset.y);
-                float2 uv = IN.texcoord + uvOffset;
+                float2 uv = IN.uv + uvOffset;
 
                 #if _WRAPMODE_REPEAT
                 uv = frac(uv);
@@ -197,6 +197,9 @@ Shader "UI/Default"
                 _IsGrey = 1 - step(_IsGrey, 0.5);
                 // 之前犯了愚蠢的错误，认为在ui层面这是gray就行，后来发现不行，因为gray是针对于每个像素进行的处理
                 color.rgb = lerp(color.rgb, Luminance(color.rgb), _IsGrey);
+
+                float alpha = CalcAlpha(IN.uv, _WidthHeightRadius.xy, _WidthHeightRadius.z);
+                color = mixAlpha(color, IN.color, alpha);
 
                 return color;
             }
