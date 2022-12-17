@@ -253,17 +253,20 @@ public static class ToolbarExtander {
 [InitializeOnLoad]
 public class ToolbarGUI {
     public static class ToolbarStyles {
-        public static readonly GUIStyle commandButtonStyle = new GUIStyle("Command") {
+        public static readonly GUIStyle CommandButtonStyle = new GUIStyle("Command") {
             fontSize = 14,
             alignment = TextAnchor.MiddleCenter,
             imagePosition = ImagePosition.ImageAbove,
             fontStyle = FontStyle.Bold
         };
 
-        public static GUIContent commandButtonContent = EditorGUIUtility.IconContent("SaveFromPlay");
+        // icon来自: https://github.com/smkplus/CustomToolbar
+        public static GUIContent SaveFromPlayButtonContent = EditorGUIUtility.IconContent("SaveFromPlay");
+        public static GUIContent RefreshPlayButtonContent = EditorGUIUtility.IconContent("Refresh");
 
         static ToolbarStyles() {
-            commandButtonContent.tooltip = "打开主场景";
+            SaveFromPlayButtonContent.tooltip = "打开主场景";
+            RefreshPlayButtonContent.tooltip = "Refresh AssetDataBase";
         }
     }
 
@@ -276,9 +279,9 @@ public class ToolbarGUI {
         GUILayout.FlexibleSpace();
 
         // https://github.com/smkplus/CustomToolbar
-        if (GUILayout.Button(ToolbarStyles.commandButtonContent, ToolbarStyles.commandButtonStyle)) {
+        if (GUILayout.Button(ToolbarStyles.SaveFromPlayButtonContent, ToolbarStyles.CommandButtonStyle)) {
             if (Application.isPlaying || EditorApplication.isPaused || EditorApplication.isCompiling) {
-                Debug.LogError("You Cant load scene between playing/pausing/compiling");
+                Debug.LogError("You Cant open scene when playing/pausing/compiling");
                 return;
             }
 
@@ -296,6 +299,26 @@ public class ToolbarGUI {
                     EditorSceneManager.OpenScene(path);
                 }
             }
+        }
+
+        if (GUILayout.Button(new GUIContent("N", "新建场景"), ToolbarStyles.CommandButtonStyle)) {
+            if (Application.isPlaying || EditorApplication.isPaused || EditorApplication.isCompiling) {
+                Debug.LogError("You Cant new scene when playing/pausing/compiling");
+                return;
+            }
+
+            if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) {
+                EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
+            }
+        }
+
+        if (GUILayout.Button(ToolbarStyles.RefreshPlayButtonContent, ToolbarStyles.CommandButtonStyle)) {
+            if (Application.isPlaying || EditorApplication.isPaused || EditorApplication.isCompiling) {
+                Debug.LogError("You Cant new scene when playing/pausing/compiling");
+                return;
+            }
+
+            AssetDatabase.Refresh();
         }
     }
 

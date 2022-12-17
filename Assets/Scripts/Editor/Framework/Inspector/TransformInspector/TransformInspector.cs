@@ -2,6 +2,7 @@
 using UnityEngine;
 
 // ref : https://github.com/XINCGer/UnityToolchainsTrick/tree/main/Assets/Editor/Examples/Example_31_ExtendedTransformEditor/Editor
+// https://github.com/LucasJoestar/LudumDare50
 [CustomEditor(typeof(Transform)), CanEditMultipleObjects]
 public class TransformInspector : Editor {
     private class Content {

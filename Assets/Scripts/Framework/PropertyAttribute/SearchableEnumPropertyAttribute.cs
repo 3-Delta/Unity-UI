@@ -15,8 +15,7 @@ public class SearchableEnumPropertyDrawer : PropertyDrawer {
     private int idHash;
 
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-        // If this is not used on an eunum, show an error
-        if (property.type != "Enum") {
+        if (property.propertyType != SerializedPropertyType.Enum) {
             GUIStyle errorStyle = "CN EntryErrorIconSmall";
             Rect r = new Rect(position);
             r.width = errorStyle.fixedWidth;
