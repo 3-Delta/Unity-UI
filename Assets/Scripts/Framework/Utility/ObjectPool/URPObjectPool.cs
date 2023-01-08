@@ -19,7 +19,7 @@ namespace UnityEngine.URP {
         public int countAll { get; private set; }
 
         /// <summary>
-        /// Number of active objects in the pool.
+        /// Number of canMove objects in the pool.
         /// </summary>
         public int countActive {
             get { return countAll - countInactive; }
