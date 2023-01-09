@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 // https://github.com/marijnz/unity-toolbar-extender/blob/master/Editor
+// https://github.com/jwellone/GameViewDrawMode/blob/main/Assets/jwellone/ToolbarExtension/Editor/ToolbarExtension.cs
 public static class ToolbarCallback {
     static Type m_toolbarType = typeof(Editor).Assembly.GetType("UnityEditor.Toolbar");
     static Type m_guiViewType = typeof(Editor).Assembly.GetType("UnityEditor.GUIView");
