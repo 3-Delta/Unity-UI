@@ -132,6 +132,7 @@ public class AssemBuilder {
                     progress += 0.1f;
                     EditorUtility.DisplayCancelableProgressBar("AssemblyBuilder.Build", "...", progress);
                 }
+
                 Debug.LogErrorFormat("Build Assembly Success：" + assemblyBuilder.assemblyPath);
             }
         }
@@ -172,7 +173,7 @@ public class HotReloadBuilder {
             "Hotfix/HotReload/",
         }, Array.Empty<string>(), null);
     }
-    
+
     [MenuItem("Assembly/Build/HotfixSeparate(Fixed + HotReload)")]
     public static void BuildHotfixSeparate() {
         BuildFixed();

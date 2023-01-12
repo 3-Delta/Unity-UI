@@ -12,7 +12,11 @@ public class LayerPropertyDrawer : PropertyDrawer {
             return;
         }
 
+        // 方案1 
         property.intValue = EditorGUI.LayerField(position, property.name, property.intValue);
+
+        // 方案2 好像不行
+        // property.intValue = EditorGUILayout.LayerField(property.name, property.intValue);
     }
 }
 #endif
@@ -21,5 +25,4 @@ public class LayerPropertyDrawer : PropertyDrawer {
 
 // public int layer;
 [AttributeUsage(AttributeTargets.Field)]
-public class LayerPropertyAttribute : PropertyAttribute {
-}
+public class LayerPropertyAttribute : PropertyAttribute { }
