@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-// #if UNITY_EDITOR
+#if UNITY_EDITOR
 using UnityEditor;
 
 // https://github.com/upscalebaby/generic-serializable-dictionary/blob/master/Assets/Editor/GenericDictionaryPropertyDrawer.cs
@@ -48,7 +48,7 @@ public class DictionaryPropertyDrawer : PropertyDrawer {
         return height;
     }
 }
-// #endif
+#endif
 
 // 字典的序列化
 [AttributeUsage(AttributeTargets.Field)]

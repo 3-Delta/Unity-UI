@@ -41,15 +41,15 @@ public class NetAdapter {
     public NetworkInterface NetInterface { get; protected set; }
 
 #if UNITY_EDITOR
-    [SerializeField] private string _Name;
+    [SerializeField]
 #endif
-    public string Name {
-        get { return _Name; }
-    }
+    private string _Name;
 
 #if UNITY_EDITOR
-    [SerializeField] private string _Mac;
+    [SerializeField]
 #endif
+    private string _Mac;
+
     public string Mac {
         get { return _Mac; }
     }

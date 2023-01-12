@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Ludiq.PeekCore;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -35,7 +34,7 @@ public class MondrianBlocks : MonoBehaviour {
                 blocks[i] = block;
             }
             else {
-                blocks[i] = child.AddComponent<Block>();
+                blocks[i] = child.gameObject.AddComponent<Block>();
             }
 
             blocks[i].setter = setter;
