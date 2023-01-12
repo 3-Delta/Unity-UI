@@ -12,7 +12,11 @@ public class TagPropertyDrawer : PropertyDrawer {
             return;
         }
 
+        // 方案1
         property.stringValue = EditorGUI.TagField(position, property.name, property.stringValue);
+
+        // 方案2  好像不行
+        // property.stringValue = EditorGUILayout.TagField(property.name, property.stringValue);
     }
 }
 #endif
