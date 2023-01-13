@@ -22,6 +22,11 @@ public static class BuildMenuItem {
     public static void BuildPlayer() {
         PlayerBuilder.Build();
     }
+        
+    [MenuItem("Assets/Build/PlayerScripts")]
+    public static void PlayerScripts() {
+        ScriptBuilder.Build();
+    }
 
     [MenuItem("Assets/Build/ClearProgressBar")]
     public static void ClearProgressBar() {

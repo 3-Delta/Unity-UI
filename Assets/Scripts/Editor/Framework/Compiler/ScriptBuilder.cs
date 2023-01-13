@@ -5,7 +5,8 @@ using UnityEditor.Build.Player;
 using UnityEngine;
 
 public class ScriptBuilder {
-    // 构建整个工程代码，类似AssetDataBase.Refresh
+    // 构建整个工程中最终出包会用到的代码，编辑器代码会被ignore。
+    // 也就是说相比Library\ScriptAssemblies会少一些
     public static bool Build() {
         string assembliesOutputPath = Application.dataPath + "/../Temp/ScriptBuilder";
         return Build(assembliesOutputPath);
