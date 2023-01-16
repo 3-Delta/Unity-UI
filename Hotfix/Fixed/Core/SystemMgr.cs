@@ -47,12 +47,22 @@
             }
         }
 
+        public override void OnTimeAdjusted(long newTime, long oldTime)
+        {
+            for (int i = 0, length = SystemList.list.Count; i < length; i++)
+            {
+                SystemList.list[i].OnTimeAdjusted(newTime, oldTime);
+            }
+        }
+
         public override void ToVisualize()
         {
+#if UNITY_EDITOR
             for (int i = 0, length = SystemList.list.Count; i < length; i++)
             {
                 SystemList.list[i].ToVisualize();
             }
+#endif
         }
     }
 }

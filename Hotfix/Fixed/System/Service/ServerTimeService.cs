@@ -5,11 +5,6 @@ namespace Logic.Hotfix.Fixed
     // 处理servertime
     public class ServerTimeService : SysBase<ServerTimeService>
     {
-        public enum EEvents
-        {
-            OnTimeSync,
-        }
-
         protected override void ProcessEvent(bool toRegister)
         {
             if (toRegister)
@@ -22,9 +17,34 @@ namespace Logic.Hotfix.Fixed
             }
         }
 
+        private long syncLocalTime;
+        private long syncRemoteTime;
+        
+        public long RemoteTimeZoneSeconds { get; private set; }
+        public long RemoteNow {
+            get {
+                var passed = TimeService.NowTotalSeconds - syncLocalTime;
+                return syncRemoteTime + passed;
+            }
+        }
+
+        public void AdjustTime(TimeSync msg)
+        {
+            RemoteTimeZoneSeconds = msg.TimeZoneSeconds;
+            
+            syncRemoteTime = msg.TimeSeconds;
+            syncLocalTime = TimeService.NowTotalSeconds;
+        }
+        
         private void OnSctimeNtf(SCTimeNtf msg)
         {
-            UnityEngine.Debug.LogError("res.Time: " + msg.Time);
+            UnityEngine.Debug.LogError("res.Time: " + msg.Time.TimeSeconds);
+
+            var oldTime = RemoteNow;
+            AdjustTime(msg.Time);
+            var newTime = RemoteNow;
+            
+            SystemMgr.Instance.OnTimeAdjusted(newTime, oldTime);
         }
     }
 }

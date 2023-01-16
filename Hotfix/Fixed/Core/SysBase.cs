@@ -29,9 +29,11 @@ namespace Logic.Hotfix.Fixed
         void OnSynced(bool isReconnect);
         void OnReload();
 
-        #if UNITY_EDITOR
+        void OnTimeAdjusted(long newTime, long oldTime);
+
+#if UNITY_EDITOR
         void ToVisualize();
-        #endif
+#endif
     }
 
     [System.Serializable]
@@ -68,6 +70,8 @@ namespace Logic.Hotfix.Fixed
 
         // 表格配置等重载
         public virtual void OnReload() { }
+
+        public virtual void OnTimeAdjusted(long newTime, long oldTime) { }
 
         // 数据可视化,比如序列化成io的json文件，或者序列化道redis，或者数据库中
         public virtual void ToVisualize() {
