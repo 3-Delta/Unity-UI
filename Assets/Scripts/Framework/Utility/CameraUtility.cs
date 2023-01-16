@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+// https://answer.uwa4d.com/question/60acab5d6bb31032f979189d
 public class CameraUtility {
     public static void World2UI(GameObject go, Transform worldTransform, Camera c3, Camera c2) {
         if (worldTransform != null) {
@@ -9,7 +10,12 @@ public class CameraUtility {
 
     public static void World2UI(GameObject go, Vector3 worldPosition, Camera c3, Camera c2) {
         if (c3 != null) {
-            Vector2 screenPosition = c3.WorldToScreenPoint(worldPosition);
+            Vector3 screenPosition = c3.WorldToScreenPoint(worldPosition);
+            // 相机背面的物体
+            if (screenPosition.z < 0) {
+                screenPosition.x = -screenPosition.x;
+                screenPosition.y = -screenPosition.y;
+            }
             Screen2UI(go, screenPosition, c2);
         }
     }
