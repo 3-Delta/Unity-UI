@@ -4,81 +4,143 @@
 // 时间戳定义是：格林威治时间1970年01月01日00时00分00秒(北京时间1970年01月01日08时00分00秒)起至现在的总秒数，表示为：1970-01-01 00:00:00 UTC。它称为Unix时间(Unix time)、POSIX时间(POSIX time)。从定义可以看到，全球相同时刻，不管你是什么时区，时间戳是一致的，时间戳是不会跟着时区的改变而改变。
 // 时区最本质：都是计算当前到1970的一个时间差diff, 只不过在同一时间，比如北京是8点的时候，伦敦是0点，也就是秒数一样，但是时间展示不一样。
 // 但是c#在处理datetime.now和datetime.utcnow的时候，居然通过+-时区秒数的方式去实现。
-public static class TimeService {
-    public static readonly DateTime Utc_Start_Time = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+// DateTime.Now - DateTime.UtcNow != 0
+// Local_Start_Time - Utc_Start_Time == 0
+// 1. 从图中信息 可以发现只有now和utcnow，以及ToLocalTime和ToUniversalTime 有秒数差距，其他都是一致的
+// 2. utc的ToLocalTime的时候会加上时区秒数，local的ToUniversalTime的时候会减去时区秒数
+// 3. utc的ToUniversalTime无变化，local的ToLocalTime无变化
+// 4. 浏览器中时间就是单纯的时间戳，时间戳和时区没关系，各个时区的时间戳都是一样的。 当0秒时，就是1970/1/1，而其实当时北京已经是8点了。8点只是一个显示，底层其实时间戳依然是0
+public static class TimeService
+{
+    public static readonly DateTime UTC_START_TIME = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
     private static TimeZoneInfo _beiJingTimeZone;
-    public static TimeZoneInfo BeiJingTimeZone {
-        get {
-            if (_beiJingTimeZone == null) {
+    public static TimeZoneInfo BeiJingTimeZone
+    {
+        get
+        {
+            if (_beiJingTimeZone == null)
+            {
                 _beiJingTimeZone = TimeZoneInfo.FindSystemTimeZoneById("China Standard Time");
             }
 
             return _beiJingTimeZone;
         }
-        set {
+        set
+        {
             // 强制清空
             _beiJingTimeZone = null;
         }
     }
 
     // 返回的是不带时区的秒数,也就是浏览器的秒数
-    public static long NowTotalSeconds {
-        get {
-            return (long)DateTime.UtcNow.Subtract(Utc_Start_Time).TotalSeconds;
+    public static long LocalNowTotalSeconds
+    {
+        get
+        {
+            return (long)DateTime.UtcNow.Subtract(UTC_START_TIME).TotalSeconds;
         }
     }
 
-    public static bool IsSameDay(ref DateTime x, ref DateTime y) {
+    // 设备当前的时区
+    public static long LocalTimeZoneSeconds
+    {
+        get
+        {
+            return (long)DateTime.Now.Subtract(DateTime.UtcNow).TotalSeconds;
+        }
+    }
+
+    // 今天0时+offsetSeconds的时间
+    public static DateTime Day(long seconds, long offsetSeconds)
+    {
+        var dt = Seconds2DateTime(seconds);
+        return dt.Date.AddSeconds(offsetSeconds);
+    }
+
+    // 本周第一天的0点+offsetSeconds的时间
+    // 本周第一天不是周一，而是周日哦
+    public static DateTime Week(long seconds, long offsetSeconds)
+    {
+        var dt = Seconds2DateTime(seconds);
+        dt.AddDays(-(int)dt.DayOfWeek);
+        return dt.Date.AddSeconds(offsetSeconds);
+    }
+
+    // 本月第一天的0点+offsetSeconds的时间
+    public static DateTime Month(long seconds, long offsetSeconds)
+    {
+        var dt = Seconds2DateTime(seconds);
+        dt.AddDays(-(int)dt.Day);
+        return dt.Date.AddSeconds(offsetSeconds);
+    }
+    // 本年第一天的0点+offsetSeconds的时间
+    public static DateTime Year(long seconds, long offsetSeconds)
+    {
+        var dt = Seconds2DateTime(seconds);
+        dt.AddDays(-(int)dt.DayOfYear);
+        return dt.Date.AddSeconds(offsetSeconds);
+    }
+
+    public static bool IsSameDay(in DateTime x, in DateTime y)
+    {
         return x.Year == y.Year && x.DayOfYear == y.DayOfYear;
     }
 
-    // xUtcSeconds和yUtcSeconds是浏览器北京时间秒数， timeZoneSeconds是北京时间时区相对于utc时区的偏移秒数即8*3600
-    public static bool IsSameDay(long xUnixTimeStamp, long yUnixTimeStamp, long offsetSeconds = 0, long timeZoneSeconds = 0) {
-        if (xUnixTimeStamp == yUnixTimeStamp) {
+    public static bool IsSameDay(long xUnixTimeStamp, long yUnixTimeStamp, long offsetSeconds = 0)
+    {
+        if (xUnixTimeStamp == yUnixTimeStamp)
+        {
             return true;
         }
 
-        DateTime l = FromUtcToDateTime(xUnixTimeStamp - offsetSeconds, timeZoneSeconds);
-        DateTime r = FromUtcToDateTime(yUnixTimeStamp - offsetSeconds, timeZoneSeconds);
-        return IsSameDay(ref l, ref r);
+        DateTime l = Seconds2DateTime(xUnixTimeStamp - offsetSeconds);
+        DateTime r = Seconds2DateTime(yUnixTimeStamp - offsetSeconds);
+        return IsSameDay(in l, in r);
     }
 
-    public static bool IsSameWeek(ref DateTime x, ref DateTime y) {
+    public static bool IsSameWeek(in DateTime x, in DateTime y)
+    {
         var l = x.AddDays(-(int)x.DayOfWeek).Date;
         var r = y.AddDays(-(int)y.DayOfWeek).Date;
-        return IsSameDay(ref l, ref r);
+        return IsSameDay(in l, in r);
     }
 
-    public static bool IsSameMonth(long xUnixTimeStamp, long yUnixTimeStamp, long offsetSeconds = 0, long timeZoneSeconds = 0) {
-        if (xUnixTimeStamp == yUnixTimeStamp) {
+    public static bool IsSameMonth(long xUnixTimeStamp, long yUnixTimeStamp, long offsetSeconds = 0)
+    {
+        if (xUnixTimeStamp == yUnixTimeStamp)
+        {
             return true;
         }
 
-        DateTime l = FromUtcToDateTime(xUnixTimeStamp - offsetSeconds, timeZoneSeconds);
-        DateTime r = FromUtcToDateTime(yUnixTimeStamp - offsetSeconds, timeZoneSeconds);
+        DateTime l = Seconds2DateTime(xUnixTimeStamp - offsetSeconds);
+        DateTime r = Seconds2DateTime(yUnixTimeStamp - offsetSeconds);
         return l.Year == r.Year && l.Month == r.Month;
     }
 
-    public static bool IsSameWeek(long xUnixTimeStamp, long yUnixTimeStamp, long offsetSeconds = 0, long timeZoneSeconds = 0) {
-        if (xUnixTimeStamp == yUnixTimeStamp) {
+    public static bool IsSameWeek(long xUnixTimeStamp, long yUnixTimeStamp, long offsetSeconds = 0)
+    {
+        if (xUnixTimeStamp == yUnixTimeStamp)
+        {
             return true;
         }
 
-        DateTime l = FromUtcToDateTime(xUnixTimeStamp - offsetSeconds, timeZoneSeconds);
-        DateTime r = FromUtcToDateTime(yUnixTimeStamp - offsetSeconds, timeZoneSeconds);
-        return IsSameWeek(ref l, ref r);
+        DateTime l = Seconds2DateTime(xUnixTimeStamp - offsetSeconds);
+        DateTime r = Seconds2DateTime(yUnixTimeStamp - offsetSeconds);
+        return IsSameWeek(in l, in r);
     }
 
-    public static long ToUtcSeconds(DateTime utcDt, long offsetSeconds = 0) {
-        if (utcDt.Kind == DateTimeKind.Utc) {
-            return (long)utcDt.Subtract(Utc_Start_Time).TotalSeconds - offsetSeconds;
-        }
-        else if(utcDt.Kind == DateTimeKind.Local) {
-            utcDt = TimeZoneInfo.ConvertTimeToUtc(utcDt);
-            return (long)utcDt.Subtract(Utc_Start_Time).TotalSeconds - offsetSeconds;
-        }
-        throw new ArgumentException("utcDt parameter is an invalid kind time");
+    public static long DateTime2Seconds(DateTime utcDt)
+    {
+        return (long)utcDt.Subtract(UTC_START_TIME).TotalSeconds;
+        //if (utcDt.Kind == DateTimeKind.Utc) {
+        //    return (long)utcDt.Subtract(UTC_START_TIME).TotalSeconds + offsetSeconds;
+        //}
+        //else if(utcDt.Kind == DateTimeKind.Local) {
+        //    utcDt = TimeZoneInfo.ConvertTimeToUtc(utcDt);
+        //    return (long)utcDt.Subtract(UTC_START_TIME).TotalSeconds + offsetSeconds;
+        //}
+        //throw new ArgumentException("utcDt parameter is an invalid kind time");
     }
 
     // 时间戳 浏览器中的时间秒数是不带TimeZone的
@@ -91,10 +153,11 @@ public static class TimeService {
     // 转换为 dateTime=FromUtcToDateTime(1659197827, 0).ToLocalTime();
     // 或者 dateTime=FromUtcToDateTime(1659197827, 28800);
     // https://tool.lu/timestamp/
-    public static DateTime FromUtcToDateTime(long unixTimeStamp, long offsetSeconds = 0) {
-        DateTime targetTime = Utc_Start_Time.AddSeconds(unixTimeStamp + offsetSeconds);
+    public static DateTime Seconds2DateTime(long unixTimeStamp, long offsetSeconds = 0)
+    {
+        DateTime targetTime = UTC_START_TIME.AddSeconds(unixTimeStamp + offsetSeconds);
         return targetTime;
-        
+
         /*
             // 北京时间：2022/7/31 4:59:40
             secBefore = 1659214780;
@@ -116,15 +179,16 @@ public static class TimeService {
             Debug.LogError(l + "  " + r);
         */
     }
-    
+
     // TimeSpan其实就是:时间差
-    
+
     // DateTime.SpecifyKind(dt, DateTimeKind.Unspecified); 指定一个时区，然后配合TimeZoneInfo.ConvertTime
     // TimeZoneInfo.ConvertTime是将一个Datetime从原时区转换为目标时区
     // public static DateTime ConvertTime(DateTime dateTime, TimeZoneInfo sourceTimeZone, TimeZoneInfo destinationTimeZone)
 
     // 转换为DateTime的Ticks 参考：TimeSpan.TimeToTicks
-    public static long SecondsToTicks(long seconds) {
+    public static long SecondsToTicks(long seconds)
+    {
         return seconds * 10000000L; //1E+07;
     }
 }

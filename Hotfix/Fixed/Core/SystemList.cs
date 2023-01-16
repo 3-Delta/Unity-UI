@@ -6,7 +6,7 @@ namespace Logic.Hotfix.Fixed
     {
         public readonly static List<ISysModule> list = new List<ISysModule>()
         {
-            ServerTimeService.Instance,
+            RemoteTimeService.Instance,
             ReconnectService.Instance,
 
             SysAccount.Instance,

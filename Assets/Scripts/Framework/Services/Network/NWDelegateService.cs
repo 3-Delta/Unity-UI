@@ -3,38 +3,47 @@ using Google.Protobuf;
 using pb = Google.Protobuf;
 using System.Collections.Generic;
 
-public static class NWDelegateService {
-    public interface IHandler {
+public static class NWDelegateService
+{
+    public interface IHandler
+    {
         void Handle<T>(Action<T> callback, bool toBeAdd);
         void Fire(NWPackage package);
     }
 
-    public class Handler<TMsg> : IHandler where TMsg : class, IMessage {
+    public class Handler<TMsg> : IHandler where TMsg : class, IMessage
+    {
         public ushort requestProtoType;
         public ushort responseProtoType;
 
         public MessageParser parser;
 
-        public Handler(ushort requestProtoType, ushort responseProtoType, MessageParser parser) {
+        public Handler(ushort requestProtoType, ushort responseProtoType, MessageParser parser)
+        {
             this.requestProtoType = requestProtoType;
             this.responseProtoType = responseProtoType;
             this.parser = parser;
         }
 
         // T 和 接口的 T这里是故意一样的，否则会编译错误
-        public void Handle<TMsg>(Action<TMsg> callback, bool toBeAdd) {
-            emiter.Handle<TMsg>(responseProtoType, callback, toBeAdd);
+        public void Handle<TMsg>(Action<TMsg> callback, bool toBeAdd)
+        {
+            NWDelegateService.emiter.Handle<TMsg>(responseProtoType, callback, toBeAdd);
         }
 
-        public void Fire(NWPackage package) {
-            if (parser != null) {
-                if (PbfSerializer.TryDeserialize<TMsg>(parser, package.body.bodyBytes, out TMsg msg)) {
-                    emiter.Fire<TMsg>(responseProtoType, msg);
+        public void Fire(NWPackage package)
+        {
+            if (parser != null)
+            {
+                if (PbfSerializer.TryDeserialize<TMsg>(parser, package.body.bodyBytes, out TMsg msg))
+                {
+                    NWDelegateService.emiter.Fire<TMsg>(responseProtoType, msg);
                 }
             }
         }
 
-        public override string ToString() {
+        public override string ToString()
+        {
             return $"request:{requestProtoType.ToString()} response:{responseProtoType.ToString()}";
         }
     }
@@ -48,9 +57,11 @@ public static class NWDelegateService {
     // 这里记录requestProtoType的目的是：
     // 1:方便review者可以轻松匹配request和response的关系
     // 2:将来去实现网络等待光圈的时候可以利用这个request对应的response是否进行回复，如果回复，则关闭网络等待ui。 【WaitUI】
-    public static void Add<T>(ushort requestProtoType, ushort responseProtoType, Action<T> callback, MessageParser parser) where T : class, IMessage {
+    public static void Add<T>(ushort requestProtoType, ushort responseProtoType, Action<T> callback, MessageParser parser) where T : class, IMessage
+    {
         // parserDict
-        if (!dict.TryGetValue(responseProtoType, out var handler)) {
+        if (!dict.TryGetValue(responseProtoType, out var handler))
+        {
             // converter只传递一次
             handler = new Handler<T>(requestProtoType, responseProtoType, parser);
             dict.Add(responseProtoType, handler);
@@ -59,15 +70,31 @@ public static class NWDelegateService {
         handler.Handle(callback, true);
     }
 
-    public static void Remove<T>(ushort responseProtoType, Action<T> callback) where T : class, IMessage {
-        if (dict.TryGetValue(responseProtoType, out var handler)) {
+    public static void Remove<T>(ushort responseProtoType, Action<T> callback) where T : class, IMessage
+    {
+        if (dict.TryGetValue(responseProtoType, out var handler))
+        {
             handler.Handle(callback, false);
         }
     }
 
+    public static void Handle<T>(ushort requestProtoType, ushort responseProtoType, Action<T> callback, MessageParser parser, bool toBeAdd) where T : class, IMessage
+    {
+        if (toBeAdd)
+        {
+            Add<T>(requestProtoType, responseProtoType, callback, parser);
+        }
+        else
+        {
+            Remove<T>(responseProtoType, callback);
+        }
+    }
+
     // 网络中使用这个Fire
-    public static void Fire(ushort protoType, NWPackage package) {
-        if (dict.TryGetValue(protoType, out var handler)) {
+    public static void Fire(ushort protoType, NWPackage package)
+    {
+        if (dict.TryGetValue(protoType, out var handler))
+        {
             handler.Fire(package);
 
             // 通知外部接收到协议,本来直接emiter.Fire(protoType);也可以，但是考虑到事件冲突
@@ -75,7 +102,8 @@ public static class NWDelegateService {
         }
     }
 
-    public static void Clear() {
+    public static void Clear()
+    {
         dict.Clear();
     }
 }

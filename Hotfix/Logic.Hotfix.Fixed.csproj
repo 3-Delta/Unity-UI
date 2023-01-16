@@ -86,10 +86,10 @@
     <Compile Include="Fixed\Protos\ServerList.cs" />
     <Compile Include="Fixed\Protos\Team.cs" />
     <Compile Include="Fixed\Protos\Time.cs" />
+    <Compile Include="Fixed\System\Service\RemoteTimeService.cs" />
     <Compile Include="Fixed\System\Service\TipListService.cs" />
     <Compile Include="Fixed\System\Service\EnterAdPushService.cs" />
     <Compile Include="Fixed\System\Service\ReconnectService.cs" />
-    <Compile Include="Fixed\System\Service\ServerTimeService.cs" />
     <Compile Include="Fixed\System\SysAccount.cs" />
     <Compile Include="Fixed\System\SysTeam.cs" />
   </ItemGroup>
