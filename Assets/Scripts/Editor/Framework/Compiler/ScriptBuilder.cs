@@ -34,6 +34,8 @@ public class ScriptBuilder {
 
         // 编译所有脚本
         // UnityEditor.Scripting.ScriptCompilation.EditorCompilationInterface.CompileScripts();
+        // https://docs.unity3d.com/ScriptReference/Build.Player.ScriptCompilationSettings-extraScriptingDefines.html
+        // https://www.zhihu.com/pin/1595771124507512832 也是需要新增的define，而不可以删除预定义的一些全局define
         ScriptCompilationResult scriptCompilationResult = PlayerBuildInterface.CompilePlayerScripts(scriptCompilationSettings, assembliesOutputPath);
         if (scriptCompilationResult.assemblies.Count > 0) {
             Debug.LogFormat($"Success to CompilePlayerScripts, total assembly count is: {scriptCompilationResult.assemblies.Count.ToString()}, at: {assembliesOutputPath}");
