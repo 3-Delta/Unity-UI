@@ -8,15 +8,15 @@ public class LRArrowSwitcher : MonoBehaviour {
         Circle, // 循环
         CircleRightOnly, // 右侧循环
         CircleLeftOnly, // 右侧循环
-        NoCircle, // 两侧边界模式
+        NoCircle, // 两侧边界模式.即到达边界的时候控制对应边按钮的显隐
     }
 
     public ETravelMode mode = ETravelMode.Circle;
     public Button leftArrow;
     public Button rightArrow;
 
-    [SerializeField, Range(1, int.MaxValue)]
-    private int countPerPage = 1;
+    [Range(1, int.MaxValue)]
+    public int countPerPage = 1;
 
     // index:startIndex:rangeCount
     public Action<int, int, int> onSwitch;
