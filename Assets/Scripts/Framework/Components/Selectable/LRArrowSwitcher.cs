@@ -9,14 +9,14 @@ public class LRArrowSwitcher : MonoBehaviour {
         CircleRightOnly, // 右侧循环
         CircleLeftOnly, // 右侧循环
         NoCircle, // 两侧边界模式.即到达边界的时候控制对应边按钮的显隐
+        NoCircleKeepArrow, // 两侧边界模式.即到达边界的时候不控制对应边按钮的显隐
     }
 
     public ETravelMode mode = ETravelMode.Circle;
     public Button leftArrow;
     public Button rightArrow;
 
-    [Range(1, int.MaxValue)]
-    public int countPerPage = 1;
+    [Range(1, int.MaxValue)] public int countPerPage = 1;
 
     // index:startIndex:rangeCount
     public Action<int, int, int> onSwitch;
@@ -40,11 +40,19 @@ public class LRArrowSwitcher : MonoBehaviour {
     }
 
     private void OnBtnLeftClicked() {
+        if (mode == ETravelMode.NoCircleKeepArrow && CurrentPageIndex <= 0) {
+            return;
+        }
+
         --CurrentPageIndex;
         Switch();
     }
 
     private void OnBtnRightClicked() {
+        if (mode == ETravelMode.NoCircleKeepArrow && CurrentPageIndex >= PageCount - 1) {
+            return;
+        }
+
         ++CurrentPageIndex;
         Switch();
     }
@@ -56,10 +64,10 @@ public class LRArrowSwitcher : MonoBehaviour {
     }
 
     // 设置currentIndex
-    public bool Switch(ref int currentIndex) {
+    public bool Switch(ref int currentIndex, bool trigger = true) {
         if (0 <= currentIndex && currentIndex < PageCount) {
             this.CurrentPageIndex = currentIndex;
-            this.Switch();
+            this.Switch(trigger);
             return true;
         }
         else {
@@ -68,9 +76,10 @@ public class LRArrowSwitcher : MonoBehaviour {
         }
     }
 
-    private void Switch() {
+    private void Switch(bool trigger = true) {
         CurrentPageIndex = (CurrentPageIndex + PageCount) % PageCount;
 
+        #region UI逻辑
         if (mode == ETravelMode.NoCircle) {
             leftArrow.gameObject.SetActive(CurrentPageIndex != 0);
             rightArrow.gameObject.SetActive(CurrentPageIndex != PageCount - 1);
@@ -81,9 +90,12 @@ public class LRArrowSwitcher : MonoBehaviour {
         else if (mode == ETravelMode.CircleLeftOnly) {
             rightArrow.gameObject.SetActive(CurrentPageIndex != PageCount - 1);
         }
+        #endregion
 
-        int startIndex = CurrentPageIndex * countPerPage;
-        int rangeCount = Math.Min(countPerPage, DataCount - startIndex);
-        onSwitch?.Invoke(CurrentPageIndex, startIndex, rangeCount);
+        if (trigger) {
+            int startIndex = CurrentPageIndex * countPerPage;
+            int rangeCount = Math.Min(countPerPage, DataCount - startIndex);
+            onSwitch?.Invoke(CurrentPageIndex, startIndex, rangeCount);
+        }
     }
 }

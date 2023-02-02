@@ -14,7 +14,7 @@ public class StatusActiver : MonoBehaviour {
         Set(curStatusIndex);
     }
 
-    public void Set(int statusIndex) {
+    public void Set(int statusIndex, bool toTrigger = true) {
         int old = curStatusIndex;
         curStatusIndex = statusIndex;
 
@@ -25,6 +25,8 @@ public class StatusActiver : MonoBehaviour {
             }
         }
 
-        onStatusChanged?.Invoke(old, curStatusIndex, old != curStatusIndex);
+        if (toTrigger) {
+            onStatusChanged?.Invoke(old, curStatusIndex, old != curStatusIndex);
+        }
     }
 }
