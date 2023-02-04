@@ -11,61 +11,68 @@ public class SpringPosition : MonoBehaviour {
 
     public Action<GameObject> onFinished;
 
-    private float mThreshold = 0f;
+    public float stopThreshold = 0f;
 
     private void Update() {
         float delta = ignoreTimeScale ? Time.unscaledDeltaTime : Time.deltaTime;
 
         if (worldSpace) {
-            if (mThreshold == 0f) {
-                mThreshold = (target - transform.position).sqrMagnitude * 0.001f;
+            if (this.stopThreshold == 0f) {
+                this.stopThreshold = (target - transform.position).sqrMagnitude * 0.001f;
             }
-        
+
             transform.position = SpringLerp(transform.position, target, strength, delta);
-        
-            if (mThreshold >= (target - transform.position).sqrMagnitude) {
+
+            if (this.stopThreshold >= (target - transform.position).sqrMagnitude) {
                 transform.position = target;
-                onFinished?.Invoke(transform.gameObject);
+                NotifyListeners();
                 enabled = false;
             }
         }
-        else
-        {
-            if (mThreshold == 0f) {
-                mThreshold = (target - transform.localPosition).sqrMagnitude * 0.00001f;
+        else {
+            if (this.stopThreshold == 0f) {
+                this.stopThreshold = (target - transform.localPosition).sqrMagnitude * 0.00001f;
             }
 
             transform.localPosition = SpringLerp(transform.localPosition, target, strength, delta);
 
-            if (mThreshold >= (target - transform.localPosition).sqrMagnitude) {
+            if (this.stopThreshold >= (target - transform.localPosition).sqrMagnitude) {
                 transform.localPosition = target;
-                onFinished?.Invoke(transform.gameObject);
+                NotifyListeners();
                 enabled = false;
             }
         }
     }
 
+    private void NotifyListeners() {
+        onFinished?.Invoke(transform.gameObject);
+    }
+
     [ContextMenu(nameof(Begin))]
     public SpringPosition Begin() {
-        return Begin(gameObject, this.target, this.strength);
+        return Begin(gameObject, this.target, this.strength, onFinished);
     }
 
-    public SpringPosition Begin(Vector3 pos, float strength) {
-        return Begin(gameObject, pos, strength);
+    public SpringPosition Begin(Vector3 pos) {
+        return Begin(gameObject, pos, strength, onFinished);
     }
 
-    public static SpringPosition Begin(GameObject go, Vector3 pos, float strength) {
+    public SpringPosition Begin(Vector3 pos, float strength, Action<GameObject> onFinished = null) {
+        return Begin(gameObject, pos, strength, onFinished);
+    }
+
+    public static SpringPosition Begin(GameObject go, Vector3 pos, float strength, Action<GameObject> onFinished = null) {
         if (!go.TryGetComponent<SpringPosition>(out SpringPosition sp)) {
             sp = go.AddComponent<SpringPosition>();
         }
 
         sp.target = pos;
         sp.strength = strength;
-        sp.onFinished = null;
+        sp.onFinished = onFinished;
 
         if (!sp.enabled) {
             // reset
-            sp.mThreshold = 0f;
+            sp.stopThreshold = 0f;
             sp.enabled = true;
         }
 
