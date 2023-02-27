@@ -33,14 +33,15 @@ public class FBridge : MonoBehaviour {
             return;
         }
 
-#if __NATIVE__
-    Logic.Hotfix.Fixed.HotfixBridge.Init();
+#if __NATIVE__ // 如果这里编译报错肯定是Logic.Hotfix.dll不存在，或者没有用vs重新编译Logic.Hotfix到Unity中
+        // 注意用vs编译Logic.Hotfix会依赖unity工程，如果此时unity工程有编译错误那么就不会编译Logic.Hotfix
+        Logic.Hotfix.Fixed.HotfixBridge.Init();
 #elif __REFL_RELOAD__ && UNITY_EDITOR
-    _hotfixInit?.Exec();
+        _hotfixInit?.Exec();
 #elif __REFL__
-    _hotfixInit?.Exec();
+        _hotfixInit?.Exec();
 #elif __ILR__
-    _hotfixInit?.Exec();
+        _hotfixInit?.Exec();
 #endif
     }
     
