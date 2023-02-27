@@ -1,7 +1,18 @@
+// https://protobuf.dev/programming-guides/proto3/
+// https://protobuf.dev/reference/csharp/csharp-generated/#compiler_options
+// https://learn.microsoft.com/zh-cn/aspnet/core/grpc/protobuf?view=aspnetcore-7.0
+
+// ChatGPT 说是编译的时候加上--csharp_opt=generic_services会支持泛型
+// 加上之后有提示：Unknown generator option: generic_services
+// ChatGPT说是protoc版本太低，然后https://github.com/protocolbuffers/protobuf/releases/升级版本之后，还是不行，泛型的message定义不识别
+// 最终查阅多个文档发现压根不支持泛型，麻蛋，被GPT骗了
+// 不支持的原因我猜测是：protoc会计算proto的字段压缩，如果是泛型那么生成的代码就不能执行固定的压缩
+
 syntax = "proto3";
 package Logic.Hotfix.Fixed.Pbf;
 
 // https://www.jianshu.com/p/3e388bc267ee
+// https://learn.microsoft.com/zh-cn/aspnet/core/grpc/protobuf?view=aspnetcore-7.0
 import "google/protobuf/any.proto";
 
 // 拓展proto，支持nullable
