@@ -31,7 +31,7 @@ public class ScrollPage : MonoBehaviour {
         this.centerOnChild.CenterOn(pageIndex); // 某个下标为index的vd节点居中
         
         // 某个page被选中, 只处理UI，不抛事件
-        this.cow.cow[pageIndex].SetSelected(true, false);
+        // this.cow.cow[pageIndex].SetSelected(true, false);
         
         // 通知外部进行逻辑以及UI处理
         this.onPageSelected?.Invoke(pageIndex);
@@ -51,7 +51,7 @@ public class ScrollPage : MonoBehaviour {
     
     private void _OnCenter(Transform t, int pageIndex) {
         // 某个page被选中, 只处理UI，不抛事件
-        this.cow.cow[pageIndex].SetSelected(true, false);
+        // this.cow.cow[pageIndex].SetSelected(true, false);
         
         // 箭头UI配合
         arrowSwitcher.Switch(ref pageIndex, false);
