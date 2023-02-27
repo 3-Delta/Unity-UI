@@ -3,7 +3,7 @@
 
 @echo off
 set curPath=%~dp0
-echo curPath = %curPath%s
+echo curPath = %curPath%
 
 set sourcePath=%curPath%..\Resource\Protos
 echo sourcePath = %sourcePath%

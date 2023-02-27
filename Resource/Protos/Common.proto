@@ -1,9 +1,38 @@
 syntax = "proto3";
 package Logic.Hotfix.Fixed.Pbf;
 
+// https://www.jianshu.com/p/3e388bc267ee
+import "google/protobuf/any.proto";
+
 // 拓展proto，支持nullable
 // https://www.codercto.com/a/10882.html
 // https://github.com/criteo-forks/protobuf/commit/8298aff178ccffd0c7c99806e714d0f14f40faf8
+
+
+// https://www.zhihu.com/pin/1612126921554280448
+message Header 
+{
+	uint32 id = 1;
+	uint32 bufferSize = 2;
+	bool splitIndex = 3; // 如果为0，也就是默认值，表示没有超过uint32.MaxValue，否则就是从1开始
+	bool splitCount = 4; // split的个数，正常情况下为0，也就是false，protobuf会将默认值的字段压缩
+}
+
+message PkgAny
+{
+	Header header = 1;
+	// 正常protoc可以导出成功，因为在C#层的protobuf是适配ilruntime的，所以缩减了一部分功能，比如说缩减了Any
+	// 所以依然any不能正常使用， 可以按照最完整的protobuC#源码把any给加回来
+	google.protobuf.Any buffer = 2; // 数据部分
+}
+
+/* 泛型
+message Package<T>
+{
+	Header header = 1;
+	T buffer = 2; // 数据部分
+}
+*/
 
 message Item
 {
