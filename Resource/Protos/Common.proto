@@ -21,7 +21,7 @@ import "google/protobuf/any.proto";
 
 
 // https://www.zhihu.com/pin/1612126921554280448
-message Header 
+message PackageHeader 
 {
 	uint32 id = 1;
 	uint32 bufferSize = 2;
@@ -29,19 +29,21 @@ message Header
 	bool splitCount = 4; // split的个数，正常情况下为0，也就是false，protobuf会将默认值的字段压缩
 }
 
-message PkgAny
+/* ilruntime不支持any
+message PackageAny
 {
-	Header header = 1;
+	PackageHeader header = 1;
 	// 正常protoc可以导出成功，因为在C#层的protobuf是适配ilruntime的，所以缩减了一部分功能，比如说缩减了Any
 	// 所以依然any不能正常使用， 可以按照最完整的protobuC#源码把any给加回来
-	google.protobuf.Any buffer = 2; // 数据部分
+	google.protobuf.Any body = 2; // 数据部分
 }
+*/
 
-/* 泛型
+/* protobuf 不支持泛型
 message Package<T>
 {
-	Header header = 1;
-	T buffer = 2; // 数据部分
+	PackageHeader header = 1;
+	T body = 2; // 数据部分
 }
 */
 

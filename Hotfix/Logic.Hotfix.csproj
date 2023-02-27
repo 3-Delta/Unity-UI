@@ -68,6 +68,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Fixed\Core\IMessagePackage.cs" />
     <Compile Include="Fixed\Core\EUIType.cs" />
     <Compile Include="Fixed\Core\HotfixBridge.cs" />
     <Compile Include="Fixed\Core\SysBase.cs" />
