@@ -34,7 +34,7 @@ public class FBridge : MonoBehaviour {
         }
 
 #if __NATIVE__
-    Logic.Hotfix.HotfixBridge.Init();
+    Logic.Hotfix.Fixed.HotfixBridge.Init();
 #elif __REFL_RELOAD__ && UNITY_EDITOR
     _hotfixInit?.Exec();
 #elif __REFL__
