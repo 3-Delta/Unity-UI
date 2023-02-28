@@ -9,97 +9,58 @@ using scg = global::System.Collections.Generic;
 namespace Logic.Hotfix.Fixed.Pbf {
 
   #region Messages
-  /// <summary>
-  /// https://www.zhihu.com/pin/1612126921554280448
-  /// </summary>
-  public sealed class PackageHeader : pb::IMessage {
-    private static readonly pb::MessageParser<PackageHeader> _parser = new pb::MessageParser<PackageHeader>(() => new PackageHeader());
+  public sealed class PackageSplit : pb::IMessage {
+    private static readonly pb::MessageParser<PackageSplit> _parser = new pb::MessageParser<PackageSplit>(() => new PackageSplit());
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<PackageHeader> Parser { get { return _parser; } }
+    public static pb::MessageParser<PackageSplit> Parser { get { return _parser; } }
 
-    /// <summary>Field number for the "id" field.</summary>
-    public const int IdFieldNumber = 1;
-    private uint id_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint Id {
-      get { return id_; }
-      set {
-        id_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "bufferSize" field.</summary>
-    public const int BufferSizeFieldNumber = 2;
-    private uint bufferSize_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint BufferSize {
-      get { return bufferSize_; }
-      set {
-        bufferSize_ = value;
-      }
-    }
-
-    /// <summary>Field number for the "splitIndex" field.</summary>
-    public const int SplitIndexFieldNumber = 3;
-    private bool splitIndex_;
+    /// <summary>Field number for the "index" field.</summary>
+    public const int IndexFieldNumber = 1;
+    private bool index_;
     /// <summary>
     /// 如果为0，也就是默认值，表示没有超过uint32.MaxValue，否则就是从1开始
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool SplitIndex {
-      get { return splitIndex_; }
+    public bool Index {
+      get { return index_; }
       set {
-        splitIndex_ = value;
+        index_ = value;
       }
     }
 
-    /// <summary>Field number for the "splitCount" field.</summary>
-    public const int SplitCountFieldNumber = 4;
-    private bool splitCount_;
+    /// <summary>Field number for the "count" field.</summary>
+    public const int CountFieldNumber = 2;
+    private bool count_;
     /// <summary>
     /// split的个数，正常情况下为0，也就是false，protobuf会将默认值的字段压缩
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool SplitCount {
-      get { return splitCount_; }
+    public bool Count {
+      get { return count_; }
       set {
-        splitCount_ = value;
+        count_ = value;
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (Id != 0) {
+      if (Index != false) {
         output.WriteRawTag(8);
-        output.WriteUInt32(Id);
+        output.WriteBool(Index);
       }
-      if (BufferSize != 0) {
+      if (Count != false) {
         output.WriteRawTag(16);
-        output.WriteUInt32(BufferSize);
-      }
-      if (SplitIndex != false) {
-        output.WriteRawTag(24);
-        output.WriteBool(SplitIndex);
-      }
-      if (SplitCount != false) {
-        output.WriteRawTag(32);
-        output.WriteBool(SplitCount);
+        output.WriteBool(Count);
       }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (Id != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(Id);
-      }
-      if (BufferSize != 0) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(BufferSize);
-      }
-      if (SplitIndex != false) {
+      if (Index != false) {
         size += 1 + 1;
       }
-      if (SplitCount != false) {
+      if (Count != false) {
         size += 1 + 1;
       }
       return size;
@@ -114,19 +75,11 @@ namespace Logic.Hotfix.Fixed.Pbf {
             input.SkipLastField();
             break;
           case 8: {
-            Id = input.ReadUInt32();
+            Index = input.ReadBool();
             break;
           }
           case 16: {
-            BufferSize = input.ReadUInt32();
-            break;
-          }
-          case 24: {
-            SplitIndex = input.ReadBool();
-            break;
-          }
-          case 32: {
-            SplitCount = input.ReadBool();
+            Count = input.ReadBool();
             break;
           }
         }

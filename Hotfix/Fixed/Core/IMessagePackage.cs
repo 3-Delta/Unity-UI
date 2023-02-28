@@ -1,6 +1,8 @@
 ﻿#pragma warning disable 1591, 0612, 3021
 #region Designer generated code
 
+using UnityEngine;
+
 using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using scg = global::System.Collections.Generic;
@@ -8,27 +10,27 @@ using scg = global::System.Collections.Generic;
 namespace Logic.Hotfix.Fixed.Pbf
 {
     #region Messages
-    public sealed class Package<T> : pb::IMessage where T : pb::IMessage, new()
+    public sealed class PackageBody<T> : pb::IMessage where T : pb::IMessage, new()
     {
-        private static readonly pb::MessageParser<Package<T>> _parser = new pb::MessageParser<Package<T>>(() => new Package<T>());
+        private static readonly pb::MessageParser<PackageBody<T>> _parser = new pb::MessageParser<PackageBody<T>>(() => new PackageBody<T>());
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        public static pb::MessageParser<Package<T>> Parser { get { return _parser; } }
+        public static pb::MessageParser<PackageBody<T>> Parser { get { return _parser; } }
 
-        /// <summary>Field number for the "header" field.</summary>
-        public const int HeaderFieldNumber = 1;
-        private global::Logic.Hotfix.Fixed.Pbf.PackageHeader header_;
+        /// <summary>Field number for the "split" field.</summary>
+        public const int SplitFieldNumber = 1;
+        private global::Logic.Hotfix.Fixed.Pbf.PackageSplit split_;
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        public global::Logic.Hotfix.Fixed.Pbf.PackageHeader Header
+        public global::Logic.Hotfix.Fixed.Pbf.PackageSplit Split
         {
-            get { return header_; }
+            get { return split_; }
             set
             {
-                header_ = value;
+                split_ = value;
             }
         }
 
         /// <summary>Field number for the "body" field.</summary>
-        public const int BufferFieldNumber = 2;
+        public const int BodyFieldNumber = 2;
         private T body_;
         /// <summary>
         /// 数据部分
@@ -46,14 +48,14 @@ namespace Logic.Hotfix.Fixed.Pbf
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public void WriteTo(pb::CodedOutputStream output)
         {
-            if (header_ != null)
+            if (split_ != null)
             {
                 output.WriteRawTag(10);
-                output.WriteMessage(Header);
+                output.WriteMessage(Split);
             }
             if (body_ != null)
             {
-                output.WriteRawTag(18); // 18不知道计算出来的？但是发现如果Buffer字段是IMessage的话，那么这个值始终是18
+                output.WriteRawTag(18);
                 output.WriteMessage(Body);
             }
         }
@@ -62,9 +64,9 @@ namespace Logic.Hotfix.Fixed.Pbf
         public int CalculateSize()
         {
             int size = 0;
-            if (header_ != null)
+            if (split_ != null)
             {
-                size += 1 + pb::CodedOutputStream.ComputeMessageSize(Header);
+                size += 1 + pb::CodedOutputStream.ComputeMessageSize(Split);
             }
             if (body_ != null)
             {
@@ -86,11 +88,11 @@ namespace Logic.Hotfix.Fixed.Pbf
                         break;
                     case 10:
                         {
-                            if (header_ == null)
+                            if (split_ == null)
                             {
-                                header_ = new global::Logic.Hotfix.Fixed.Pbf.PackageHeader();
+                                split_ = new global::Logic.Hotfix.Fixed.Pbf.PackageSplit();
                             }
-                            input.ReadMessage(header_);
+                            input.ReadMessage(split_);
                             break;
                         }
                     case 18:
