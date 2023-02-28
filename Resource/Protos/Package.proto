@@ -3,8 +3,8 @@ package Logic.Hotfix.Fixed.Pbf;
 
 message PackageSplit 
 {
-	bool index = 1; // 如果为0，也就是默认值，表示没有超过uint32.MaxValue，否则就是从1开始
-	bool count = 2; // split的个数，正常情况下为0，也就是false，protobuf会将默认值的字段压缩
+	int32 index = 1; // 如果为0，也就是默认值，表示没有超过uint32.MaxValue，否则就是从1开始
+	int32 count = 2; // split的个数，正常情况下为0，也就是false，protobuf会将默认值的字段压缩
 }
 
 /*
