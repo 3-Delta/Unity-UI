@@ -84,6 +84,7 @@
     <Compile Include="Fixed\Protos\GM.cs" />
     <Compile Include="Fixed\Protos\Login.cs" />
     <Compile Include="Fixed\Protos\Msgype.cs" />
+    <Compile Include="Fixed\Protos\Package.cs" />
     <Compile Include="Fixed\Protos\Reconnect.cs" />
     <Compile Include="Fixed\Protos\ServerList.cs" />
     <Compile Include="Fixed\Protos\Team.cs" />
