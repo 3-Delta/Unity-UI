@@ -1,14 +1,38 @@
 syntax = "proto3";
 package Logic.Hotfix.Fixed.Pbf;
 
+message PackageSplit 
+{
+	bool index = 1; // 如果为0，也就是默认值，表示没有超过uint32.MaxValue，否则就是从1开始
+	bool count = 2; // split的个数，正常情况下为0，也就是false，protobuf会将默认值的字段压缩
+}
+
+/*
 // https://www.zhihu.com/pin/1612126921554280448
 message PackageHeader 
 {
-	uint32 id = 1;
+	uint32 id = 1; // prptobuf不支持short， 同时发现如果吧header也压缩，那么接收端会无法处理信息
 	uint32 bufferSize = 2;
-	bool splitIndex = 3; // 如果为0，也就是默认值，表示没有超过uint32.MaxValue，否则就是从1开始
-	bool splitCount = 4; // split的个数，正常情况下为0，也就是false，protobuf会将默认值的字段压缩
 }
+
+message EMPTY
+{
+	
+}
+
+message PackageBody
+{
+	PackageSplit split = 1;
+	EMPTY body = 2; // 数据部分
+}
+
+message Package
+{
+	PackageHeader header = 1;
+	PackageBody body = 2;
+}
+*/
+
 
 /* ilruntime不支持any
 message PackageAny
