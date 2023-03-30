@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
+// https://www.freesion.com/article/9524692248/
 // todo 目前处理静态节点，动态加载的节点后续处理
 [DisallowMultipleComponent]
 [RequireComponent(typeof(Mask))]
