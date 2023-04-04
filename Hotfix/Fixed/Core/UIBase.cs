@@ -11,7 +11,11 @@ namespace Logic.Hotfix.Fixed {
         protected override void OnLoaded(Transform transform) {
             base.OnLoaded(transform);
 
+#if UNITY_EDITOR
+            this.layout = transform.gameObject.AddComponent<TLayout>();
+#else
             this.layout = new TLayout();
+#endif
             this.layout.TryBind(transform);
         }
     }
