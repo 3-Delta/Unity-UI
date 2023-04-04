@@ -237,8 +237,8 @@ public class UIBindComponents : MonoBehaviour {
 
             StringBuilder sb = new StringBuilder("");
             
-            sb.Append("[__TAB__]public partial class Layout : FUILayoutBase {");
-            sb.AppendLine(SYNC_BINDER);
+            sb.AppendLine("[__TAB__]public partial class Layout : FUILayoutBase {");
+            // sb.AppendLine(SYNC_BINDER);
             for (int i = 0, length = bindComponents.Count; i < length; ++i) {
                 var item = bindComponents[i];
                 sb.Append("[__TAB__]");
