@@ -45,6 +45,7 @@ public class CameraUtility {
             // 矩阵将worldPosition转换为裁减空间的数值，因为是点，不是方向，则w == 1
 
             // 经过测试发现一般情况下：camera.cullingMatrix == (camera.projectionMatrix * camera.worldToCameraMatrix)
+            // 某些情况下不同，chatgpt解释
             // vertex shader将定点从local转换到clip空间，然后裁剪空间到屏幕空间的转换是unity自己完成的，shader不需要处理这部分逻辑
             Matrix4x4 matrix = camera.cullingMatrix;
             Vector4 v = worldPosition;

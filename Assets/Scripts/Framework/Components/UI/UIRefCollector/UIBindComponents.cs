@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-#region Editor内容
 #if UNITY_EDITOR
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
@@ -45,15 +45,13 @@ public class BindItemDrawer : PropertyDrawer {
 public class UIBindComponentsInspector : Editor {
     private UIBindComponents owner;
 
-    private SerializedProperty csharpFieldStyle;
-    private SerializedProperty codeStyle;
+    private SerializedProperty fieldStyle;
     private ReorderableList recorderableList;
 
     private void OnEnable() {
         owner = target as UIBindComponents;
 
-        codeStyle = serializedObject.FindProperty("codeStyle");
-        csharpFieldStyle = serializedObject.FindProperty("csharpFieldStyle");
+        this.fieldStyle = serializedObject.FindProperty("fieldStyle");
 
         var prop = serializedObject.FindProperty("bindComponents");
         recorderableList = new ReorderableList(serializedObject, prop);
@@ -85,22 +83,37 @@ public class UIBindComponentsInspector : Editor {
     public override void OnInspectorGUI() {
         serializedObject.Update();
 
-        EditorGUILayout.PropertyField(codeStyle);
-        if (codeStyle.enumValueIndex == (int)UIBindComponents.ECodeStyle.CSharp) {
-            EditorGUILayout.PropertyField(csharpFieldStyle);
-        }
+        EditorGUILayout.PropertyField(fieldStyle);
 
         recorderableList.DoLayoutList();
 
-        if (GUILayout.Button("CHECK")) {
+        if (GUILayout.Button("命名检测")) {
             owner.Check();
         }
 
-        if (GUILayout.Button("COPY")) {
+        if (GUILayout.Button("自动更名")) {
+            owner.AutoName();
+        }
+
+        if (GUILayout.Button("复制")) {
             if (owner.Check()) {
-                string code = owner.Copy();
+                string code = owner.Copy("Layout", false, false);
                 GUIUtility.systemCopyBuffer = code;
                 Debug.LogError(code);
+            }
+        }
+
+        if (GUILayout.Button("生成")) {
+            if (owner.Check()) {
+                string path = EditorUtility.SaveFilePanel("SaveFile", Application.dataPath, "XXX_Layout", "cs");
+                if (string.IsNullOrWhiteSpace(path)) {
+                    return;
+                }
+
+                string clsName = Path.GetFileNameWithoutExtension(path);
+                string code = owner.Copy(clsName, true, true);
+                GUIUtility.systemCopyBuffer = code;
+                File.WriteAllText(path, code);
             }
         }
 
@@ -108,7 +121,6 @@ public class UIBindComponentsInspector : Editor {
     }
 }
 #endif
-#endregion
 
 [DisallowMultipleComponent]
 public class UIBindComponents : MonoBehaviour {
@@ -141,37 +153,33 @@ public class UIBindComponents : MonoBehaviour {
     public List<BindComponent> bindComponents = new List<BindComponent>();
 
 #if UNITY_EDITOR
-    public enum ECodeStyle {
-        CSharp,
-        Lua,
-    }
-
     public enum ECSharpFieldStyle {
         Field,
         Property,
     }
 
-    [SerializeField] private ECodeStyle codeStyle = ECodeStyle.CSharp;
-    [SerializeField] private ECSharpFieldStyle csharpFieldStyle = ECSharpFieldStyle.Property;
+    public ECSharpFieldStyle fieldStyle = ECSharpFieldStyle.Field;
     public const string TAB = "    ";
 
     // tuple形式，方便后续动态的add，进行拓展
-    public static readonly Dictionary<Type, ValueTuple<string, string>> csharpListenDescs = new Dictionary<Type, ValueTuple<string, string>>() {
+    public static readonly Dictionary<Type, IList<ValueTuple<string, string>>> LISTEN_DESCS = new Dictionary<Type, IList<ValueTuple<string, string>>>() {
         {
-            typeof(Button), new ValueTuple<string, string>("void OnBtnClicked{0}();", "this.{0}.onClick.AddListener(listener.OnBtnClicked{1});")
+            typeof(Button), new List<(string, string)>() {
+                new ValueTuple<string, string>("void OnBtnClicked{0}();", "this.{0}.onClick.AddListener(listener.OnBtnClicked{1});"),
+            }
         }, {
-            typeof(Toggle), new ValueTuple<string, string>("void OnValueChanged{0}(bool flag);", "this.{0}.onValueChanged.AddListener(listener.OnValueChanged{1});")
+            typeof(Toggle), new List<(string, string)>() {
+                new ValueTuple<string, string>("void OnValueChanged{0}(bool flag);", "this.{0}.onValueChanged.AddListener(listener.OnValueChanged{1});"),
+            }
         }, {
-            typeof(Slider), new ValueTuple<string, string>("void OnValueChanged{0}(float currentValue);", "this.{0}.onValueChanged.AddListener(listener.OnValueChanged{1});")
+            typeof(Slider), new List<(string, string)>() {
+                new ValueTuple<string, string>("void OnValueChanged{0}(float currentValue);", "this.{0}.onValueChanged.AddListener(listener.OnValueChanged{1});"),
+            }
         },
     };
 
-    private string LuaCopy() {
-        return "---暂未实现---";
-    }
-
     // https://github.com/scriban/scriban
-    private string CSharpCopy() {
+    public string Copy(string clsName, bool includeNamespace, bool includeUsing = true) {
         string AppendTab(int level, string Tab = UIBindComponents.TAB) {
             StringBuilder rlt = new StringBuilder();
             if (level <= 0) {
@@ -185,111 +193,267 @@ public class UIBindComponents : MonoBehaviour {
             return rlt.ToString();
         }
 
-        StringBuilder sb = new StringBuilder();
+        string GenerateKls() {
+            const string SYNC_BINDER = @"
+#if UNITY_EDITOR
+    [__TAB__]private void Reset() {
+    [__TAB__]    this.hideFlags = HideFlags.DontSaveInBuild;
+    [__TAB__]    this.FindByPath(transform, true);
+    [__TAB__]}
+    [__TAB__]
+    [__TAB__][ContextMenu(nameof(SyncToBinder))]
+    [__TAB__]private void SyncToBinder() {
+    [__TAB__]    if (!transform.TryGetComponent<UIBindComponents>(out UIBindComponents r)) {
+    [__TAB__]        r = transform.gameObject.AddComponent<UIBindComponents>();
+    [__TAB__]    }
+    [__TAB__]
+    [__TAB__]    r.fieldStyle = UIBindComponents.ECSharpFieldStyle.Field;
+    [__TAB__]    r.bindComponents = this.Collect();
+    [__TAB__]}
+    [__TAB__]
+    [__TAB__]private List<UIBindComponents.BindComponent> Collect() {
+    [__TAB__]    var fis = this.GetType().GetFields();
+    [__TAB__]    List<UIBindComponents.BindComponent> array = new List<UIBindComponents.BindComponent>();
+    [__TAB__]    foreach (var fi in fis) {
+    [__TAB__]        if (!fi.FieldType.IsSubclassOf(typeof(UnityEngine.Component))) {
+    [__TAB__]            continue;
+    [__TAB__]        }
+    [__TAB__]
+    [__TAB__]        var cp = fi.GetValue(this) as UnityEngine.Component;
+    [__TAB__]        var a = new UIBindComponents.BindComponent() {
+    [__TAB__]            component = cp,
+    [__TAB__]            toListen = true,
+    [__TAB__]            name = fi.Name
+    [__TAB__]        };
+    [__TAB__]        array.Add(a);
+    [__TAB__]    }
+    [__TAB__]
+    [__TAB__]    return array;
+    [__TAB__]}
+#endif
+";
+            const string FIELD_NOTE = "// [{0}] Path: \"{1}\"";
+            const string FIELD_DEFINE = @"public {0} {1}";
 
-        sb.AppendLine("public class Layout : UILayoutBase {");
-        for (int i = 0, length = bindComponents.Count; i < length; ++i) {
-            var item = bindComponents[i];
-            sb.Append(AppendTab(1));
-            sb.AppendFormat("// [{0}] Path: \"{1}\"", i.ToString(), item.GetComponentPath(this));
-            sb.AppendLine();
+            StringBuilder sb = new StringBuilder("");
+            
+            sb.Append("[__TAB__]public partial class Layout : FUILayoutBase {");
+            sb.AppendLine(SYNC_BINDER);
+            for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+                var item = bindComponents[i];
+                sb.Append("[__TAB__]");
+                sb.Append(AppendTab(1));
+                sb.AppendFormat(FIELD_NOTE, i.ToString(), item.GetComponentPath(this));
+                sb.AppendLine();
 
-            sb.Append(AppendTab(1));
-            sb.AppendFormat("public {0} {1}", item.componentType, item.name);
-
-            if (csharpFieldStyle == ECSharpFieldStyle.Property) {
-                sb.AppendLine(" { get; private set; } = null;");
-            }
-            else if (csharpFieldStyle == ECSharpFieldStyle.Field) {
-                sb.AppendLine(" = null;");
-            }
-        }
-
-        sb.AppendLine();
-
-        sb.Append(AppendTab(1));
-        sb.AppendLine("protected override void FindByIndex(UIBindComponents binder) {");
-        for (int i = 0, length = bindComponents.Count; i < length; ++i) {
-            var item = bindComponents[i];
-            sb.Append(AppendTab(2));
-            sb.AppendFormat("this.{0} = binder.Find<{1}>({2});", item.name, item.componentType, i.ToString());
-            sb.AppendLine();
-        }
-
-        sb.Append(AppendTab(1));
-        sb.AppendLine("}");
-
-        sb.AppendLine();
-        sb.Append(AppendTab(1));
-        sb.AppendLine("// 后续想不热更prefab,只热更脚本的形式获取组件,再次函数内部添加查找逻辑即可");
-        sb.Append(AppendTab(1));
-        sb.AppendLine("protected override void FindByPath(Transform transform) {");
-        for (int i = 0, length = bindComponents.Count; i < length; ++i) {
-            var item = bindComponents[i];
-            sb.Append(AppendTab(2));
-            var path = item.GetComponentPath(this);
-            if (path == null) {
-                sb.AppendFormat("// this.{0} = transform.GetComponent<{1}>();", item.name, item.componentType);
-            }
-            else {
-                sb.AppendFormat("// this.{0} = transform.Find(\"{1}\").GetComponent<{2}>();", item.name, path, item.componentType);
-            }
-
-            sb.AppendLine();
-        }
-
-        sb.Append(AppendTab(1));
-        sb.AppendLine("}");
-
-        sb.AppendLine();
-        sb.Append(AppendTab(1));
-        sb.AppendLine(@"public interface IListener {");
-        for (int i = 0, length = bindComponents.Count; i < length; ++i) {
-            var item = bindComponents[i];
-            if (item.component != null && item.toListen) {
-                var type = item.type;
-                if (type != null && csharpListenDescs.TryGetValue(type, out var desc)) {
-                    sb.Append(AppendTab(2));
-                    sb.AppendFormat(desc.Item1, item.name);
-                    sb.AppendLine();
+                sb.Append("[__TAB__]");
+                sb.Append(AppendTab(1));
+                sb.AppendFormat(FIELD_DEFINE, item.componentType, item.name);
+                if (this.fieldStyle == ECSharpFieldStyle.Property) {
+                    sb.AppendLine(" { get; private set; } = null;");
+                }
+                else if (this.fieldStyle == ECSharpFieldStyle.Field) {
+                    sb.AppendLine(" = null;");
                 }
             }
-        }
 
-        sb.Append(AppendTab(1));
-        sb.AppendLine("}");
-        sb.AppendLine();
+            sb.AppendLine();
 
-        sb.Append(AppendTab(1));
-        sb.AppendLine("public void Listen(IListener listener, bool toListen = true) {");
-        for (int i = 0, length = bindComponents.Count; i < length; ++i) {
-            var item = bindComponents[i];
-            if (item.component != null && item.toListen) {
-                var type = item.type;
-                if (type != null && csharpListenDescs.TryGetValue(type, out var desc)) {
-                    sb.Append(AppendTab(2));
-                    sb.AppendFormat(desc.Item2, item.name, item.name);
-                    sb.AppendLine();
-                }
+            const string BINDER_FIND = @"this.{0} = binder.Find<{1}>({2});";
+            sb.Append(AppendTab(1));
+            sb.AppendLine("[__TAB__]protected override void FindByIndex(UIBindComponents binder) {");
+            for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+                var item = bindComponents[i];
+                sb.Append("[__TAB__]");
+                sb.Append(AppendTab(2));
+                sb.AppendFormat(BINDER_FIND, item.name, item.componentType, i.ToString());
+                sb.AppendLine();
             }
+
+            sb.Append(AppendTab(1));
+            sb.AppendLine("[__TAB__]}");
+
+            sb.AppendLine();
+            sb.Append(AppendTab(1));
+            sb.AppendLine("[__TAB__]// 后续想不热更prefab,只热更脚本的形式获取组件,再次函数内部添加查找逻辑即可");
+            sb.Append(AppendTab(1));
+            sb.AppendLine("[__TAB__]protected override void FindByPath(UnityEngine.Transform transform, bool check = false) {");
+
+            sb.Append(AppendTab(2));
+            sb.AppendLine("[__TAB__]if (!check) {");
+            for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+                var item = bindComponents[i];
+                sb.Append(AppendTab(3));
+                var path = item.GetComponentPath(this);
+                if (path == null) {
+                    sb.AppendFormat("[__TAB__]this.{0} = transform.GetComponent<{1}>();", item.name, item.componentType);
+                }
+                else {
+                    sb.AppendFormat("[__TAB__]this.{0} = transform.Find(\"{1}\").GetComponent<{2}>();", item.name, path, item.componentType);
+                }
+
+                sb.AppendLine();
+            }
+
+            sb.Append(AppendTab(2));
+            sb.AppendLine("[__TAB__]}");
+
+            sb.Append(AppendTab(2));
+            sb.AppendLine("[__TAB__]else {");
+            sb.Append(AppendTab(3));
+            sb.AppendLine("[__TAB__]UnityEngine.Transform ___t = null;");
+            for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+                var item = bindComponents[i];
+                sb.Append(AppendTab(3));
+                var path = item.GetComponentPath(this);
+                if (path == null) {
+                    sb.AppendFormat("[__TAB__]this.{0} = transform.GetComponent<{1}>();", item.name, item.componentType);
+                }
+                else {
+                    sb.AppendFormat("[__TAB__]___t = transform.Find(\"{0}\");", path);
+                    sb.AppendLine();
+                    sb.Append(AppendTab(3));
+                    sb.AppendFormat("[__TAB__]this.{0} = ___t != null ? ___t.GetComponent<{1}>() : null;", item.name, item.componentType);
+                }
+
+                sb.AppendLine();
+            }
+
+            sb.Append(AppendTab(2));
+            sb.AppendLine("[__TAB__]}");
+
+            sb.Append(AppendTab(1));
+            sb.AppendLine("[__TAB__]}");
+
+            if (NeedListener()) {
+                sb.AppendLine();
+                sb.Append(AppendTab(1));
+                sb.AppendLine(@"[__TAB__]public interface IListener {");
+                for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+                    var item = bindComponents[i];
+                    if (item.component != null && item.toListen) {
+                        var type = item.type;
+                        if (type != null && LISTEN_DESCS.TryGetValue(type, out var descs)) {
+                            foreach (var desc in descs) {
+                                sb.Append(AppendTab(2));
+                                sb.AppendFormat("[__TAB__]" + desc.Item1, item.name);
+                                sb.AppendLine();
+                            }
+                        }
+                    }
+                }
+
+                sb.Append(AppendTab(1));
+                sb.AppendLine("[__TAB__]}");
+                sb.AppendLine();
+
+                sb.Append(AppendTab(1));
+                sb.AppendLine("[__TAB__]public void Listen(IListener listener, bool toListen = true) {");
+                for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+                    var item = bindComponents[i];
+                    if (item.component != null && item.toListen) {
+                        var type = item.type;
+                        if (type != null && LISTEN_DESCS.TryGetValue(type, out var descs)) {
+                            foreach (var desc in descs) {
+                                sb.Append(AppendTab(2));
+                                sb.AppendFormat("[__TAB__]" + desc.Item2, item.name, item.name);
+                                sb.AppendLine();
+                            }
+                        }
+                    }
+                }
+
+                sb.Append(AppendTab(1));
+                sb.AppendLine("[__TAB__]}");
+            }
+
+            sb.AppendLine("[__TAB__]}");
+            return sb.ToString();
         }
 
-        sb.Append(AppendTab(1));
-        sb.AppendLine("}");
+        string GenerateUsing() {
+            StringBuilder sb = new StringBuilder("");
 
-        sb.AppendLine("}");
-        return sb.ToString();
+            const string USING = @"using System;
+using UnityEngine;
+using UnityEngine.UI;
+
+#if UNITY_EDITOR
+using System.Collections.Generic;
+using System.Reflection;
+#endif";
+            if (includeUsing) {
+                sb.AppendLine(USING);
+                sb.AppendLine();
+            }
+
+            return sb.ToString();
+        }
+
+        const string NAMESPACE = @"namespace Logic {
+[__KLS__]}";
+
+        string usingContent = GenerateUsing();
+        StringBuilder final = new StringBuilder(usingContent);
+        string klsContent = GenerateKls();
+        if (includeNamespace) {
+            final.Append(NAMESPACE);
+            final = final.Replace("[__KLS__]", klsContent);
+            final = final.Replace("[__TAB__]", TAB);
+        }
+        else {
+            final.Append(klsContent);
+            final = final.Replace("[__TAB__]", "");
+        }
+
+        return final.ToString();
     }
 
-    public string Copy() {
-        if (codeStyle == ECodeStyle.CSharp) {
-            return CSharpCopy();
-        }
-        else if (codeStyle == ECodeStyle.Lua) {
-            return LuaCopy();
+    // 是否需要生成listener
+    public bool NeedListener() {
+        bool need = false;
+        for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+            var item = bindComponents[i];
+            if (item.component != null && item.toListen) {
+                var type = item.type;
+                if (type != null && LISTEN_DESCS.TryGetValue(type, out var descs)) {
+                    need = true;
+                    break;
+                }
+            }
         }
 
-        return "---暂未实现---";
+        return need;
+    }
+
+    public void AutoName() {
+        string FirstCharUpper(string target) {
+            if (!string.IsNullOrWhiteSpace(target) && target.Length > 1) {
+                return target[0].ToString().ToUpper() + target.Substring(1);
+            }
+
+            return null;
+        }
+
+        for (int i = 0, length = bindComponents.Count; i < length; ++i) {
+            var cp = bindComponents[i];
+            if (cp != null && cp.component != null) {
+                var targetName = cp.component.name;
+
+                // 名字规则
+                // 去除空格
+                targetName = targetName?.Replace(" ", "");
+                // 首字母大写
+                targetName = FirstCharUpper(targetName);
+                // 添加前缀
+                var prefix = cp.componentType.ToLower();
+                var splits = prefix.Split(new char[] { '.' });
+                prefix = splits[splits.Length - 1];
+                targetName = prefix + targetName;
+
+                cp.name = targetName;
+            }
+        }
     }
 
     // 重名检测
@@ -379,5 +543,9 @@ public class UIBindComponents : MonoBehaviour {
         }
 
         return totalPath;
+    }
+
+    public static bool IsOfType(Type toCheck, Type type, bool orInherited = true) {
+        return type == toCheck || (orInherited && type.IsAssignableFrom(toCheck));
     }
 }
