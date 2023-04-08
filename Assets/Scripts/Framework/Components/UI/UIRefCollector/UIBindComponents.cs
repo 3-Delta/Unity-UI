@@ -180,19 +180,6 @@ public class UIBindComponents : MonoBehaviour {
 
     // https://github.com/scriban/scriban
     public string Copy(string clsName, bool includeNamespace, bool includeUsing = true) {
-        string AppendTab(int level, string Tab = UIBindComponents.TAB) {
-            StringBuilder rlt = new StringBuilder();
-            if (level <= 0) {
-                return "";
-            }
-
-            for (int i = 0; i < level; ++i) {
-                rlt.Append(Tab);
-            }
-
-            return rlt.ToString();
-        }
-
         string GenerateKls() {
             const string SYNC_BINDER = @"
 #if UNITY_EDITOR
@@ -236,18 +223,18 @@ public class UIBindComponents : MonoBehaviour {
             const string FIELD_DEFINE = @"public {0} {1}";
 
             StringBuilder sb = new StringBuilder("");
-            
+
             sb.AppendLine("[__TAB__]public partial class Layout : FUILayoutBase {");
             // sb.AppendLine(SYNC_BINDER);
             for (int i = 0, length = bindComponents.Count; i < length; ++i) {
                 var item = bindComponents[i];
                 sb.Append("[__TAB__]");
-                sb.Append(AppendTab(1));
+                sb.Append(MultiTab(1));
                 sb.AppendFormat(FIELD_NOTE, i.ToString(), item.GetComponentPath(this));
                 sb.AppendLine();
 
                 sb.Append("[__TAB__]");
-                sb.Append(AppendTab(1));
+                sb.Append(MultiTab(1));
                 sb.AppendFormat(FIELD_DEFINE, item.componentType, item.name);
                 if (this.fieldStyle == ECSharpFieldStyle.Property) {
                     sb.AppendLine(" { get; private set; } = null;");
@@ -260,30 +247,30 @@ public class UIBindComponents : MonoBehaviour {
             sb.AppendLine();
 
             const string BINDER_FIND = @"this.{0} = binder.Find<{1}>({2});";
-            sb.Append(AppendTab(1));
+            sb.Append(MultiTab(1));
             sb.AppendLine("[__TAB__]protected override void FindByIndex(UIBindComponents binder) {");
             for (int i = 0, length = bindComponents.Count; i < length; ++i) {
                 var item = bindComponents[i];
                 sb.Append("[__TAB__]");
-                sb.Append(AppendTab(2));
+                sb.Append(MultiTab(2));
                 sb.AppendFormat(BINDER_FIND, item.name, item.componentType, i.ToString());
                 sb.AppendLine();
             }
 
-            sb.Append(AppendTab(1));
+            sb.Append(MultiTab(1));
             sb.AppendLine("[__TAB__]}");
 
             sb.AppendLine();
-            sb.Append(AppendTab(1));
+            sb.Append(MultiTab(1));
             sb.AppendLine("[__TAB__]// 后续想不热更prefab,只热更脚本的形式获取组件,再次函数内部添加查找逻辑即可");
-            sb.Append(AppendTab(1));
+            sb.Append(MultiTab(1));
             sb.AppendLine("[__TAB__]protected override void FindByPath(UnityEngine.Transform transform, bool check = false) {");
 
-            sb.Append(AppendTab(2));
+            sb.Append(MultiTab(2));
             sb.AppendLine("[__TAB__]if (!check) {");
             for (int i = 0, length = bindComponents.Count; i < length; ++i) {
                 var item = bindComponents[i];
-                sb.Append(AppendTab(3));
+                sb.Append(MultiTab(3));
                 var path = item.GetComponentPath(this);
                 if (path == null) {
                     sb.AppendFormat("[__TAB__]this.{0} = transform.GetComponent<{1}>();", item.name, item.componentType);
@@ -295,16 +282,16 @@ public class UIBindComponents : MonoBehaviour {
                 sb.AppendLine();
             }
 
-            sb.Append(AppendTab(2));
+            sb.Append(MultiTab(2));
             sb.AppendLine("[__TAB__]}");
 
-            sb.Append(AppendTab(2));
+            sb.Append(MultiTab(2));
             sb.AppendLine("[__TAB__]else {");
-            sb.Append(AppendTab(3));
+            sb.Append(MultiTab(3));
             sb.AppendLine("[__TAB__]UnityEngine.Transform ___t = null;");
             for (int i = 0, length = bindComponents.Count; i < length; ++i) {
                 var item = bindComponents[i];
-                sb.Append(AppendTab(3));
+                sb.Append(MultiTab(3));
                 var path = item.GetComponentPath(this);
                 if (path == null) {
                     sb.AppendFormat("[__TAB__]this.{0} = transform.GetComponent<{1}>();", item.name, item.componentType);
@@ -312,22 +299,22 @@ public class UIBindComponents : MonoBehaviour {
                 else {
                     sb.AppendFormat("[__TAB__]___t = transform.Find(\"{0}\");", path);
                     sb.AppendLine();
-                    sb.Append(AppendTab(3));
+                    sb.Append(MultiTab(3));
                     sb.AppendFormat("[__TAB__]this.{0} = ___t != null ? ___t.GetComponent<{1}>() : null;", item.name, item.componentType);
                 }
 
                 sb.AppendLine();
             }
 
-            sb.Append(AppendTab(2));
+            sb.Append(MultiTab(2));
             sb.AppendLine("[__TAB__]}");
 
-            sb.Append(AppendTab(1));
+            sb.Append(MultiTab(1));
             sb.AppendLine("[__TAB__]}");
 
             if (NeedListener()) {
                 sb.AppendLine();
-                sb.Append(AppendTab(1));
+                sb.Append(MultiTab(1));
                 sb.AppendLine(@"[__TAB__]public interface IListener {");
                 for (int i = 0, length = bindComponents.Count; i < length; ++i) {
                     var item = bindComponents[i];
@@ -335,7 +322,7 @@ public class UIBindComponents : MonoBehaviour {
                         var type = item.type;
                         if (type != null && LISTEN_DESCS.TryGetValue(type, out var descs)) {
                             foreach (var desc in descs) {
-                                sb.Append(AppendTab(2));
+                                sb.Append(MultiTab(2));
                                 sb.AppendFormat("[__TAB__]" + desc.Item1, item.name);
                                 sb.AppendLine();
                             }
@@ -343,11 +330,11 @@ public class UIBindComponents : MonoBehaviour {
                     }
                 }
 
-                sb.Append(AppendTab(1));
+                sb.Append(MultiTab(1));
                 sb.AppendLine("[__TAB__]}");
                 sb.AppendLine();
 
-                sb.Append(AppendTab(1));
+                sb.Append(MultiTab(1));
                 sb.AppendLine("[__TAB__]public void Listen(IListener listener, bool toListen = true) {");
                 for (int i = 0, length = bindComponents.Count; i < length; ++i) {
                     var item = bindComponents[i];
@@ -355,7 +342,7 @@ public class UIBindComponents : MonoBehaviour {
                         var type = item.type;
                         if (type != null && LISTEN_DESCS.TryGetValue(type, out var descs)) {
                             foreach (var desc in descs) {
-                                sb.Append(AppendTab(2));
+                                sb.Append(MultiTab(2));
                                 sb.AppendFormat("[__TAB__]" + desc.Item2, item.name, item.name);
                                 sb.AppendLine();
                             }
@@ -363,7 +350,7 @@ public class UIBindComponents : MonoBehaviour {
                     }
                 }
 
-                sb.Append(AppendTab(1));
+                sb.Append(MultiTab(1));
                 sb.AppendLine("[__TAB__]}");
             }
 
@@ -547,5 +534,34 @@ using System.Reflection;
 
     public static bool IsOfType(Type toCheck, Type type, bool orInherited = true) {
         return type == toCheck || (orInherited && type.IsAssignableFrom(toCheck));
+    }
+
+    public static string MultiTab(int level, string TAB = "    ") {
+        string append = "";
+        for (int i = 0, length = level; i < length; ++i) {
+            append += TAB;
+        }
+
+        return append;
+    }
+
+    // 给每行的行首添加TAB
+    public static string AppendTabBeforeLine(string input, int tabCount) {
+        string[] splites = input?.Split(new char[] { '\n' });
+        if (splites.Length > 0) {
+            string append = MultiTab(tabCount);
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0, length = splites.Length - 1; i < length; ++i) {
+                sb.Append(append);
+                sb.Append(splites[i]);
+                sb.Append("\n");
+            }
+
+            sb.Append(append);
+            sb.Append(splites[splites.Length - 1]);
+            return sb.ToString();
+        }
+
+        return "";
     }
 }
