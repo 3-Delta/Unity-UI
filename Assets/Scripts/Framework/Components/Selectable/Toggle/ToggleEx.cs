@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 [DisallowMultipleComponent]
 public class ToggleEx : Selectable, IPointerClickHandler {
-    public class ToggleEvent : UnityEvent<bool> { }
+    public class ToggleEvent : UnityEvent<bool, bool> { }
 
     public ToggleEvent onValueChanged = new ToggleEvent();
 
@@ -38,14 +38,14 @@ public class ToggleEx : Selectable, IPointerClickHandler {
             return;
         }
 
-        Select();
+        this.SetSelected(true);
     }
 
-    public void Select() {
+    public void SetSelected(bool interaction = false/*主动点击控件true否则false*/) {
         bool can = (this.clickCondition == null);
         can |= (clickCondition != null && this.clickCondition.Invoke());
         if (can) {
-            this.ownerRegistry.SwitchTo(this, this.isOn);
+            this.ownerRegistry.SwitchTo(this, this.isOn, interaction);
         }
     }
 

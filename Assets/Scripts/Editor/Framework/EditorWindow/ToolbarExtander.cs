@@ -302,16 +302,16 @@ public class ToolbarGUI {
             }
         }
 
-        if (GUILayout.Button(new GUIContent("N", "新建场景"), ToolbarStyles.CommandButtonStyle)) {
-            if (Application.isPlaying || EditorApplication.isPaused || EditorApplication.isCompiling) {
-                Debug.LogError("You Cant new scene when playing/pausing/compiling");
-                return;
-            }
-
-            if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) {
-                EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
-            }
-        }
+        // if (GUILayout.Button(new GUIContent("N", "新建场景"), ToolbarStyles.CommandButtonStyle)) {
+        //     if (Application.isPlaying || EditorApplication.isPaused || EditorApplication.isCompiling) {
+        //         Debug.LogError("You Cant new scene when playing/pausing/compiling");
+        //         return;
+        //     }
+        //
+        //     if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) {
+        //         EditorSceneManager.NewScene(NewSceneSetup.DefaultGameObjects, NewSceneMode.Single);
+        //     }
+        // }
 
         if (GUILayout.Button(ToolbarStyles.RefreshPlayButtonContent, ToolbarStyles.CommandButtonStyle)) {
             if (Application.isPlaying || EditorApplication.isPaused || EditorApplication.isCompiling) {
@@ -326,7 +326,9 @@ public class ToolbarGUI {
     static void OnRightToolbarGUI() {
         // timescale滑动条
         // https://docs.unity3d.com/ScriptReference/EditorGUILayout.Slider.html
-        EditorGUILayout.LabelField("TimeScale", GUILayout.Width(63f));
-        Time.timeScale = EditorGUILayout.Slider(Time.timeScale, 0f, 10f, GUILayout.Width(150f));
+        if (Application.isPlaying) {
+            EditorGUILayout.LabelField("TimeScale", GUILayout.Width(63f));
+            Time.timeScale = EditorGUILayout.Slider(Time.timeScale, 0f, 10f, GUILayout.Width(150f));
+        }
     }
 }

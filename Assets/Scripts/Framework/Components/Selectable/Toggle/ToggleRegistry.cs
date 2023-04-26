@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 [DisallowMultipleComponent]
 public class ToggleRegistry : UIBehaviour {
-    public Action<uint, ToggleEx, bool> onValueChanged;
+    public Action<uint, ToggleEx, bool, bool> onValueChanged;
 
     public bool allowSwitchOff = false;
 
@@ -14,7 +14,7 @@ public class ToggleRegistry : UIBehaviour {
 
     // 点击toggle调用
     // 传入不合理的Toggle会取消所有高亮
-    public void SwitchTo(ToggleEx toggle, bool isOn, bool force = false) {
+    public void SwitchTo(ToggleEx toggle, bool isOn, bool interaction/*主动点击控件true否则false*/, bool force = false) {
         if (this.allowSwitchOff) {
             isOn = !isOn;
         }
@@ -32,14 +32,14 @@ public class ToggleRegistry : UIBehaviour {
             }
 
             if (sendMessage) {
-                onValueChanged?.Invoke(tg.id, tg, toSelect);
-                tg.onValueChanged?.Invoke(toSelect);
+                onValueChanged?.Invoke(tg.id, tg, toSelect, interaction);
+                tg.onValueChanged?.Invoke(toSelect, interaction);
             }
         }
     }
 
     // 外部调用，可能存在id重复性的问题
-    public void SwitchToById(uint id, bool isOn = true, bool force = false) {
+    public void SwitchToById(uint id, bool isOn = true, bool interaction = false/*主动点击控件true否则false*/, bool force = false) {
         if (this.allowSwitchOff) {
             isOn = !isOn;
         }
@@ -58,8 +58,8 @@ public class ToggleRegistry : UIBehaviour {
             }
 
             if (sendMessage) {
-                onValueChanged?.Invoke(toggle.id, toggle, toSelect);
-                toggle.onValueChanged?.Invoke(toSelect);
+                onValueChanged?.Invoke(toggle.id, toggle, interaction, toSelect);
+                toggle.onValueChanged?.Invoke(toSelect, interaction);
             }
         }
     }
