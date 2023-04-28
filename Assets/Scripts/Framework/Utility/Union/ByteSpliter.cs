@@ -2,66 +2,48 @@
 using System.Runtime.InteropServices;
 
 // 解析成和本机一样的大小端数据
+// https://www.zhihu.com/pin/1633497757422940160
 [StructLayout(LayoutKind.Explicit)]
 public struct Union64LocalSpliter {
     [FieldOffset(0)] public readonly Int64 value;
-    [FieldOffset(0)] public readonly byte[] bytes;
+    [FieldOffset(0)] public readonly byte v0;
+    [FieldOffset(1)] public readonly byte v1;
+    [FieldOffset(2)] public readonly byte v2;
+    [FieldOffset(3)] public readonly byte v3;
+    [FieldOffset(4)] public readonly byte v4;
+    [FieldOffset(5)] public readonly byte v5;
+    [FieldOffset(6)] public readonly byte v6;
+    [FieldOffset(7)] public readonly byte v7;
 
     public Union64LocalSpliter(Int64 value) {
+        this.v0 = this.v1 = this.v2 = this.v3 = this.v4 = this.v5 = this.v6 = this.v7 = 0;
         this.value = value;
-        this.bytes = new byte[8];
-    }
-
-    public Union64LocalSpliter(byte[] bytes) {
-        this.value = 0;
-        if (bytes != null && bytes.Length >= sizeof(Int64)) {
-            this.bytes = bytes;
-        }
-        else {
-            this.bytes = new byte[8];
-        }
     }
 }
 
 [StructLayout(LayoutKind.Explicit)]
 public struct Union32LocalSpliter {
     [FieldOffset(0)] public readonly Int32 value;
-    [FieldOffset(0)] public readonly byte[] bytes;
+    [FieldOffset(0)] public readonly byte v0;
+    [FieldOffset(1)] public readonly byte v1;
+    [FieldOffset(2)] public readonly byte v2;
+    [FieldOffset(3)] public readonly byte v3;
 
     public Union32LocalSpliter(Int32 value) {
+        this.v0 = this.v1 = this.v2 = this.v3 = 0;
         this.value = value;
-        this.bytes = new byte[4];
-    }
-
-    public Union32LocalSpliter(byte[] bytes) {
-        this.value = 0;
-        if (bytes != null && bytes.Length >= sizeof(Int32)) {
-            this.bytes = bytes;
-        }
-        else {
-            this.bytes = new byte[4];
-        }
     }
 }
 
 [StructLayout(LayoutKind.Explicit)]
 public struct Union16LocalSpliter {
     [FieldOffset(0)] public readonly Int16 value;
-    [FieldOffset(0)] public readonly byte[] bytes;
+    [FieldOffset(0)] public readonly byte v0;
+    [FieldOffset(1)] public readonly byte v1;
 
     public Union16LocalSpliter(Int16 value) {
+        this.v0 = this.v1 = 0;
         this.value = value;
-        this.bytes = new byte[2];
-    }
-
-    public Union16LocalSpliter(byte[] bytes) {
-        this.value = 0;
-        if (bytes != null && bytes.Length >= sizeof(Int16)) {
-            this.bytes = bytes;
-        }
-        else {
-            this.bytes = new byte[2];
-        }
     }
 }
 
@@ -173,23 +155,23 @@ public class ByteSpliter {
         if (littleEndian) {
             // 内存低地址存储数值低位，高地址存储数值高位
             aim = array[0];
-            aim = (uint)(array[1] << 8) | aim;
-            aim = (uint)(array[2] << 8) | aim;
-            aim = (uint)(array[3] << 8) | aim;
-            aim = (uint)(array[4] << 8) | aim;
-            aim = (uint)(array[5] << 8) | aim;
-            aim = (uint)(array[6] << 8) | aim;
-            aim = (uint)(array[7] << 8) | aim;
+            aim = (Int64)(array[1] << 8) | aim;
+            aim = (Int64)(array[2] << 16) | aim;
+            aim = (Int64)(array[3] << 24) | aim;
+            aim = (Int64)((Int64)array[4] << 32) | aim;
+            aim = (Int64)((Int64)array[5] << 40) | aim;
+            aim = (Int64)((Int64)array[6] << 48) | aim;
+            aim = (Int64)((Int64)array[7] << 56) | aim;
         }
         else {
             aim = array[7];
-            aim = (uint)(array[6] << 8) | aim;
-            aim = (uint)(array[5] << 8) | aim;
-            aim = (uint)(array[4] << 8) | aim;
-            aim = (uint)(array[3] << 8) | aim;
-            aim = (uint)(array[2] << 8) | aim;
-            aim = (uint)(array[1] << 8) | aim;
-            aim = (uint)(array[0] << 8) | aim;
+            aim = (Int64)(array[6] << 8) | aim;
+            aim = (Int64)(array[5] << 16) | aim;
+            aim = (Int64)(array[4] << 24) | aim;
+            aim = (Int64)((Int64)array[3] << 32) | aim;
+            aim = (Int64)((Int64)array[2] << 40) | aim;
+            aim = (Int64)((Int64)array[1] << 48) | aim;
+            aim = (Int64)((Int64)array[0] << 56) | aim;
         }
 
         return true;
@@ -205,14 +187,14 @@ public class ByteSpliter {
             // 内存低地址存储数值低位，高地址存储数值高位
             aim = array[0];
             aim = (array[1] << 8) | aim;
-            aim = (array[2] << 8) | aim;
-            aim = (array[3] << 8) | aim;
+            aim = (array[2] << 16) | aim;
+            aim = (array[3] << 24) | aim;
         }
         else {
             aim = array[3];
             aim = (array[2] << 8) | aim;
-            aim = (array[1] << 8) | aim;
-            aim = (array[0] << 8) | aim;
+            aim = (array[1] << 16) | aim;
+            aim = (array[0] << 24) | aim;
         }
 
         return true;
