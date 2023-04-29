@@ -6,17 +6,27 @@ using System.Runtime.InteropServices;
 [StructLayout(LayoutKind.Explicit)]
 public struct Union64LocalSpliter {
     [FieldOffset(0)] public readonly Int64 value;
-    [FieldOffset(0)] public readonly byte v0;
-    [FieldOffset(1)] public readonly byte v1;
-    [FieldOffset(2)] public readonly byte v2;
-    [FieldOffset(3)] public readonly byte v3;
-    [FieldOffset(4)] public readonly byte v4;
-    [FieldOffset(5)] public readonly byte v5;
-    [FieldOffset(6)] public readonly byte v6;
-    [FieldOffset(7)] public readonly byte v7;
+    
+    [FieldOffset(0)] public readonly byte x0;
+    [FieldOffset(1)] public readonly byte x1;
+    [FieldOffset(2)] public readonly byte x2;
+    [FieldOffset(3)] public readonly byte x3;
+    [FieldOffset(4)] public readonly byte x4;
+    [FieldOffset(5)] public readonly byte x5;
+    [FieldOffset(6)] public readonly byte x6;
+    [FieldOffset(7)] public readonly byte x7;
 
-    public Union64LocalSpliter(Int64 value) {
-        this.v0 = this.v1 = this.v2 = this.v3 = this.v4 = this.v5 = this.v6 = this.v7 = 0;
+    [FieldOffset(0)] public readonly byte y7;
+    [FieldOffset(1)] public readonly byte y6;
+    [FieldOffset(2)] public readonly byte y5;
+    [FieldOffset(3)] public readonly byte y4;
+    [FieldOffset(4)] public readonly byte y3;
+    [FieldOffset(5)] public readonly byte y2;
+    [FieldOffset(6)] public readonly byte y1;
+    [FieldOffset(7)] public readonly byte y0;
+
+    public Union64LocalSpliter(Int32 value) {
+        this.x0 = this.x1 = this.x2 = this.x3 = this.x4 = this.x5 = this.x6 = this.x7 = this.y0 = this.y1 = this.y2 = this.y3 = this.y4 = this.y5 = this.y6 = this.y7 = 0;
         this.value = value;
     }
 }
@@ -24,13 +34,19 @@ public struct Union64LocalSpliter {
 [StructLayout(LayoutKind.Explicit)]
 public struct Union32LocalSpliter {
     [FieldOffset(0)] public readonly Int32 value;
-    [FieldOffset(0)] public readonly byte v0;
-    [FieldOffset(1)] public readonly byte v1;
-    [FieldOffset(2)] public readonly byte v2;
-    [FieldOffset(3)] public readonly byte v3;
+
+    [FieldOffset(0)] public readonly byte x0;
+    [FieldOffset(1)] public readonly byte x1;
+    [FieldOffset(2)] public readonly byte x2;
+    [FieldOffset(3)] public readonly byte x3;
+
+    [FieldOffset(0)] public readonly byte y3;
+    [FieldOffset(1)] public readonly byte y2;
+    [FieldOffset(2)] public readonly byte y1;
+    [FieldOffset(3)] public readonly byte y0;
 
     public Union32LocalSpliter(Int32 value) {
-        this.v0 = this.v1 = this.v2 = this.v3 = 0;
+        this.x0 = this.x1 = this.x2 = this.x3 = this.y0 = this.y1 = this.y2 = this.y3 = 0;
         this.value = value;
     }
 }
@@ -38,11 +54,15 @@ public struct Union32LocalSpliter {
 [StructLayout(LayoutKind.Explicit)]
 public struct Union16LocalSpliter {
     [FieldOffset(0)] public readonly Int16 value;
-    [FieldOffset(0)] public readonly byte v0;
-    [FieldOffset(1)] public readonly byte v1;
+
+    [FieldOffset(0)] public readonly byte x0;
+    [FieldOffset(1)] public readonly byte x1;
+
+    [FieldOffset(0)] public readonly byte y1;
+    [FieldOffset(1)] public readonly byte y0;
 
     public Union16LocalSpliter(Int16 value) {
-        this.v0 = this.v1 = 0;
+        this.x0 = this.x1 = this.y0 = this.y1 = 0;
         this.value = value;
     }
 }
@@ -144,82 +164,5 @@ public class ByteSpliter {
             t = (byte)(aim >> 8);
             array[0] = t;
         }
-    }
-
-    public static bool Combine(byte[] array, out Int64 aim, bool littleEndian) {
-        aim = 0;
-        if (array == null || array.Length < sizeof(Int64)) {
-            return false;
-        }
-
-        if (littleEndian) {
-            // 内存低地址存储数值低位，高地址存储数值高位
-            aim = array[0];
-            aim = (Int64)(array[1] << 8) | aim;
-            aim = (Int64)(array[2] << 16) | aim;
-            aim = (Int64)(array[3] << 24) | aim;
-            aim = (Int64)((Int64)array[4] << 32) | aim;
-            aim = (Int64)((Int64)array[5] << 40) | aim;
-            aim = (Int64)((Int64)array[6] << 48) | aim;
-            aim = (Int64)((Int64)array[7] << 56) | aim;
-        }
-        else {
-            aim = array[7];
-            aim = (Int64)(array[6] << 8) | aim;
-            aim = (Int64)(array[5] << 16) | aim;
-            aim = (Int64)(array[4] << 24) | aim;
-            aim = (Int64)((Int64)array[3] << 32) | aim;
-            aim = (Int64)((Int64)array[2] << 40) | aim;
-            aim = (Int64)((Int64)array[1] << 48) | aim;
-            aim = (Int64)((Int64)array[0] << 56) | aim;
-        }
-
-        return true;
-    }
-
-    public static bool Combine(byte[] array, out Int32 aim, bool littleEndian) {
-        aim = 0;
-        if (array == null || array.Length < sizeof(Int32)) {
-            return false;
-        }
-
-        if (littleEndian) {
-            // 内存低地址存储数值低位，高地址存储数值高位
-            aim = array[0];
-            aim = (array[1] << 8) | aim;
-            aim = (array[2] << 16) | aim;
-            aim = (array[3] << 24) | aim;
-        }
-        else {
-            aim = array[3];
-            aim = (array[2] << 8) | aim;
-            aim = (array[1] << 16) | aim;
-            aim = (array[0] << 24) | aim;
-        }
-
-        return true;
-    }
-
-    public static bool Combine(byte[] array, out Int16 aim, bool littleEndian) {
-        aim = 0;
-        if (array == null || array.Length < sizeof(Int16)) {
-            return false;
-        }
-
-        if (littleEndian) {
-            // 内存低地址存储数值低位，高地址存储数值高位
-            Int32 u32 = array[0];
-            u32 = (array[1] << 8) | u32;
-
-            aim = (Int16)u32;
-        }
-        else {
-            Int32 u32 = array[1];
-            u32 = (array[0] << 8) | u32;
-
-            aim = (Int16)u32;
-        }
-
-        return true;
     }
 }
