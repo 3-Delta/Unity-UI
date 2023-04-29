@@ -6,30 +6,36 @@
 public class NWMsgTypeParser
 {
     /* c格式代码
-    union U {
-        uint16_t value;
-        struct ST {
-            uint16_t first : 10;
-            uint16_t second : 6;
-        }st;
-    };
+    #include <stdint.h>
 
-    uint16_t GetU16(uint16_t first, uint16_t second) {
-        union U u;
-        u.st.first = first;
-        u.st.second = second;
-        return u.value;
-    }
+	#define DLLExport __declspec(dllexport)
 
-    void GetFirstSecond(uint16_t value, uint16_t* first, uint16_t* second) {
-        union U u;
-        u.value = value;
-        if(first != NULL) {
-            *first = u.st.first;
-        }
-        if(second != NULL) {
-            *second = u.st.second;
-        }
-    }
+	extern "C" {
+		union U {
+			uint16_t value;
+			struct ST {
+				uint16_t first : 10;
+				uint16_t second : 6;
+			}st;
+		};
+
+		DLLExport uint16_t GetValue(uint16_t first, uint16_t second) {
+			union U u;
+			u.st.first = first;
+			u.st.second = second;
+			return u.value;
+		}
+
+		DLLExport void GetFirstSecond(uint16_t value, uint16_t* first, uint16_t* second) {
+			union U u;
+			u.value = value;
+			if (first != NULL) {
+				*first = u.st.first;
+			}
+			if (second != NULL) {
+				*second = u.st.second;
+			}
+		}
+	}
     */
 }
