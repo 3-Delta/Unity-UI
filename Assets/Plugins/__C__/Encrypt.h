@@ -3,10 +3,11 @@
 
 #pragma once
 
-#include "EXPORT.h"
+#include "EXPORT.h"	
+#include "MARCO.h"
 
 void XOR(char* array, int len);
 EXTREN_C_BEGIN
-	extern void EXPORT_API Encrypt(char* array, int len);
-	extern void EXPORT_API Decrypt(char* array, int len);
+	extern EXPORT_API void Encrypt(char* array, int len);
+	extern EXPORT_API void Decrypt(char* array, int len);
 EXTREN_C_END

@@ -9,10 +9,10 @@ void XOR(char* array, int len) {
 	}
 }
 
-EXPORT_API void EXPORT_API Encrypt(char* array, int len) {
+EXPORT_API void Encrypt(char* array, int len) {
 	XOR(array, len);
 }
 
-EXPORT_API void EXPORT_API Decrypt(char* array, int len) {
+EXPORT_API void Decrypt(char* array, int len) {
 	XOR(array, len);
 }

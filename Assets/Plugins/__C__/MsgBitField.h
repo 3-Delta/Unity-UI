@@ -7,8 +7,9 @@
 #include <stddef.h>
 
 #include "EXPORT.h"
+#include "MARCO.h"
 
 EXTREN_C_BEGIN
-	extern uint16_t EXPORT_API GetValue(uint16_t first, uint16_t second);
-	extern void EXPORT_API GetFirstSecond(uint16_t value, uint16_t* first, uint16_t* second);
+	extern EXPORT_API uint16_t GetValue(uint16_t first, uint16_t second);
+	extern EXPORT_API void GetFirstSecond(uint16_t value, uint16_t* first, uint16_t* second);
 EXTREN_C_END
