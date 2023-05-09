@@ -105,6 +105,7 @@ EXPORT_API int32_t Swap32(int32_t target) {
 	*/
 
 	union U32Bytes u;
+	u.value = target;
 	SWAP(u.st.v0, u.st.v3);
 	SWAP(u.st.v1, u.st.v2);
 
@@ -131,6 +132,7 @@ EXPORT_API int64_t Swap64(int64_t target) {
 	*/
 
 	union U64Bytes u;
+	u.value = target;
 	SWAP(u.st.v0, u.st.v7);
 	SWAP(u.st.v1, u.st.v6);
 	SWAP(u.st.v2, u.st.v5);
