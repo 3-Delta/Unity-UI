@@ -17,23 +17,33 @@ public struct Union64LocalSpliter {
     [FieldOffset(6)] public byte x6;
     [FieldOffset(7)] public byte x7;
     
-    [FieldOffset(0)] [MarshalAs(UnmanagedType.ByValArray, SizeConst = sizeof(Int64))] public byte[] bytes;
+    // [FieldOffset(0)] [MarshalAs(UnmanagedType.ByValArray, SizeConst = sizeof(Int64))] public byte[] bytes;
     
     public Union64LocalSpliter(Int64 value) {
         this.x0 = this.x1 = this.x2 = this.x3 = this.x4 = this.x5 = this.x6 = this.x7 = 0;
-        this.bytes = new byte[sizeof(Int64)] {0, 0, 0, 0, 0, 0, 0, 0};
+        // this.bytes = new byte[sizeof(Int64)] {0, 0, 0, 0, 0, 0, 0, 0};
         this.value = value;
     }
 
     public void CopyFrom(IList<byte> from, int beginIndex, int endIndex) {
+        this.value = 0;
         if (from == null || beginIndex > endIndex || beginIndex < 0) {
-            value = 0;
             return;
         }
 
         int i = 0;
         while (i < sizeof(Int64) && beginIndex < endIndex) {
-            bytes[i++] = from[beginIndex++];
+            if (i <= 0) { x0 = from[beginIndex]; }
+            else if (i <= 1) { x1 = from[beginIndex]; }
+            else if (i <= 2) { x2 = from[beginIndex]; }
+            else if (i <= 3) { x3 = from[beginIndex]; }
+            else if (i <= 4) { x4 = from[beginIndex]; }
+            else if (i <= 5) { x5 = from[beginIndex]; }
+            else if (i <= 6) { x6 = from[beginIndex]; }
+            else if (i <= 7) { x7 = from[beginIndex]; }
+
+            i++;
+            beginIndex ++;
         }
     }
 }
@@ -47,23 +57,29 @@ public struct Union32LocalSpliter {
     [FieldOffset(2)] public byte x2;
     [FieldOffset(3)] public byte x3;
     
-    [FieldOffset(0)] [MarshalAs(UnmanagedType.ByValArray, SizeConst = sizeof(Int32))] public byte[] bytes;
+    // [FieldOffset(0)] [MarshalAs(UnmanagedType.ByValArray, SizeConst = sizeof(Int32))] public byte[] bytes;
 
     public Union32LocalSpliter(Int32 value) {
         this.x0 = this.x1 = this.x2 = this.x3 = 0;
-        this.bytes = new byte[sizeof(Int32)] {0, 0, 0, 0};
+        // this.bytes = new byte[sizeof(Int32)] {0, 0, 0, 0};
         this.value = value;
     }
     
     public void CopyFrom(IList<byte> from, int beginIndex, int endIndex) {
+        this.value = 0;
         if (from == null || beginIndex > endIndex || beginIndex < 0) {
-            value = 0;
             return;
         }
 
         int i = 0;
         while (i < sizeof(Int32) && beginIndex < endIndex) {
-            bytes[i++] = from[beginIndex++];
+            if (i <= 0) { x0 = from[beginIndex]; }
+            else if (i <= 1) { x1 = from[beginIndex]; }
+            else if (i <= 2) { x2 = from[beginIndex]; }
+            else if (i <= 3) { x3 = from[beginIndex]; }
+
+            i++;
+            beginIndex ++;
         }
     }
 }
@@ -75,23 +91,27 @@ public struct Union16LocalSpliter {
     [FieldOffset(0)] public byte x0;
     [FieldOffset(1)] public byte x1;
     
-    [FieldOffset(0)] [MarshalAs(UnmanagedType.ByValArray, SizeConst = sizeof(Int16))] public byte[] bytes;
+    // [FieldOffset(0)] [MarshalAs(UnmanagedType.ByValArray, SizeConst = sizeof(Int16))] public byte[] bytes;
 
     public Union16LocalSpliter(Int16 value) {
         this.x0 = this.x1 = 0;
-        this.bytes = new byte[sizeof(Int16)] {0, 0};
+        // this.bytes = new byte[sizeof(Int16)] {0, 0};
         this.value = value;
     }
     
     public void CopyFrom(IList<byte> from, int beginIndex, int endIndex) {
+        this.value = 0;
         if (from == null || beginIndex > endIndex || beginIndex < 0) {
-            value = 0;
             return;
         }
 
         int i = 0;
         while (i < sizeof(Int16) && beginIndex < endIndex) {
-            bytes[i++] = from[beginIndex++];
+            if (i <= 0) { x0 = from[beginIndex]; }
+            else if (i <= 1) { x1 = from[beginIndex]; }
+
+            i++;
+            beginIndex ++;
         }
     }
 
