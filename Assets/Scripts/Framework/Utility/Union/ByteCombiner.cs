@@ -2,7 +2,7 @@
 
 public class ByteCombiner {
     public static bool Combine(byte[] array, out Int64 aim, bool littleEndian) {
-        aim = 0;
+        /*aim = 0;
         if (array == null || array.Length < sizeof(Int64)) {
             return false;
         }
@@ -29,11 +29,22 @@ public class ByteCombiner {
             aim = (Int64)((Int64)array[0] << 56) | aim;
         }
 
+        return true;*/
+
+        Union64LocalSpliter u = new Union64LocalSpliter(0);
+        u.CopyFrom(array, 0, array.Length);
+        if (littleEndian == Union16LocalSpliter.IslittleEndian()) {
+            aim = u.value;
+        }
+        else {
+            aim = ByteSwaper.Swap(u.value);
+        }
+
         return true;
     }
 
     public static bool Combine(byte[] array, out Int32 aim, bool littleEndian) {
-        aim = 0;
+        /*aim = 0;
         if (array == null || array.Length < sizeof(Int32)) {
             return false;
         }
@@ -52,11 +63,22 @@ public class ByteCombiner {
             aim = (array[0] << 24) | aim;
         }
 
+        return true;*/
+
+        Union32LocalSpliter u = new Union32LocalSpliter(0);
+        u.CopyFrom(array, 0, array.Length);
+        if (littleEndian == Union16LocalSpliter.IslittleEndian()) {
+            aim = u.value;
+        }
+        else {
+            aim = ByteSwaper.Swap(u.value);
+        }
+
         return true;
     }
 
     public static bool Combine(byte[] array, out Int16 aim, bool littleEndian) {
-        aim = 0;
+        /*aim = 0;
         if (array == null || array.Length < sizeof(Int16)) {
             return false;
         }
@@ -73,6 +95,17 @@ public class ByteCombiner {
             u32 = (array[0] << 8) | u32;
 
             aim = (Int16)u32;
+        }
+
+        return true;*/
+
+        Union16LocalSpliter u = new Union16LocalSpliter(0);
+        u.CopyFrom(array, 0, array.Length);
+        if (littleEndian == Union16LocalSpliter.IslittleEndian()) {
+            aim = u.value;
+        }
+        else {
+            aim = ByteSwaper.Swap(u.value);
         }
 
         return true;
