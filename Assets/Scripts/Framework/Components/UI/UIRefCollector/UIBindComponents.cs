@@ -47,11 +47,13 @@ public class UIBindComponentsInspector : Editor {
 
     private SerializedProperty fieldStyle;
     private ReorderableList recorderableList;
+    private SerializedProperty generatePath;
 
     private void OnEnable() {
         owner = target as UIBindComponents;
 
         this.fieldStyle = serializedObject.FindProperty("fieldStyle");
+        this.generatePath = serializedObject.FindProperty("generatePath");
 
         var prop = serializedObject.FindProperty("bindComponents");
         recorderableList = new ReorderableList(serializedObject, prop);
@@ -84,6 +86,9 @@ public class UIBindComponentsInspector : Editor {
         serializedObject.Update();
 
         EditorGUILayout.PropertyField(fieldStyle);
+        if(!string.IsNullOrWhiteSpace(generatePath.stringValue)) {
+            EditorGUILayout.PropertyField(generatePath);
+        }
 
         recorderableList.DoLayoutList();
 
@@ -106,6 +111,24 @@ public class UIBindComponentsInspector : Editor {
         if (GUILayout.Button("生成")) {
             if (owner.Check()) {
                 string path = EditorUtility.SaveFilePanel("SaveFile", Application.dataPath, "XXX_Layout", "cs");
+                if (string.IsNullOrWhiteSpace(path)) {
+                    return;
+                }
+                
+                int index = path.LastIndexOf("Assets");
+                string relativePath = path.Substring(index + "Assets".Length + 1);
+                generatePath.stringValue = relativePath;
+
+                string clsName = Path.GetFileNameWithoutExtension(path);
+                string code = owner.Copy(clsName, true, true);
+                GUIUtility.systemCopyBuffer = code;
+                File.WriteAllText(path, code);
+            }
+        }
+        
+        if (GUILayout.Button("快速生成")) {
+            if (owner.Check()) {
+                string path = Path.Combine(Application.dataPath, generatePath.stringValue);
                 if (string.IsNullOrWhiteSpace(path)) {
                     return;
                 }
@@ -160,6 +183,8 @@ public class UIBindComponents : MonoBehaviour {
 
     public ECSharpFieldStyle fieldStyle = ECSharpFieldStyle.Field;
     public const string TAB = "    ";
+    
+    public string generatePath;
 
     // tuple形式，方便后续动态的add，进行拓展
     public static readonly Dictionary<Type, IList<ValueTuple<string, string>>> LISTEN_DESCS = new Dictionary<Type, IList<ValueTuple<string, string>>>() {
