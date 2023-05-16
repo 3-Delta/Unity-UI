@@ -12,6 +12,9 @@ using UnityEngine.UI;
 
 [CustomPropertyDrawer(typeof(UIBindComponents.BindComponent))]
 public class BindItemDrawer : PropertyDrawer {
+    private List<Component> cps = new List<Component>();
+    private List<string> cpNames = new List<string>();
+    
     public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
         using (new EditorGUI.PropertyScope(position, label, property)) {
             EditorGUIUtility.labelWidth = 120;
@@ -23,10 +26,35 @@ public class BindItemDrawer : PropertyDrawer {
             };
             var component = property.FindPropertyRelative("component");
             EditorGUI.PropertyField(componentRect, component, GUIContent.none);
+            
+            Component selectedCP = null;
+            if (component != null && component.objectReferenceValue != null) {
+                selectedCP = component.objectReferenceValue as Component;
+            }
 
-            Rect listenRect = new Rect(componentRect) {
+            Rect cpSelectRect = new Rect(componentRect) {
                 x = componentRect.x + 135,
-                width = 30
+                width = 20
+            };
+            if (selectedCP != null) {
+                cps.Clear();
+                selectedCP.GetComponents<Component>(cps);
+                
+                cpNames.Clear();
+                foreach (var oneCp in cps) {
+                    var type = oneCp.GetType().Name;
+                    cpNames.Add(type);
+                }
+                
+                int index = cps.IndexOf(selectedCP);
+                index = index <= 0 ? 0 : index;
+                index = EditorGUI.Popup(cpSelectRect, index, cpNames.ToArray());
+                component.objectReferenceValue = cps[index];
+            }
+            
+            Rect listenRect = new Rect(cpSelectRect) {
+                x = cpSelectRect.x + 25,
+                width = 20
             };
             var listen = property.FindPropertyRelative("toListen");
             EditorGUI.PropertyField(listenRect, listen, GUIContent.none);
@@ -80,13 +108,16 @@ public class UIBindComponentsInspector : Editor {
             EditorGUI.LabelField(rect, string.Format("[--> Index | {0} | {1} | {2} <--]", /*prop.displayName, */"Component", "Listen", "Name"));
             GUI.color = oldColor;
         };
+
+        // recorderableList.onChangedCallback = list => {
+        // };
     }
 
     public override void OnInspectorGUI() {
         serializedObject.Update();
 
         EditorGUILayout.PropertyField(fieldStyle);
-        if(!string.IsNullOrWhiteSpace(generatePath.stringValue)) {
+        if (!string.IsNullOrWhiteSpace(generatePath.stringValue)) {
             EditorGUILayout.PropertyField(generatePath);
         }
 
@@ -114,7 +145,7 @@ public class UIBindComponentsInspector : Editor {
                 if (string.IsNullOrWhiteSpace(path)) {
                     return;
                 }
-                
+
                 int index = path.LastIndexOf("Assets");
                 string relativePath = path.Substring(index + "Assets".Length + 1);
                 generatePath.stringValue = relativePath;
@@ -125,8 +156,8 @@ public class UIBindComponentsInspector : Editor {
                 File.WriteAllText(path, code);
             }
         }
-        
-        if (GUILayout.Button("快速生成")) {
+
+        if ((!string.IsNullOrWhiteSpace(generatePath.stringValue)) && GUILayout.Button("快速生成")) {
             if (owner.Check()) {
                 string path = Path.Combine(Application.dataPath, generatePath.stringValue);
                 if (string.IsNullOrWhiteSpace(path)) {
@@ -183,9 +214,9 @@ public class UIBindComponents : MonoBehaviour {
 
     public ECSharpFieldStyle fieldStyle = ECSharpFieldStyle.Field;
     public const string TAB = "    ";
-    
-    public string generatePath;
 
+    public string generatePath;
+    
     // tuple形式，方便后续动态的add，进行拓展
     public static readonly Dictionary<Type, IList<ValueTuple<string, string>>> LISTEN_DESCS = new Dictionary<Type, IList<ValueTuple<string, string>>>() {
         {
