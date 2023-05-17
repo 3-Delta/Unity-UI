@@ -1,71 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Text;
 
 #if UNITY_EDITOR
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEditorInternal;
 using UnityEngine.UI;
 
-[CustomPropertyDrawer(typeof(UIBindComponents.BindComponent))]
-public class BindItemDrawer : PropertyDrawer {
-    private List<Component> cps = new List<Component>();
-    private List<string> cpNames = new List<string>();
-    
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
-        using (new EditorGUI.PropertyScope(position, label, property)) {
-            EditorGUIUtility.labelWidth = 120;
-            position.height = EditorGUIUtility.singleLineHeight;
+public class DragAndDropGeter : Editor {
+    public static UnityEngine.Object GetDraging(ref Rect dragArea) {
+        Event aEvent = Event.current;
+        GUI.contentColor = Color.white;
 
-            Rect componentRect = new Rect(position) {
-                x = position.x + 30,
-                width = 130
-            };
-            var component = property.FindPropertyRelative("component");
-            EditorGUI.PropertyField(componentRect, component, GUIContent.none);
-            
-            Component selectedCP = null;
-            if (component != null && component.objectReferenceValue != null) {
-                selectedCP = component.objectReferenceValue as Component;
-            }
+        UnityEngine.Object dragging = null;
 
-            Rect cpSelectRect = new Rect(componentRect) {
-                x = componentRect.x + 135,
-                width = 20
-            };
-            if (selectedCP != null) {
-                cps.Clear();
-                selectedCP.GetComponents<Component>(cps);
-                
-                cpNames.Clear();
-                foreach (var oneCp in cps) {
-                    var type = oneCp.GetType().Name;
-                    cpNames.Add(type);
+        switch (aEvent.type) {
+            case EventType.DragUpdated:
+            case EventType.DragPerform:
+                if (!dragArea.Contains(aEvent.mousePosition)) {
+                    break;
                 }
-                
-                int index = cps.IndexOf(selectedCP);
-                index = index <= 0 ? 0 : index;
-                index = EditorGUI.Popup(cpSelectRect, index, cpNames.ToArray());
-                component.objectReferenceValue = cps[index];
-            }
-            
-            Rect listenRect = new Rect(cpSelectRect) {
-                x = cpSelectRect.x + 25,
-                width = 20
-            };
-            var listen = property.FindPropertyRelative("toListen");
-            EditorGUI.PropertyField(listenRect, listen, GUIContent.none);
 
-            Rect nameRect = new Rect(listenRect) {
-                x = listenRect.x + 20,
-                width = 130
-            };
-            var name = property.FindPropertyRelative("name");
-            name.stringValue = EditorGUI.TextField(nameRect, "", name.stringValue);
+                DragAndDrop.visualMode = DragAndDropVisualMode.Copy;
+                if (aEvent.type == EventType.DragPerform) {
+                    DragAndDrop.AcceptDrag();
+                    for (int i = DragAndDrop.objectReferences.Length - 1; i >= 0; --i) {
+                        dragging = DragAndDrop.objectReferences[i];
+                        if (dragging == null) {
+                            break;
+                        }
+                    }
+                }
+
+                Event.current.Use();
+                break;
+            default:
+                break;
         }
+
+        return dragging;
     }
 }
 
@@ -83,12 +59,11 @@ public class UIBindComponentsInspector : Editor {
         this.fieldStyle = serializedObject.FindProperty("fieldStyle");
         this.generatePath = serializedObject.FindProperty("generatePath");
 
-        var prop = serializedObject.FindProperty("bindComponents");
-        recorderableList = new ReorderableList(serializedObject, prop);
+        var bindComponentsProp = serializedObject.FindProperty("bindComponents");
+        recorderableList = new ReorderableList(serializedObject, bindComponentsProp);
         recorderableList.elementHeight = 20;
         recorderableList.drawElementCallback = (rect, index, active, focused) => {
-            var element = prop.GetArrayElementAtIndex(index);
-
+            var elementProp = bindComponentsProp.GetArrayElementAtIndex(index);
             Rect itemRect = new Rect(rect) {
                 x = rect.x,
                 width = 20
@@ -97,7 +72,9 @@ public class UIBindComponentsInspector : Editor {
 
             rect.height -= 4;
             rect.y += 2;
-            EditorGUI.PropertyField(rect, element);
+
+            _DrawElement(rect, elementProp, index, bindComponentsProp);
+            // EditorGUI.PropertyField(rect, element);
         };
 
         recorderableList.onSelectCallback += rlist => { GUI.backgroundColor = Color.blue; };
@@ -108,9 +85,92 @@ public class UIBindComponentsInspector : Editor {
             EditorGUI.LabelField(rect, string.Format("[--> Index | {0} | {1} | {2} <--]", /*prop.displayName, */"Component", "Listen", "Name"));
             GUI.color = oldColor;
         };
+    }
 
-        // recorderableList.onChangedCallback = list => {
-        // };
+    private void _DrawElement(Rect elementPosition, SerializedProperty elementProp, int index, SerializedProperty bindComponentsProp) {
+        // using (new EditorGUI.PropertyScope(position, GUIContent.none, property)) 
+        {
+            elementProp.serializedObject.Update();
+            
+            EditorGUIUtility.labelWidth = 120;
+            elementPosition.height = EditorGUIUtility.singleLineHeight;
+            
+            UIBindComponents.BindComponent item = owner.bindComponents[index];
+            var component = elementProp.FindPropertyRelative("component");
+            
+            Rect componentRect = new Rect(elementPosition) {
+                x = elementPosition.x + 30,
+                width = 130
+            };
+            
+            Rect cpSelectRect = new Rect(componentRect) {
+                x = componentRect.x + 135,
+                width = 20
+            };
+            Rect listenRect = new Rect(cpSelectRect) {
+                x = cpSelectRect.x + 25,
+                width = 20
+            };
+            Rect nameRect = new Rect(listenRect) {
+                x = listenRect.x + 20,
+                width = 130
+            };
+
+            Component selectedCP = null;
+            bool draged = false;
+            
+            void DrawPop(Component cp) {
+                if (selectedCP != null) {
+                    int oldCpIndexOfItem = item.cps.IndexOf(cp);
+                    int newCpIndexOfItem = EditorGUI.Popup(cpSelectRect, oldCpIndexOfItem, item.cpNames);
+                    if (newCpIndexOfItem != oldCpIndexOfItem && (0 <= newCpIndexOfItem && newCpIndexOfItem < item.cps.Count)) {
+                        item.component = item.cps[newCpIndexOfItem];
+                    }
+                }
+            }
+            
+            var dragging = DragAndDropGeter.GetDraging(ref elementPosition);
+            if (dragging != null) {
+                // 拖拽给槽赋值的时机，构建数据
+                item.cps.Clear();
+                if (dragging is GameObject asGo) {
+                    draged = true;
+                    
+                    asGo.GetComponents<Component>(item.cps);
+                    selectedCP = item.cps[0];
+                }
+                else if (dragging is Component asCp) {
+                    draged = true;
+                    
+                    asCp.gameObject.GetComponents<Component>(item.cps);
+                    selectedCP = asCp;
+                }
+
+                if (draged) {
+                    item.SetCpNames();
+                    item.component = selectedCP;
+                    
+                    // todo 怎么让拖拽的时候自动展开 下拉菜单？
+                    // DrawPop(selectedCP);
+                }
+            }
+            else {
+                if (component != null) {
+                    selectedCP = component.objectReferenceValue as Component;
+                }
+            }
+            
+            EditorGUI.PropertyField(componentRect, component, GUIContent.none);
+            DrawPop(selectedCP);
+            
+            var listen = elementProp.FindPropertyRelative("toListen");
+            EditorGUI.PropertyField(listenRect, listen, GUIContent.none);
+
+            var cpName = elementProp.FindPropertyRelative("name");
+            cpName.stringValue = EditorGUI.TextField(nameRect, "", cpName.stringValue);
+
+            elementProp.serializedObject.ApplyModifiedProperties();
+        }
     }
 
     public override void OnInspectorGUI() {
@@ -201,6 +261,17 @@ public class UIBindComponents : MonoBehaviour {
         public string GetComponentPath(Component end) {
             return GetPath(component, end);
         }
+
+        [HideInInspector] public List<Component> cps = new List<Component>();
+
+        public void SetCpNames() {
+            cpNames = new string[cps.Count];
+            for (int i = 0, length = cps.Count; i < length; ++i) {
+                cpNames[i] = cps[i].GetType().Name;
+            }
+        }
+        
+        [HideInInspector] public string[] cpNames = Array.Empty<string>();
 #endif
     }
 
@@ -216,7 +287,7 @@ public class UIBindComponents : MonoBehaviour {
     public const string TAB = "    ";
 
     public string generatePath;
-    
+
     // tuple形式，方便后续动态的add，进行拓展
     public static readonly Dictionary<Type, IList<ValueTuple<string, string>>> LISTEN_DESCS = new Dictionary<Type, IList<ValueTuple<string, string>>>() {
         {
