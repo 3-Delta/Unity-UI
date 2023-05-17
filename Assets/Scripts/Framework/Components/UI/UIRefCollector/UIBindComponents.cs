@@ -642,7 +642,7 @@ using System.Reflection;
         }
         else {
             var cp = component;
-            while (cp.gameObject != end.gameObject) {
+            while (cp != null && cp.gameObject != end.gameObject) {
                 paths.Add(cp.transform.name);
                 cp = cp.transform.parent;
             }
