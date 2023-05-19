@@ -3,15 +3,15 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
 using System;
-
-/*
 using DG.Tweening;
+using UnityEngine.Serialization;
 
+// Scrollrect,Viewport,Content中心点都是(0.5, 0.5)而且必须无anchor
 [DisallowMultipleComponent]
 public class UICenterOnChild : MonoBehaviour, IBeginDragHandler, IEndDragHandler {
     public Action<Transform> onCenter;
 
-    // hOrV, index, transform, toMiddleRate
+    // hOrV, index, transform, toMiddle
     public Action<bool, int, Transform, float, Vector3> onTransform;
 
     public float smoothTime = 0.5f;
@@ -32,18 +32,18 @@ public class UICenterOnChild : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 
     public Vector3 MidPosition {
         get {
-            if (this.midTransform == null) {
-                return this.scrollRect.viewport.position;
+            if (midTransform == null) {
+                return scrollRect.viewport.position;
             }
 
-            return this.midTransform.position;
+            return midTransform.position;
         }
     }
 
     public Vector3 MidOffset {
         get {
             // midTransform必须为viewPort的子节点
-            if (this.midTransform != null) {
+            if (midTransform != null) {
                 return midTransform.localPosition;
             }
 
@@ -53,11 +53,11 @@ public class UICenterOnChild : MonoBehaviour, IBeginDragHandler, IEndDragHandler
 
     public float MaxDistance {
         get {
-            if (this.childrenPos.Count <= 0) {
+            if (childrenPos.Count <= 0) {
                 return 0f;
             }
 
-            return Mathf.Abs(this.childrenPos[0] - this.childrenPos[this.childrenPos.Count - 1]);
+            return Mathf.Abs(childrenPos[0] - childrenPos[childrenPos.Count - 1]);
         }
     }
 
@@ -81,8 +81,7 @@ public class UICenterOnChild : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     public void Rebuild() {
         childrenGos.Clear();
         childrenPos.Clear();
-
-        // 重建Layout, 方便计算位置
+        // 重建Layout, 方便后面位置计算
         LayoutRebuilder.ForceRebuildLayoutImmediate(scrollRect.content);
         foreach (Transform item in scrollRect.content) {
             if (item.gameObject.activeSelf && !childrenGos.Contains(item)) {
@@ -103,42 +102,42 @@ public class UICenterOnChild : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         else if (scrollRect.vertical) {
             float childPos = scrollRect.content.rect.height * 0.5f - contentGridLayout.cellSize.y * 0.5f;
             childPos += MidOffset.y;
-            childrenPos.Add(childPos);
-            for (int i = 0; i < pageCount; i++) {
+            childrenPos.Add(-childPos);
+            for (int i = 1; i < pageCount; i++) {
                 childPos -= contentGridLayout.cellSize.y + contentGridLayout.spacing.y;
-                childrenPos.Add(childPos);
+                childrenPos.Add(-childPos);
             }
         }
     }
 
     private void UpdateScrollView() {
         var midPos = MidPosition;
-        var m = this.scrollRect.content.InverseTransformPoint(midPos);
+        var m = scrollRect.content.InverseTransformPoint(midPos);
         if (scrollRect.horizontal) {
             for (int i = 0; i < childrenGos.Count; i++) {
                 Transform trans = childrenGos[i].transform;
-                var ch = this.scrollRect.content.InverseTransformPoint(trans.position);
-                float toMiddleRate = Mathf.Abs(ch.x - m.x) / MaxDistance;
-                UpdateItem(true, i, trans, toMiddleRate);
+                var ch = scrollRect.content.InverseTransformPoint(trans.position);
+                float toMiddle = Mathf.Abs(ch.x - m.x) / MaxDistance;
+                UpdateItem(true, i, trans, toMiddle);
             }
         }
         else if (scrollRect.vertical) {
             for (int i = 0; i < childrenGos.Count; i++) {
                 Transform trans = childrenGos[i].transform;
-                var ch = this.scrollRect.content.InverseTransformPoint(trans.position);
-                float toMiddleRate = Mathf.Abs(ch.y - m.y) / MaxDistance;
-                UpdateItem(false, i, trans, toMiddleRate);
+                var ch = scrollRect.content.InverseTransformPoint(trans.position);
+                float toMiddle = Mathf.Abs(ch.y - m.y) / MaxDistance;
+                UpdateItem(false, i, trans, toMiddle);
             }
         }
     }
 
-    private void UpdateItem(bool hOrV, int index, Transform tr, float toMiddleRate) {
-        var srCenterOnCentent = scrollRect.viewport.InverseTransformPoint(scrollRect.transform.position);
-        onTransform?.Invoke(hOrV, index, tr, toMiddleRate, srCenterOnCentent);
+    private void UpdateItem(bool hOrV, int index, Transform tr, float toMiddle) {
+        var srCenterOnCentent = scrollRect.content.InverseTransformPoint(scrollRect.viewport.position);
+        onTransform?.Invoke(hOrV, index, tr, toMiddle, srCenterOnCentent);
     }
 
 #if UNITY_EDITOR
-    [SerializeField] private int closestIndex;
+    [FormerlySerializedAs("closestIndex")] [SerializeField] private int dragingClosestIndex;
 #endif
     private int FindClosestPos(float currentPos) {
         int childIndex = 0;
@@ -155,7 +154,7 @@ public class UICenterOnChild : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         }
 
 #if UNITY_EDITOR
-        closestIndex = childIndex;
+        this.dragingClosestIndex = childIndex;
 #endif
         return childIndex;
     }
@@ -177,7 +176,8 @@ public class UICenterOnChild : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         }
     }
 
-#region 响应事件
+    #region 响应事件
+
     public void OnBeginDrag(PointerEventData eventData) {
         tweener?.Pause();
     }
@@ -195,12 +195,14 @@ public class UICenterOnChild : MonoBehaviour, IBeginDragHandler, IEndDragHandler
             index = FindClosestPos(scrollRect.content.anchoredPosition3D.y);
         }
 
-        targetPagePosition = this.childrenPos[index];
-        this.CenterOn(index, true);
+        targetPagePosition = childrenPos[index];
+        CenterOn(index, true);
     }
-#endregion
 
-#region 功能提供
+    #endregion
+
+    #region 功能提供
+
     [ContextMenu(nameof(ToLeft))]
     public void ToLeft(bool needTween = false) {
         if (childrenGos.Count <= 0) {
@@ -235,11 +237,13 @@ public class UICenterOnChild : MonoBehaviour, IBeginDragHandler, IEndDragHandler
     public void CenterOn(Transform target, bool needTween = false) {
         int index = childrenGos.IndexOf(target);
         if (index != -1) {
+            Debug.LogError("target: " + target);
             CenterOn(index, needTween);
         }
     }
 
     public void CenterOn(int index, bool needTween = false) {
+        Debug.LogError("index: " + index);
         if (childrenGos.Count <= 0) {
             return;
         }
@@ -251,32 +255,6 @@ public class UICenterOnChild : MonoBehaviour, IBeginDragHandler, IEndDragHandler
         onCenter?.Invoke(centerChild);
         LerpTweenToTarget(targetPagePosition, needTween);
     }
-#endregion
-}
-*/
 
-public class CenterOnAdjustItem {
-    public bool useScale;
-    public float scaleMultiply = 1f;
-
-    public bool usePosition;
-    public float positionMultiply = 1f;
-    public float positionOffset = 0f;
-
-    protected virtual void OnAdjust(bool hOrV, int index, Transform t, float toMiddleRate, Vector3 scCenterOnContent) {
-        if (this.useScale) {
-            float scale = Mathf.Clamp01(1 - toMiddleRate) * scaleMultiply;
-            t.localScale = new Vector3(scale, scale, scale);
-        }
-
-        if (this.usePosition) {
-            var oldPos = t.localPosition;
-            if (hOrV) {
-                t.localPosition = new Vector3(oldPos.x, scCenterOnContent.y + toMiddleRate * positionMultiply + this.positionOffset, oldPos.z);
-            }
-            else {
-                t.localPosition = new Vector3(scCenterOnContent.x + toMiddleRate * positionMultiply + this.positionOffset, oldPos.y, oldPos.z);
-            }
-        }
-    }
+    #endregion
 }
