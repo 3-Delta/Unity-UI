@@ -1,31 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 
-public class PreCurrent<T> {
-    public T last { get; private set; } = default;
-    public T current { get; private set; } = default;
-    public Action<T, T> onChanged = null;
+public struct PreCurrent<T> {
+    public T last { get; private set; }
+    public T current { get; private set; }
+    public Action<T, T> onChanged;
 
-    public PreCurrent() { }
-
-    public PreCurrent(Action<T, T> onChanged) {
+    public PreCurrent( T last, T current = default, Action<T, T> onChanged = null) {
+        this.last = last;
+        this.current = current;
         this.onChanged = onChanged;
     }
 
-    public PreCurrent<T> Set(T current) {
-        if (EqualityComparer<T>.Default.Equals(this.current, current)) {
-            this.last = this.current;
-            this.current = current;
+    public PreCurrent<T> Set(T target) {
+    	this.last = this.current;
+    	this.current = target;
+    	
+        if (!EqualityComparer<T>.Default.Equals(this.last, current)) {
             onChanged?.Invoke(this.last, this.current);
         }
 
-        return this;
-    }
-
-    // for reuse
-    public PreCurrent<T> Reset() {
-        this.last = default;
-        this.current = default;
         return this;
     }
 }
