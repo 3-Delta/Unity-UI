@@ -48,7 +48,7 @@ public class DelegateList {
                 (delegates[i] as Action)?.Invoke();
             }
             catch (Exception e) {
-                UnityEngine.Debug.LogErrorFormat("{0} eventType invoke fail : {1}", e.ToString());
+                UnityEngine.Debug.LogErrorFormat("{0} eventType invoke fail : {1}", eventType.ToString(), e.ToString());
             }
         }
 
