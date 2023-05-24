@@ -16,12 +16,15 @@ UGUI框架
     比如游戏阶段：loading，主城，战斗，对话，cutscene    
     
     
-参考：
+## 参考：
 1. https://github.com/SuperCLine/ui-framework.git
 
-###鸣谢：
+## 证书：
+MIT License
+
+## 鸣谢：
 [PVS-Studio](https://pvs-studio.com/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - static analyzer for C, C++, C#, and Java code.
+
 [JetBrains/Rider](https://www.jetbrains.com/rider/) - Fast & powerful cross-platform .NET IDE.
-| ![](Imgs/PVS-Studio.png)  |  ![](Imgs/JetBrains.png) |
-|---|---|
-|  PVS-Studio |  JetBrains |
+
+![](Imgs/PVS-Studio.png)  ![](Imgs/JetBrains.png) 
