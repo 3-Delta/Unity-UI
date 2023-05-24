@@ -19,7 +19,9 @@ UGUI框架
 参考：
 1. https://github.com/SuperCLine/ui-framework.git
 
-鸣谢：
-## SAST 工具
-
-[PVS-工作室]（https://pvs-studio.com/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source） - 用于 C、C++、C# 和 Java 代码的静态分析器。
+###鸣谢：
+[PVS-Studio](https://pvs-studio.com/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source) - static analyzer for C, C++, C#, and Java code.
+[JetBrains/Rider](https://www.jetbrains.com/rider/) - Fast & powerful cross-platform .NET IDE.
+| ![](Imgs/PVS-Studio.png)  |  ![](Imgs/JetBrains.png) |
+|---|---|
+|  PVS-Studio |  JetBrains |
