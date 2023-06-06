@@ -56,8 +56,12 @@ public class UICenterOnChild : MonoBehaviour, IBeginDragHandler, IEndDragHandler
             if (childrenPos.Count <= 0) {
                 return 0f;
             }
-
-            return Mathf.Abs(childrenPos[0] - childrenPos[childrenPos.Count - 1]);
+            else if (childrenPos.Count > 1) {
+                return Mathf.Abs(childrenPos[0] - childrenPos[childrenPos.Count - 1]);
+            }
+            else {
+                return 1f;
+            }
         }
     }
 
