@@ -3,10 +3,21 @@
 
 #pragma once
 
+// https://www.zhihu.com/question/27417946/answer/1253126563
+// https://zhuanlan.zhihu.com/p/144963553
+
+// if (0 <= x && x < max)
+// -> if (((unsigned int)x) < max) 
+#define RANGE0(x, max) (((unsigned int)(x)) < (max))
+
+// if (min <= x && x <= max)
+// -> if (( (x - min) | (max - x) ) >= 0)
+#define RANGE(x, min, max) (((x - min) | (max - x)) >= 0)
+
 // https://www.zhihu.com/question/37692782/answer/2929878510
 // #define fun(x) do{fun1(x);fun2(x);}while(0)
 
-#define TO_BOOL(e) return !!(e)
+#define TO_BOOL(e) (!!(e))
 
 #define SWAP(l, r) {(l) = (l) ^ (r); (r) = (l) ^ (r); (l) = (l) ^ (r);}
 
