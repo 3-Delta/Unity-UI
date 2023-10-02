@@ -29,4 +29,6 @@ MIT License
 
 [JetBrains/Rider](https://www.jetbrains.com/rider/) - Fast & powerful cross-platform .NET IDE.
 
-![](Imgs/PVS-Studio.png)  ![](Imgs/JetBrains.png) 
+[Github](https://github.com/search) - Github search
+
+![](Imgs/PVS-Studio.png)  ![](Imgs/JetBrains.png)  ![](Imgs/github-mark.png) 
