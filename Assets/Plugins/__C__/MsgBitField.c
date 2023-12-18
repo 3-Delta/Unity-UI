@@ -1,5 +1,6 @@
 ﻿#include "MsgBitField.h"
 
+// 位域
 union U {
 	uint16_t value;
 	struct ST {
