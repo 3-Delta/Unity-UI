@@ -4,6 +4,7 @@
 /obj
 /Packages
 /Temp
+/Assembly-CSharp.csproj.user
 /.vsconfig
 /Assembly-CSharp.csproj
 /Assembly-CSharp.Player.csproj
