@@ -1,5 +1,4 @@
 ﻿using Logic.Hotfix.Fixed;
-
 using UnityEngine;
 
 namespace Logic.Hotfix.HotReload
