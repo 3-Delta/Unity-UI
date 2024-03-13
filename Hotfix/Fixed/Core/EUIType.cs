@@ -7,6 +7,7 @@
         UIMain = 1,
         UILogin = 2,
         UIWairForNetwork = 3,
+        UIEmpty = 4,
     }
 }
 
