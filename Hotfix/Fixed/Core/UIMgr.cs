@@ -1,9 +1,7 @@
 ﻿using System;
 
-namespace Logic.Hotfix.Fixed
-{
-    public class UIMgr : FUIMgr
-    {
+namespace Logic.Hotfix.Fixed {
+    public class UIMgr : FUIMgr {
         public static void Open(EUIType uiType, Tuple<ulong, ulong, ulong, object> arg = null)
         {
             Open((int)(uiType), arg);
