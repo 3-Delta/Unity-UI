@@ -1,7 +1,5 @@
-﻿namespace Logic.Hotfix.Fixed
-{
-    public class SysTeam : SysBase<SysAccount>
-    {
+﻿namespace Logic.Hotfix.Fixed {
+    public class SysTeam : SysBase<SysAccount> {
         public uint teamId = 0;
         public ulong camptainId = 0;
 
