@@ -16,6 +16,7 @@ public class CameraUtility {
                 screenPosition.x = -screenPosition.x;
                 screenPosition.y = -screenPosition.y;
             }
+
             Screen2UI(go, screenPosition, c2);
         }
     }

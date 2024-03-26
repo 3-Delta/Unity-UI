@@ -10,4 +10,3 @@ public static class ZeroArray<T> {
 public static class ZeroList<T> {
     public static readonly List<T> Value = new List<T>(0);
 }
-

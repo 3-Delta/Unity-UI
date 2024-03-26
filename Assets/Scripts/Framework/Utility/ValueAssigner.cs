@@ -9,7 +9,7 @@ public struct ValueAssigner<T> where T : IEquatable<T> {
     public T value {
         get { return _value; }
         set {
-            if (!EqualityComparer<T>.Default.Equals(this._value, value)) {
+            if(!EqualityComparer<T>.Default.Equals(this._value, value)) {
                 T oldValue = this._value;
                 this._value = value;
                 onValueChanged?.Invoke(oldValue, value);

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class BoolUtils {
     public static bool AllTrue<T>(IList<T> container, Func<int, T, bool> condition, out int failIndex) {

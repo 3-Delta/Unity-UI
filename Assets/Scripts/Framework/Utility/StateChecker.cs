@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using UnityEngine;
 
 // 用于处理爱心区域，进入/离开 区域的动态检测

@@ -10,11 +10,11 @@ public class Using<T> : IDisposable {
         this.value = value;
         this.onDisposed = onDisposed;
     }
-    
+
     public void Dispose() {
         this.value = default;
         this.onDisposed = null;
-        
+
         onDisposed?.Invoke(value);
     }
 
@@ -42,7 +42,7 @@ public struct UsingSt<T> : IDisposable {
     public void Dispose() {
         this.value = default;
         this.onDisposed = null;
-        
+
         onDisposed?.Invoke(value);
     }
 

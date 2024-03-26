@@ -15,7 +15,9 @@ public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, IS
 
     [SerializeField] private List<KVP> list = new List<KVP>();
 
-    public void OnBeforeSerialize() { }
+    public void OnBeforeSerialize() {
+    }
 
-    public void OnAfterDeserialize() { }
+    public void OnAfterDeserialize() {
+    }
 }

@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using UnityEngine.Events;
 
 public static class SetValueUtility {
     public static bool SetStruct<T>(ref T currentValue, T newValue) where T : struct {
